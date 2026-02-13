@@ -1,5 +1,5 @@
 # VEXO
-### DESCRIPCION DEL PROYECTO 
+### DESCRIPCIÓN DEL PROYECTO 
 Estoy desarrollando mi Trabajo Fin de Ciclo (TFC) del CFGS de Desarrollo de Aplicaciones Multiplataforma. El proyecto consiste en una aplicación móvil Android llamada Vexo, desarrollada en Android Studio con Kotlin, cuyo objetivo es ayudar a los usuarios a descubrir, organizar y decidir qué películas y series ver, reduciendo el tiempo de decisión y la saturación de contenido actual. 
 La aplicación consumirá una API externa de cine y series (TMDB) para obtener información real y actualizada sobre películas y series, incluyendo contenido en tendencia, estrenos recientes, películas en cartelera, series populares y próximos lanzamientos. Vexo contará con varias funcionalidades principales: Recomendaciones de películas y series mediante dos métodos: 
 

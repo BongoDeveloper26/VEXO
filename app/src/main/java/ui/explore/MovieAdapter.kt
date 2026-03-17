@@ -7,39 +7,97 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.vexo.app.R
 import data.model.Movie
+import data.repository.WatchlistRepository
 
-class MovieAdapter(private var movies: List<Movie>) :
-    RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
+class MovieAdapter(private var movies: List<Movie>, private val isGridView: Boolean = false) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var onItemClick: ((Movie) -> Unit)? = null
+    private var watchlistRepository: WatchlistRepository? = null
 
-    class MovieViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    private val allGenresMap = mapOf(
+        28 to "Acción", 12 to "Aventura", 16 to "Animación",
+        35 to "Comedia", 80 to "Crimen", 99 to "Doc",
+        18 to "Drama", 10751 to "Familiar", 14 to "Fantasía",
+        36 to "Historia", 27 to "Terror", 10402 to "Música",
+        9648 to "Misterio", 10749 to "Romance", 878 to "Ciencia Ficción",
+        53 to "Suspense", 10752 to "Bélica", 37 to "Western"
+    )
+
+    class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imgPoster: ImageView = itemView.findViewById(R.id.imgPoster)
         val textTitle: TextView = itemView.findViewById(R.id.textTitle)
         val textRating: TextView = itemView.findViewById(R.id.textRating)
+        val textDescription: TextView? = itemView.findViewById(R.id.textDescription)
+        val chipGroup: ChipGroup = itemView.findViewById(R.id.chipGroupItemGenres)
+        val watchedOverlay: View? = itemView.findViewById(R.id.viewWatchedOverlay)
+        val watchedBadge: ImageView? = itemView.findViewById(R.id.imgWatchedBadge)
+        val favBadge: ImageView? = itemView.findViewById(R.id.imgFavoriteBadge)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_movie, parent, false)
-        return MovieViewHolder(view)
+    class GridViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val imgPoster: ImageView = itemView.findViewById(R.id.imgPosterGrid)
+        val textRating: TextView = itemView.findViewById(R.id.textRatingGrid)
+        // Podríamos añadir badges aquí también si se desea
     }
 
-    override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-        val movie = movies[position]
+    override fun getItemViewType(position: Int): Int {
+        return if (isGridView) 1 else 0
+    }
 
-        holder.textTitle.text = movie.title
-        holder.textRating.text = "Rating: ${movie.rating}"
-
-        Glide.with(holder.itemView.context)
-            .load(movie.posterPath)
-            .into(holder.imgPoster)
-
-        holder.itemView.setOnClickListener {
-            onItemClick?.invoke(movie)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        if (watchlistRepository == null) {
+            watchlistRepository = WatchlistRepository(parent.context)
         }
+        
+        return if (viewType == 1) {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_movie_grid, parent, false)
+            GridViewHolder(view)
+        } else {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_movie, parent, false)
+            ListViewHolder(view)
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val movie = movies[position]
+        val isWatched = watchlistRepository?.isWatched(movie.id) ?: false
+        val isFav = watchlistRepository?.isFavorite(movie.id) ?: false
+
+        if (holder is GridViewHolder) {
+            holder.textRating.text = "★ ${String.format("%.1f", movie.rating)}"
+            Glide.with(holder.itemView.context).load(movie.posterPath).centerCrop().into(holder.imgPoster)
+        } else if (holder is ListViewHolder) {
+            holder.textTitle.text = movie.title
+            holder.textRating.text = "★ ${String.format("%.1f", movie.rating)}"
+            holder.textDescription?.text = movie.overview
+            
+            // Mostrar/Ocultar badges visuales
+            holder.watchedOverlay?.visibility = if (isWatched) View.VISIBLE else View.GONE
+            holder.watchedBadge?.visibility = if (isWatched) View.VISIBLE else View.GONE
+            holder.favBadge?.visibility = if (isFav) View.VISIBLE else View.GONE
+
+            holder.chipGroup.removeAllViews()
+            movie.genreIds.take(2).forEach { id ->
+                allGenresMap[id]?.let { name ->
+                    val chip = Chip(holder.itemView.context).apply {
+                        text = name
+                        textSize = 9f
+                        setChipBackgroundColorResource(R.color.background_app)
+                        setTextColor(holder.itemView.context.getColor(R.color.text_secondary))
+                        chipStrokeWidth = 0f
+                    }
+                    holder.chipGroup.addView(chip)
+                }
+            }
+            Glide.with(holder.itemView.context).load(movie.posterPath).into(holder.imgPoster)
+        }
+
+        holder.itemView.setOnClickListener { onItemClick?.invoke(movie) }
     }
 
     override fun getItemCount(): Int = movies.size

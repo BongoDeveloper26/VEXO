@@ -25,10 +25,14 @@
         </activity>
 
         <!-- Otras Activities -->
-        <activity android:name="ui.explore.ExploreActivity"/>
-        <activity android:name="ui.detail.DetailActivity"/>
-        <activity android:name="ui.search.SearchActivity"/>
-        <activity android:name=".ListActivity"/>
+        <activity android:name="ui.explore.ExploreActivity" android:exported="false"/>
+        <activity android:name="ui.explore.CategoryMoviesActivity" android:exported="false"/>
+        <activity android:name="ui.detail.DetailActivity" android:exported="false"/>
+        <activity android:name="ui.detail.PersonMoviesActivity" android:exported="false"/>
+        <activity android:name="ui.search.SearchActivity" android:exported="false"/>
+        <activity android:name="ui.genre.GenreActivity" android:exported="false"/>
+        <activity android:name=".ListActivity" android:exported="false"/>
+        <activity android:name=".UserListDetailActivity" android:exported="false"/>
 
     </application>
 

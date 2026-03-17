@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="280dp"
+    android:layout_height="320dp"
+    android:layout_margin="16dp"
+    app:cardCornerRadius="32dp"
+    app:cardElevation="8dp"
+    app:cardBackgroundColor="@color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="24dp">
+
+        <View
+            android:id="@+id/viewIconBg"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/rounded_corners"
+            android:backgroundTint="@color/background_app"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imgOptionIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:layout_constraintBottom_toBottomOf="@id/viewIconBg"
+            app:layout_constraintEnd_toEndOf="@id/viewIconBg"
+            app:layout_constraintStart_toStartOf="@id/viewIconBg"
+            app:layout_constraintTop_toTopOf="@id/viewIconBg"
+            app:tint="@color/primary" />
+
+        <TextView
+            android:id="@+id/textOptionTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:textColor="@color/text_primary"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/viewIconBg"
+            android:text="Título" />
+
+        <TextView
+            android:id="@+id/textOptionDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/textOptionTitle"
+            android:text="Descripción corta de la opción para el usuario." />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGo"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Entrar"
+            android:textColor="@color/primary"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:icon="@drawable/ic_back_custom"
+            app:iconGravity="textEnd"
+            android:rotation="180"
+            app:iconTint="@color/primary" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

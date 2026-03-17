@@ -2,4 +2,19 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Colores basados en tu logo (Morado muy claro / Lavanda) -->
+    <color name="background_app">#F3E8FF</color> <!-- Morado casi blanco -->
+    <color name="surface_app">#FFFFFF</color>
+    
+    <color name="primary">#7C3AED</color> <!-- Un morado vibrante para botones -->
+    <color name="primary_dark">#5B21B6</color>
+    
+    <color name="text_primary">#1E1B4B</color> <!-- Azul/Morado muy oscuro para lectura -->
+    <color name="text_secondary">#6B7280</color>
+    
+    <color name="accent">#F59E0B</color> <!-- Dorado para estrellas -->
+    
+    <!-- Color para el indicador de la barra de navegación (20% opacidad) -->
+    <color name="nav_indicator_color">#337C3AED</color>
 </resources>

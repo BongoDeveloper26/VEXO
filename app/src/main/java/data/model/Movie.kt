@@ -9,5 +9,7 @@ data class Movie(
     val title: String,
     val overview: String,
     val posterPath: String?,
-    val rating: Double
+    val backdropPath: String? = null,
+    val rating: Double,
+    val genreIds: List<Int> = emptyList()
 ) : Parcelable

@@ -52,11 +52,17 @@ dependencies {
     // Android core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
+    
+    // Versión 1.12.0 para soportar itemActiveIndicatorColor y diseño moderno
+    implementation("com.google.android.material:material:1.12.0")
+    
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    
+    // KTX para Fragmentos
+    implementation("androidx.fragment:fragment-ktx:1.8.5")
 
-    // Lifecycle / ViewModel (IMPORTANTE para viewModelScope)
+    // Lifecycle / ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6")
 
     // Retrofit + Gson

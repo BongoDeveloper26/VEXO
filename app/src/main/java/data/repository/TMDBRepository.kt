@@ -60,7 +60,7 @@ interface TMDBApi {
         @Path("movie_id") movieId: Int,
         @Query("api_key") apiKey: String,
         @Query("language") language: String,
-        @Query("append_to_response") append: String = "belongs_to_collection"
+        @Query("append_to_response") append: String = "belongs_to_collection,release_dates,watch/providers"
     ): MovieDetailDTO
 
     @GET("movie/{movie_id}/recommendations")
@@ -146,6 +146,7 @@ data class MovieDTO(
 
 data class MovieDetailDTO(
     val id: Int,
+    val imdb_id: String? = null,
     val title: String,
     val original_title: String,
     val overview: String,
@@ -162,8 +163,23 @@ data class MovieDetailDTO(
     val original_language: String,
     val production_companies: List<ProductionCompanyDTO>,
     val production_countries: List<ProductionCountryDTO>,
-    val belongs_to_collection: CollectionInfoDTO?
+    val belongs_to_collection: CollectionInfoDTO?,
+    val release_dates: ReleaseDatesResponse?,
+    @com.google.gson.annotations.SerializedName("watch/providers")
+    val watchProviders: WatchProvidersResponse?
 )
+
+data class ReleaseDatesResponse(val results: List<CountryReleaseDates>)
+data class CountryReleaseDates(val iso_3166_1: String, val release_dates: List<ReleaseDateItem>)
+data class ReleaseDateItem(val certification: String)
+
+data class WatchProvidersResponse(val results: Map<String, WatchCountryProviders>)
+data class WatchCountryProviders(
+    val flatrate: List<WatchProviderItem>? = null,
+    val rent: List<WatchProviderItem>? = null,
+    val buy: List<WatchProviderItem>? = null
+)
+data class WatchProviderItem(val provider_id: Int, val provider_name: String, val logo_path: String)
 
 data class MovieImagesDTO(
     val posters: List<ImageDTO>,

@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_explore -> ExploreFragment()
                 R.id.nav_search -> SearchFragment()
                 R.id.nav_list -> ListFragment()
+                R.id.nav_profile -> ProfileFragment()
                 else -> null
             }
             

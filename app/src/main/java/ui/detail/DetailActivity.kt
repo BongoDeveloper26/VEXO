@@ -2,6 +2,7 @@ package ui.detail
 
 import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -31,6 +32,8 @@ import com.vexo.app.R
 import data.model.Movie
 import data.repository.TMDBRepository
 import data.repository.WatchlistRepository
+import data.repository.WatchProviderItem
+import data.repository.OMDbRepository
 import kotlinx.coroutines.launch
 import ui.explore.MovieHorizontalAdapter
 import ui.genre.GenreActivity
@@ -40,6 +43,7 @@ import java.util.*
 class DetailActivity : AppCompatActivity() {
 
     private val repository = TMDBRepository.getInstance()
+    private val omdbRepository = OMDbRepository.getInstance()
     private lateinit var watchlistRepository: WatchlistRepository
     private var currentMovie: Movie? = null
 
@@ -381,6 +385,46 @@ class DetailActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.textRuntimeDetail)?.text = "${details.runtime} min"
                 findViewById<TextView>(R.id.textTagline)?.text = details.tagline ?: ""
                 
+                // Cargar valoraciones externas usando IMDb ID (más preciso) o Título
+                val externalId = details.imdb_id
+                if (!externalId.isNullOrEmpty()) {
+                    loadExternalRatings(externalId, true)
+                } else {
+                    loadExternalRatings(details.title, false)
+                }
+
+                // --- Lógica PEGI con colores dinámicos ---
+                val rawPegi = details.release_dates?.results?.find { it.iso_3166_1 == "ES" }?.release_dates?.firstOrNull()?.certification
+                    ?: details.release_dates?.results?.find { it.iso_3166_1 == "US" }?.release_dates?.firstOrNull()?.certification
+                
+                if (!rawPegi.isNullOrEmpty()) {
+                    findViewById<View>(R.id.dotPegi).visibility = View.VISIBLE
+                    val textPegi: TextView = findViewById(R.id.textPegiDetail)
+                    textPegi.visibility = View.VISIBLE
+                    
+                    val formattedPegi = if (rawPegi.all { it.isDigit() }) "+$rawPegi" else rawPegi
+                    textPegi.text = formattedPegi
+
+                    // Asignar color según el número
+                    val pegiColor = when {
+                        rawPegi.contains("18") -> "#EF4444" // Rojo (Adultos)
+                        rawPegi.contains("16") -> "#F59E0B" // Naranja (Adolescentes)
+                        rawPegi.contains("12") -> "#EAB308" // Amarillo
+                        rawPegi.contains("7") -> "#10B981"  // Verde (Infantil)
+                        else -> "#3B82F6"                    // Azul (Todos los públicos)
+                    }
+                    textPegi.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor(pegiColor))
+                }
+
+                // --- Lógica Dónde Ver Rediseñada ---
+                val providers = details.watchProviders?.results?.get("ES")?.flatrate
+                if (!providers.isNullOrEmpty()) {
+                    findViewById<View>(R.id.layoutWatchProviders).visibility = View.VISIBLE
+                    val recycler: RecyclerView = findViewById(R.id.recyclerWatchProviders)
+                    recycler.layoutManager = LinearLayoutManager(this@DetailActivity, LinearLayoutManager.HORIZONTAL, false)
+                    recycler.adapter = WatchProviderAdapter(providers)
+                }
+                
                 val isSpanish = repository.getLanguage() == "es-ES"
                 
                 findViewById<TextView>(R.id.textOriginalTitle)?.text = details.original_title
@@ -410,6 +454,46 @@ class DetailActivity : AppCompatActivity() {
                         }
                     }
                     groupGenres.addView(chip)
+                }
+            }
+        }
+    }
+
+    private fun loadExternalRatings(query: String, isId: Boolean) {
+        lifecycleScope.launch {
+            val omdbData = if (isId) omdbRepository.getMovieRatingsById(query) 
+                           else omdbRepository.getMovieRatingsByTitle(query)
+            
+            if (omdbData != null) {
+                var hasAnyRating = false
+                
+                // IMDb
+                val imdbVal = omdbData.imdbRating
+                if (!imdbVal.isNullOrEmpty() && imdbVal != "N/A") {
+                    findViewById<View>(R.id.layoutImdb).visibility = View.VISIBLE
+                    findViewById<TextView>(R.id.textImdbRating).text = "$imdbVal/10"
+                    hasAnyRating = true
+                }
+
+                // Rotten Tomatoes y Metacritic
+                omdbData.Ratings?.forEach { rating ->
+                    when (rating.Source) {
+                        "Rotten Tomatoes" -> {
+                            findViewById<View>(R.id.layoutRotten).visibility = View.VISIBLE
+                            findViewById<TextView>(R.id.textRottenRating).text = rating.Value
+                            hasAnyRating = true
+                        }
+                        "Metacritic" -> {
+                            findViewById<View>(R.id.layoutMetacritic).visibility = View.VISIBLE
+                            val mcValue = rating.Value.split("/")[0]
+                            findViewById<TextView>(R.id.textMetacriticRating).text = mcValue
+                            hasAnyRating = true
+                        }
+                    }
+                }
+
+                if (hasAnyRating) {
+                    findViewById<View>(R.id.layoutExternalRatings).visibility = View.VISIBLE
                 }
             }
         }
@@ -477,6 +561,22 @@ class DetailActivity : AppCompatActivity() {
     private fun refreshDetailWithMovie(movie: Movie) {
         startActivity(Intent(this, DetailActivity::class.java).apply { putExtra("movie", movie) })
         finish()
+    }
+
+    // --- Adaptadores Internos ---
+
+    inner class WatchProviderAdapter(private val providers: List<WatchProviderItem>) : RecyclerView.Adapter<WatchProviderAdapter.ViewHolder>() {
+        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+            val img: ImageView = view.findViewById(R.id.imgProviderLogo)
+        }
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_watch_provider, parent, false)
+            return ViewHolder(view)
+        }
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            Glide.with(holder.itemView.context).load("https://image.tmdb.org/t/p/w154${providers[position].logo_path}").into(holder.img)
+        }
+        override fun getItemCount() = providers.size
     }
 
     inner class PosterPagerAdapter(private val posterUrls: List<String>) : RecyclerView.Adapter<PosterPagerAdapter.ViewHolder>() {

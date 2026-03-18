@@ -30,7 +30,8 @@
                 android:layout_height="40dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_back_custom"
-                app:tint="@color/primary" />
+                app:tint="@color/primary"
+                android:visibility="gone" />
 
             <EditText
                 android:id="@+id/editSearch"
@@ -39,7 +40,7 @@
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
                 android:background="@android:color/transparent"
-                android:hint="Busca películas o personajes..."
+                android:hint="busca peliculas y actores"
                 android:paddingHorizontal="12dp"
                 android:textColor="@color/text_primary"
                 android:textColorHint="@color/text_secondary"

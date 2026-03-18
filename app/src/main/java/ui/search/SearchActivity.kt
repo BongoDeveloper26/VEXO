@@ -145,7 +145,9 @@ class SearchActivity : AppCompatActivity() {
             showLoading(true)
             
             val queryLower = query.lowercase().trim()
-            val movies = repository.searchMovies(query).filter { it.posterPath != null }
+            val movies = repository.searchMovies(query).filter { 
+                it.posterPath != null && (it.rating >= 5.0 || it.title.lowercase().trim() == queryLower)
+            }
             movieAdapter.updateMovies(movies)
             
             val smartPeopleMap = mutableMapOf<Int, PersonDTO>()

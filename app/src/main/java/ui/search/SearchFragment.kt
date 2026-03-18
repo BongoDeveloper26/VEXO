@@ -11,13 +11,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -68,19 +68,13 @@ class SearchFragment : Fragment() {
         val tabLayout: TabLayout = view.findViewById(R.id.tabLayoutSearch)
         val recyclerResults: RecyclerView = view.findViewById(R.id.recyclerSearchResults)
 
-        btnBack.setOnClickListener {
-            if (editSearch.text.isNotEmpty()) {
-                editSearch.text.clear()
-                showInitialState(view)
-            } else {
-                activity?.onBackPressedDispatcher?.onBackPressed()
-            }
-        }
+        // Ocultamos la flecha de atrás como pediste
+        btnBack.visibility = View.GONE
 
         movieAdapter = MovieAdapter(emptyList())
         movieAdapter.onItemClick = { movie ->
-            val query = editSearch.text.toString().trim()
-            if (query.isNotEmpty()) saveSearchQuery(query)
+            // Al hacer click en una peli, guardamos la búsqueda
+            saveSearchQuery(movie.title)
             val intent = Intent(requireContext(), DetailActivity::class.java)
             intent.putExtra("movie", movie)
             startActivity(intent)
@@ -111,6 +105,20 @@ class SearchFragment : Fragment() {
             clearAllHistory(view)
         }
 
+        // Mejoramos la acción de buscar del teclado
+        editSearch.setOnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                val query = editSearch.text.toString().trim()
+                if (query.isNotEmpty()) {
+                    saveSearchQuery(query)
+                    performSearch(query, view)
+                    val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(v.windowToken, 0)
+                }
+                true
+            } else false
+        }
+
         editSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -131,51 +139,52 @@ class SearchFragment : Fragment() {
     private fun performSearch(query: String, view: View) {
         searchJob?.cancel()
         searchJob = lifecycleScope.launch {
-            delay(300) // Búsqueda más instantánea
+            delay(300)
             showLoading(view, true)
             
-            // 1. Buscar películas
-            val movies = repository.searchMovies(query).filter { it.posterPath != null }
+            val queryLower = query.lowercase().trim()
+            val movies = repository.searchMovies(query).filter { 
+                it.posterPath != null && (it.rating >= 5.0 || it.title.lowercase().trim() == queryLower)
+            }
             movieAdapter.updateMovies(movies)
             
             val smartPeopleMap = mutableMapOf<Int, PersonDTO>()
-            
-            // 2. Buscar por nombre (Prioridad para que aparezca "Ben Affleck" al poner "Ben")
             repository.searchPeople(query).forEach { p ->
                 smartPeopleMap[p.id] = p
             }
             
-            // 3. Lógica Multifilm: Analizar las 5 pelis más relevantes para el reparto
             if (movies.isNotEmpty()) {
                 val topMovies = movies.take(5)
                 topMovies.forEach { movie ->
                     val credits = repository.getMovieCredits(movie.id)
                     credits?.cast?.forEach { cast ->
-                        // Si el personaje o el actor coinciden con la búsqueda, lo añadimos
                         if (cast.character.contains(query, ignoreCase = true) || 
-                            cast.name.contains(query, ignoreCase = true) ||
-                            cast.character.contains("Bruce Wayne", ignoreCase = true)) {
+                            cast.name.contains(query, ignoreCase = true)) {
                             smartPeopleMap[cast.id] = PersonDTO(cast.id, cast.name, cast.profile_path, cast.character)
                         }
                     }
                 }
             }
             
-            // Ordenar para que los que tienen foto salgan primero
             val finalPeople = smartPeopleMap.values.toList().sortedByDescending { it.profile_path != null }
             personAdapter.updatePeople(finalPeople)
             
             showLoading(view, false)
             view.findViewById<View>(R.id.recyclerSearchResults).visibility = View.VISIBLE
+            view.findViewById<View>(R.id.layoutNoResults).visibility = if (movies.isEmpty() && finalPeople.isEmpty()) View.VISIBLE else View.GONE
         }
     }
 
     private fun saveSearchQuery(query: String) {
+        val trimmed = query.trim()
+        if (trimmed.isEmpty()) return
         val prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val history = getSearchHistory().toMutableList()
-        history.remove(query)
-        history.add(0, query)
+        history.remove(trimmed)
+        history.add(0, trimmed)
         prefs.edit().putString(KEY_HISTORY, history.take(15).joinToString("|")).apply()
+        // Importante: No actualizamos la UI aquí para no interrumpir la búsqueda, 
+        // se actualizará al volver al estado inicial o onResume
     }
 
     private fun getSearchHistory(): List<String> = requireContext()
@@ -255,6 +264,8 @@ class SearchFragment : Fragment() {
             val trending = repository.getTrendingMovies()
             trendingAdapter = MovieHorizontalAdapter(trending.filter { it.posterPath != null })
             trendingAdapter.onItemClick = { movie ->
+                // Al hacer click en una de tendencias, también guardamos su título
+                saveSearchQuery(movie.title)
                 val intent = Intent(requireContext(), DetailActivity::class.java)
                 intent.putExtra("movie", movie)
                 startActivity(intent)
@@ -272,7 +283,7 @@ class SearchFragment : Fragment() {
         view.findViewById<View>(R.id.tabLayoutSearch).visibility = View.GONE
         view.findViewById<View>(R.id.recyclerSearchResults).visibility = View.GONE
         view.findViewById<View>(R.id.layoutInitialState).visibility = View.VISIBLE
-        updateHistoryList(view)
+        updateHistoryList(view) // Refrescamos el historial al volver al inicio
         showLoading(view, false)
     }
 }

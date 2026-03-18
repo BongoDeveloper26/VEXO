@@ -9,7 +9,8 @@ interface OMDbApi {
     @GET("/")
     suspend fun getMovieDetailsByTitle(
         @Query("apikey") apiKey: String,
-        @Query("t") title: String
+        @Query("t") title: String,
+        @Query("y") year: String? = null
     ): OMDbMovieDTO
 
     @GET("/")
@@ -23,7 +24,8 @@ data class OMDbMovieDTO(
     val Ratings: List<OMDbRating>? = null,
     val imdbRating: String? = null,
     val Metascore: String? = null,
-    val Awards: String? = null
+    val Awards: String? = null,
+    val Plot: String? = null
 )
 
 data class OMDbRating(
@@ -32,21 +34,20 @@ data class OMDbRating(
 )
 
 class OMDbRepository {
-    // Tu clave: c7126272
     private val apiKey = "c7126272"
     private val api: OMDbApi
 
     init {
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://www.omdbapi.com/") // CAMBIADO A HTTPS
+            .baseUrl("https://www.omdbapi.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         api = retrofit.create(OMDbApi::class.java)
     }
 
-    suspend fun getMovieRatingsByTitle(title: String): OMDbMovieDTO? {
+    suspend fun getMovieRatingsByTitle(title: String, year: String? = null): OMDbMovieDTO? {
         return try {
-            api.getMovieDetailsByTitle(apiKey, title)
+            api.getMovieDetailsByTitle(apiKey, title, year)
         } catch (e: Exception) {
             null
         }

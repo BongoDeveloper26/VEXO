@@ -6,10 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vexo.app.R
 import data.repository.TMDBRepository
@@ -38,12 +40,36 @@ class ExploreFragment : Fragment() {
     }
 
     private fun setupHeader(view: View) {
-        // En el fragmento principal, ocultamos el botón de volver si no es necesario
         view.findViewById<ImageButton>(R.id.btnBack).visibility = View.GONE
         
         view.findViewById<ImageButton>(R.id.btnSettings).setOnClickListener {
+            showSettingsMenu()
+        }
+    }
+
+    private fun showSettingsMenu() {
+        val bottomSheet = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
+        val view = layoutInflater.inflate(R.layout.layout_explore_menu, null)
+        val isSpanish = repository.getLanguage() == "es-ES"
+
+        // Configurar textos según idioma
+        view.findViewById<TextView>(R.id.textOptionLanguage).text = if (isSpanish) "Cambiar Idioma" else "Change Language"
+        view.findViewById<TextView>(R.id.textOptionAbout).text = if (isSpanish) "Quiénes Somos" else "About Us"
+
+        // Opción Idioma
+        view.findViewById<View>(R.id.optionLanguage).setOnClickListener {
+            bottomSheet.dismiss()
             showLanguageDialog()
         }
+
+        // Opción Quiénes Somos
+        view.findViewById<View>(R.id.optionAbout).setOnClickListener {
+            bottomSheet.dismiss()
+            startActivity(Intent(requireContext(), AboutActivity::class.java))
+        }
+
+        bottomSheet.setContentView(view)
+        bottomSheet.show()
     }
 
     private fun setupRecyclerView(view: View) {
@@ -61,8 +87,6 @@ class ExploreFragment : Fragment() {
     }
 
     private fun setupFab(view: View) {
-        // El FAB de búsqueda ya no es tan necesario si tenemos la pestaña abajo, 
-        // pero lo dejamos por si acaso o lo ocultamos. Lo ocultaremos para limpiar la UI.
         view.findViewById<View>(R.id.fabSearch).visibility = View.GONE
     }
 
@@ -77,7 +101,7 @@ class ExploreFragment : Fragment() {
         val currentLang = if (repository.getLanguage() == "es-ES") 0 else 1
 
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Seleccionar Idioma")
+            .setTitle(if (repository.getLanguage() == "es-ES") "Seleccionar Idioma" else "Select Language")
             .setSingleChoiceItems(languages, currentLang) { dialog, which ->
                 val newLang = if (which == 0) "es-ES" else "en-US"
                 if (newLang != repository.getLanguage()) {

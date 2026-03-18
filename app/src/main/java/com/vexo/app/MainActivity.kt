@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import ui.explore.ExploreFragment
 import ui.search.SearchFragment
+import ui.news.NewsFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,11 +22,8 @@ class MainActivity : AppCompatActivity() {
     private fun setupBottomNavigation(savedInstanceState: Bundle?) {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
         
-        // Configuramos el color del indicador por código para evitar errores de XML
-        // Usamos un morado con 15% de opacidad (26 en hexadecimal)
         bottomNav.itemActiveIndicatorColor = ColorStateList.valueOf(Color.parseColor("#267C3AED"))
         
-        // Al empezar, cargamos el fragmento de Explorar por defecto
         if (savedInstanceState == null) {
             loadFragment(ExploreFragment())
         }
@@ -35,6 +33,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_explore -> ExploreFragment()
                 R.id.nav_search -> SearchFragment()
                 R.id.nav_list -> ListFragment()
+                R.id.nav_news -> NewsFragment() // Nueva sección de noticias
                 R.id.nav_profile -> ProfileFragment()
                 else -> null
             }
@@ -49,6 +48,7 @@ class MainActivity : AppCompatActivity() {
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
+            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
             .commit()
     }
 }

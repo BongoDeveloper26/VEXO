@@ -126,14 +126,12 @@ class DetailActivity : AppCompatActivity() {
             val isFav = watchlistRepository.isFavorite(movie.id)
             val isWatched = watchlistRepository.isWatched(movie.id)
 
-            // Configurar Favorito con el corazón
             val imgHeart = view.findViewById<ImageView>(R.id.imgMenuHeart)
             val textFav = view.findViewById<TextView>(R.id.textMenuFavorite)
             imgHeart?.setImageResource(if (isFav) R.drawable.ic_heart_filled else R.drawable.ic_heart_outline)
             textFav?.text = if (isFav) (if (isSpanish) "Quitar de favoritos" else "Remove from favorites") 
                            else (if (isSpanish) "Dar corazón" else "Add to favorites")
 
-            // Configurar Visto
             val imgWatched = view.findViewById<ImageView>(R.id.imgMenuWatched)
             val textWatched = view.findViewById<TextView>(R.id.textMenuWatched)
             textWatched?.text = if (isWatched) (if (isSpanish) "Quitar de vistas" else "Mark as unwatched") 
@@ -381,19 +379,18 @@ class DetailActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val details = repository.getMovieDetails(movieId)
             if (details != null) {
-                findViewById<TextView>(R.id.textYearDetail)?.text = details.release_date.take(4)
+                val year = details.release_date.take(4)
+                findViewById<TextView>(R.id.textYearDetail)?.text = year
                 findViewById<TextView>(R.id.textRuntimeDetail)?.text = "${details.runtime} min"
                 findViewById<TextView>(R.id.textTagline)?.text = details.tagline ?: ""
                 
-                // Cargar valoraciones externas usando IMDb ID (más preciso) o Título
                 val externalId = details.imdb_id
                 if (!externalId.isNullOrEmpty()) {
-                    loadExternalRatings(externalId, true)
+                    loadExternalRatingsAndAwards(externalId, true, year)
                 } else {
-                    loadExternalRatings(details.title, false)
+                    loadExternalRatingsAndAwards(details.title, false, year)
                 }
 
-                // --- Lógica PEGI con colores dinámicos ---
                 val rawPegi = details.release_dates?.results?.find { it.iso_3166_1 == "ES" }?.release_dates?.firstOrNull()?.certification
                     ?: details.release_dates?.results?.find { it.iso_3166_1 == "US" }?.release_dates?.firstOrNull()?.certification
                 
@@ -405,18 +402,16 @@ class DetailActivity : AppCompatActivity() {
                     val formattedPegi = if (rawPegi.all { it.isDigit() }) "+$rawPegi" else rawPegi
                     textPegi.text = formattedPegi
 
-                    // Asignar color según el número
                     val pegiColor = when {
-                        rawPegi.contains("18") -> "#EF4444" // Rojo (Adultos)
-                        rawPegi.contains("16") -> "#F59E0B" // Naranja (Adolescentes)
-                        rawPegi.contains("12") -> "#EAB308" // Amarillo
-                        rawPegi.contains("7") -> "#10B981"  // Verde (Infantil)
-                        else -> "#3B82F6"                    // Azul (Todos los públicos)
+                        rawPegi.contains("18") -> "#EF4444"
+                        rawPegi.contains("16") -> "#F59E0B"
+                        rawPegi.contains("12") -> "#EAB308"
+                        rawPegi.contains("7") -> "#10B981"
+                        else -> "#3B82F6"
                     }
                     textPegi.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor(pegiColor))
                 }
 
-                // --- Lógica Dónde Ver Rediseñada ---
                 val providers = details.watchProviders?.results?.get("ES")?.flatrate
                 if (!providers.isNullOrEmpty()) {
                     findViewById<View>(R.id.layoutWatchProviders).visibility = View.VISIBLE
@@ -424,8 +419,6 @@ class DetailActivity : AppCompatActivity() {
                     recycler.layoutManager = LinearLayoutManager(this@DetailActivity, LinearLayoutManager.HORIZONTAL, false)
                     recycler.adapter = WatchProviderAdapter(providers)
                 }
-                
-                val isSpanish = repository.getLanguage() == "es-ES"
                 
                 findViewById<TextView>(R.id.textOriginalTitle)?.text = details.original_title
                 findViewById<TextView>(R.id.textStatus)?.text = details.status
@@ -459,15 +452,33 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadExternalRatings(query: String, isId: Boolean) {
+    private fun translateAwards(awards: String): String {
+        return awards
+            .replace("Won", "Ganadora de", ignoreCase = true)
+            .replace("Nominated for", "Nominada a", ignoreCase = true)
+            .replace("Another", "Otras", ignoreCase = true)
+            .replace("wins", "victorias", ignoreCase = true)
+            .replace("win", "victoria", ignoreCase = true)
+            .replace("nominations", "nominaciones", ignoreCase = true)
+            .replace("nomination", "nominación", ignoreCase = true)
+            .replace("total", "en total", ignoreCase = true)
+            .replace("Oscars", "Oscars", ignoreCase = true)
+            .replace("Oscar", "Oscar", ignoreCase = true)
+            .replace("Golden Globe", "Globo de Oro", ignoreCase = true)
+            .replace("Golden Globes", "Globos de Oro", ignoreCase = true)
+            .replace("&", "y")
+            .trim()
+    }
+
+    private fun loadExternalRatingsAndAwards(query: String, isId: Boolean, year: String?) {
         lifecycleScope.launch {
             val omdbData = if (isId) omdbRepository.getMovieRatingsById(query) 
-                           else omdbRepository.getMovieRatingsByTitle(query)
+                           else omdbRepository.getMovieRatingsByTitle(query, year)
             
             if (omdbData != null) {
                 var hasAnyRating = false
+                val isSpanish = repository.getLanguage() == "es-ES"
                 
-                // IMDb
                 val imdbVal = omdbData.imdbRating
                 if (!imdbVal.isNullOrEmpty() && imdbVal != "N/A") {
                     findViewById<View>(R.id.layoutImdb).visibility = View.VISIBLE
@@ -475,7 +486,6 @@ class DetailActivity : AppCompatActivity() {
                     hasAnyRating = true
                 }
 
-                // Rotten Tomatoes y Metacritic
                 omdbData.Ratings?.forEach { rating ->
                     when (rating.Source) {
                         "Rotten Tomatoes" -> {
@@ -490,6 +500,13 @@ class DetailActivity : AppCompatActivity() {
                             hasAnyRating = true
                         }
                     }
+                }
+
+                val awards = omdbData.Awards
+                if (!awards.isNullOrEmpty() && awards != "N/A") {
+                    findViewById<View>(R.id.layoutAwards).visibility = View.VISIBLE
+                    val textAwards: TextView = findViewById(R.id.textAwards)
+                    textAwards.text = if (isSpanish) translateAwards(awards) else awards
                 }
 
                 if (hasAnyRating) {
@@ -563,8 +580,6 @@ class DetailActivity : AppCompatActivity() {
         finish()
     }
 
-    // --- Adaptadores Internos ---
-
     inner class WatchProviderAdapter(private val providers: List<WatchProviderItem>) : RecyclerView.Adapter<WatchProviderAdapter.ViewHolder>() {
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val img: ImageView = view.findViewById(R.id.imgProviderLogo)
@@ -583,19 +598,13 @@ class DetailActivity : AppCompatActivity() {
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val imageView: ImageView = view.findViewById(R.id.imgPosterSlide)
         }
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_poster_slide, parent, false)
             return ViewHolder(view)
         }
-
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            Glide.with(holder.itemView.context)
-                .load(posterUrls[position])
-                .fitCenter()
-                .into(holder.imageView)
+            Glide.with(holder.itemView.context).load(posterUrls[position]).fitCenter().into(holder.imageView)
         }
-
         override fun getItemCount() = posterUrls.size
     }
 
@@ -603,32 +612,24 @@ class DetailActivity : AppCompatActivity() {
         private val urls: List<String>,
         private val onThumbClick: (Int) -> Unit
     ) : RecyclerView.Adapter<ThumbnailAdapter.ViewHolder>() {
-        
         private var selectedPos = 0
-
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val card: MaterialCardView = view.findViewById(R.id.cardThumbnail)
             val img: ImageView = view.findViewById(R.id.imgThumbnail)
             val overlay: View = view.findViewById(R.id.viewOverlay)
         }
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_poster_thumbnail, parent, false)
             return ViewHolder(view)
         }
-
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             Glide.with(holder.itemView.context).load(urls[position]).centerCrop().into(holder.img)
-            
             val isSelected = position == selectedPos
             holder.overlay.visibility = if (isSelected) View.GONE else View.VISIBLE
             holder.card.strokeColor = if (isSelected) getColor(R.color.primary) else getColor(android.R.color.transparent)
-            
             holder.itemView.setOnClickListener { onThumbClick(position) }
         }
-
         override fun getItemCount() = urls.size
-
         fun setSelected(position: Int) {
             val old = selectedPos
             selectedPos = position

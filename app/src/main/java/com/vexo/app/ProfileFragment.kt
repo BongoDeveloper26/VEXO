@@ -35,6 +35,7 @@ class ProfileFragment : Fragment() {
         setupUI(view)
         loadVitrina()
         loadRecentActivity(view)
+        updateStats(view)
         
         return view
     }
@@ -42,13 +43,21 @@ class ProfileFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         loadVitrina()
-        view?.let { loadRecentActivity(it) }
+        view?.let { 
+            loadRecentActivity(it)
+            updateStats(it)
+        }
     }
 
     private fun setupUI(view: View) {
         val btnLogout: Button = view.findViewById(R.id.btnLogout)
         btnLogout.setOnClickListener {
             Toast.makeText(requireContext(), "Cerrando sesión...", Toast.LENGTH_SHORT).show()
+        }
+
+        // Botón Ver todas las valoraciones
+        view.findViewById<TextView>(R.id.btnViewAllRated).setOnClickListener {
+            startActivity(Intent(requireContext(), AllRatedMoviesActivity::class.java))
         }
 
         imgSlots = listOf(
@@ -76,13 +85,19 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        // Configurar RecyclerView de Actividad con el nuevo adaptador moderno
         val recyclerActivity = view.findViewById<RecyclerView>(R.id.recyclerRecentActivity)
         recyclerActivity.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
 
+    private fun updateStats(view: View) {
+        val stats = watchlistRepository.getStats()
+        view.findViewById<TextView>(R.id.textMoviesCount).text = stats.totalMovies.toString()
+        view.findViewById<TextView>(R.id.textAverageRating).text = String.format("%.1f", stats.averageRating)
+    }
+
     private fun loadRecentActivity(view: View) {
-        val recentMovies = watchlistRepository.getRecentActivity()
+        // Corregido: Usamos la función disponible en el repositorio
+        val recentMovies = watchlistRepository.getAllRatedMovies().take(5)
         val layoutActivity = view.findViewById<View>(R.id.layoutActivity)
         
         if (recentMovies.isNotEmpty()) {
@@ -100,27 +115,25 @@ class ProfileFragment : Fragment() {
 
     private fun showMovieOptionsBottomSheet(slotIndex: Int, movie: Movie) {
         val dialog = BottomSheetDialog(requireContext())
-        val view = layoutInflater.inflate(R.layout.layout_vitrina_menu, null)
+        val menuView = layoutInflater.inflate(R.layout.layout_vitrina_menu, null)
         
-        view.findViewById<TextView>(R.id.vitrinaMenuTitle).text = movie.title
+        menuView.findViewById<TextView>(R.id.vitrinaMenuTitle).text = movie.title
 
-        // Opción Ver Detalles
-        view.findViewById<View>(R.id.btnVitrinaDetails).setOnClickListener {
+        menuView.findViewById<View>(R.id.btnVitrinaDetails).setOnClickListener {
             dialog.dismiss()
             val intent = Intent(requireContext(), DetailActivity::class.java)
             intent.putExtra("movie", movie)
             startActivity(intent)
         }
 
-        // Opción Quitar
-        view.findViewById<View>(R.id.btnVitrinaRemove).setOnClickListener {
+        menuView.findViewById<View>(R.id.btnVitrinaRemove).setOnClickListener {
             dialog.dismiss()
             watchlistRepository.setVitrinaMovie(slotIndex, null)
             loadVitrina()
             Toast.makeText(requireContext(), "Eliminada de la vitrina", Toast.LENGTH_SHORT).show()
         }
 
-        dialog.setContentView(view)
+        dialog.setContentView(menuView)
         dialog.show()
     }
 
@@ -130,10 +143,7 @@ class ProfileFragment : Fragment() {
             val imgView = imgSlots[index]
             if (movie != null) {
                 imgView.setPadding(0, 0, 0, 0)
-                Glide.with(this)
-                    .load(movie.posterPath)
-                    .centerCrop()
-                    .into(imgView)
+                Glide.with(this).load(movie.posterPath).centerCrop().into(imgView)
                 imgView.imageTintList = null
             } else {
                 imgView.setImageResource(android.R.drawable.ic_input_add)
@@ -146,21 +156,16 @@ class ProfileFragment : Fragment() {
 
     private fun showMoviePickerDialog(slotIndex: Int) {
         val favorites = watchlistRepository.getUserLists().find { it.name == WatchlistRepository.FAVORITES_LIST_NAME }?.movies ?: emptyList()
-
         if (favorites.isEmpty()) {
             Toast.makeText(requireContext(), "Añade primero alguna película a 'Mis Favoritos' para ponerla en tu vitrina", Toast.LENGTH_LONG).show()
             return
         }
-
         val options = favorites.map { it.title }.toTypedArray()
-
         AlertDialog.Builder(requireContext())
             .setTitle("Selecciona para tu Vitrina")
             .setItems(options) { _, which ->
-                val selectedMovie = favorites[which]
-                watchlistRepository.setVitrinaMovie(slotIndex, selectedMovie)
+                watchlistRepository.setVitrinaMovie(slotIndex, favorites[which])
                 loadVitrina()
-            }
-            .show()
+            }.show()
     }
 }

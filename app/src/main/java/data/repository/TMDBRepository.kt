@@ -139,7 +139,8 @@ data class MovieDTO(
             posterPath = poster_path?.let { "https://image.tmdb.org/t/p/w500$it" },
             backdropPath = backdrop_path?.let { "https://image.tmdb.org/t/p/w780$it" },
             rating = vote_average,
-            genreIds = genre_ids ?: emptyList()
+            genreIds = genre_ids ?: emptyList(),
+            releaseDate = release_date ?: "" // CORREGIDO: Capturamos la fecha de TMDB
         )
     }
 }

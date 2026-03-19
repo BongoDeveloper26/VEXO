@@ -19,9 +19,20 @@ class WatchlistRepository(context: Context) {
         private const val KEY_VITRINA = "user_vitrina"
         private const val KEY_RATINGS = "user_movie_ratings"
         private const val KEY_RATED_MOVIES_DATA = "user_rated_movies_data"
+        private const val KEY_CUSTOM_LISTS = "user_custom_lists"
     }
 
-    // GESTIÓN DE VALORACIONES (1 a 5 estrellas)
+    // --- ESTADÍSTICAS ---
+    data class UserStats(val totalMovies: Int, val averageRating: Float)
+
+    fun getStats(): UserStats {
+        val ratings = getRatingsMap()
+        val total = ratings.size
+        val avg = if (total > 0) ratings.values.average().toFloat() else 0f
+        return UserStats(total, avg)
+    }
+
+    // --- VALORACIONES ---
     fun setMovieRating(movie: Movie, rating: Float) {
         val ratings = getRatingsMap().toMutableMap()
         val ratedMovies = getRatedMoviesList().toMutableList()
@@ -31,28 +42,17 @@ class WatchlistRepository(context: Context) {
             ratedMovies.removeAll { it.id == movie.id }
         } else {
             ratings[movie.id] = rating
-            // Añadir a la lista de actividad (historial)
             ratedMovies.removeAll { it.id == movie.id }
             ratedMovies.add(0, movie)
         }
 
-        // Guardar mapa de notas
         prefs.edit().putString(KEY_RATINGS, gson.toJson(ratings)).apply()
-        // Guardar historial de objetos Movie
         prefs.edit().putString(KEY_RATED_MOVIES_DATA, gson.toJson(ratedMovies)).apply()
     }
 
-    fun getMovieRating(movieId: Int): Float {
-        return getRatingsMap()[movieId] ?: 0f
-    }
-
-    fun getRecentActivity(): List<Movie> {
-        return getRatedMoviesList().take(5)
-    }
-
-    fun getAllRatedMovies(): List<Movie> {
-        return getRatedMoviesList()
-    }
+    fun getMovieRating(movieId: Int): Float = getRatingsMap()[movieId] ?: 0f
+    
+    fun getAllRatedMovies(): List<Movie> = getRatedMoviesList()
 
     private fun getRatingsMap(): Map<Int, Float> {
         val json = prefs.getString(KEY_RATINGS, null) ?: return emptyMap()
@@ -66,7 +66,7 @@ class WatchlistRepository(context: Context) {
         return gson.fromJson(json, type)
     }
 
-    // VITRINA (VITRINA DE 4 PELÍCULAS)
+    // --- VITRINA ---
     fun getVitrinaMovies(): List<Movie?> {
         val json = prefs.getString(KEY_VITRINA, null) ?: return listOf(null, null, null, null)
         val type = object : TypeToken<List<Movie?>>() {}.type
@@ -78,9 +78,12 @@ class WatchlistRepository(context: Context) {
         val vitrina = getVitrinaMovies().toMutableList()
         if (index in 0..3) {
             vitrina[index] = movie
-            val json = gson.toJson(vitrina)
-            prefs.edit().putString(KEY_VITRINA, json).apply()
+            prefs.edit().putString(KEY_VITRINA, gson.toJson(vitrina)).apply()
         }
+    }
+
+    fun isMovieInVitrina(movieId: Int): Boolean {
+        return getVitrinaMovies().any { it?.id == movieId }
     }
 
     fun addMovieToVitrinaAuto(movie: Movie): Int {
@@ -95,10 +98,6 @@ class WatchlistRepository(context: Context) {
         return 2
     }
 
-    fun isMovieInVitrina(movieId: Int): Boolean {
-        return getVitrinaMovies().any { it?.id == movieId }
-    }
-
     fun removeFromVitrina(movieId: Int) {
         val vitrina = getVitrinaMovies().toMutableList()
         val index = vitrina.indexOfFirst { it?.id == movieId }
@@ -108,12 +107,11 @@ class WatchlistRepository(context: Context) {
         }
     }
 
-    // GESTIÓN DE LISTAS DE USUARIO
+    // --- GESTIÓN DE LISTAS ---
     fun createUserList(name: String): String {
         val lists = getUserLists().toMutableList()
         val id = UUID.randomUUID().toString()
-        val newList = UserList(id = id, name = name)
-        lists.add(newList)
+        lists.add(UserList(id = id, name = name))
         saveUserLists(lists)
         return id
     }
@@ -146,44 +144,16 @@ class WatchlistRepository(context: Context) {
     }
 
     fun getUserLists(): List<UserList> {
-        val json = prefs.getString("user_custom_lists", null) ?: return emptyList()
+        val json = prefs.getString(KEY_CUSTOM_LISTS, null) ?: return emptyList()
         val type = object : TypeToken<List<UserList>>() {}.type
         return gson.fromJson(json, type)
     }
 
     private fun saveUserLists(lists: List<UserList>) {
-        val json = gson.toJson(lists)
-        prefs.edit().putString("user_custom_lists", json).apply()
+        prefs.edit().putString(KEY_CUSTOM_LISTS, gson.toJson(lists)).apply()
     }
 
-    // GESTIÓN DE FAVORITOS Y VISTAS
-    fun toggleFavorite(movie: Movie): Boolean {
-        return toggleInternalList(movie, FAVORITES_LIST_NAME)
-    }
-
-    fun toggleWatched(movie: Movie): Boolean {
-        return toggleInternalList(movie, WATCHED_LIST_NAME)
-    }
-
-    private fun toggleInternalList(movie: Movie, listName: String): Boolean {
-        val lists = getUserLists().toMutableList()
-        var targetList = lists.find { it.name == listName }
-        if (targetList == null) {
-            targetList = UserList(id = UUID.randomUUID().toString(), name = listName)
-            lists.add(targetList)
-        }
-        val isAdded: Boolean
-        if (targetList.movies.any { it.id == movie.id }) {
-            targetList.movies.removeAll { it.id == movie.id }
-            isAdded = false
-        } else {
-            targetList.movies.add(0, movie)
-            isAdded = true
-        }
-        saveUserLists(lists)
-        return isAdded
-    }
-
+    // --- FAVORITOS Y VISTAS ---
     fun isFavorite(movieId: Int): Boolean {
         return getUserLists().find { it.name == FAVORITES_LIST_NAME }?.movies?.any { it.id == movieId } ?: false
     }
@@ -194,5 +164,24 @@ class WatchlistRepository(context: Context) {
 
     fun isInWatchlist(movieId: Int): Boolean {
         return getUserLists().any { list -> list.movies.any { it.id == movieId } }
+    }
+
+    fun toggleFavorite(movie: Movie): Boolean = toggleInternalList(movie, FAVORITES_LIST_NAME)
+    fun toggleWatched(movie: Movie): Boolean = toggleInternalList(movie, WATCHED_LIST_NAME)
+
+    private fun toggleInternalList(movie: Movie, listName: String): Boolean {
+        val lists = getUserLists().toMutableList()
+        var targetList = lists.find { it.name == listName } ?: UserList(id = UUID.randomUUID().toString(), name = listName).also { lists.add(it) }
+        
+        val isAdded: Boolean
+        if (targetList.movies.any { it.id == movie.id }) {
+            targetList.movies.removeAll { it.id == movie.id }
+            isAdded = false
+        } else {
+            targetList.movies.add(0, movie)
+            isAdded = true
+        }
+        saveUserLists(lists)
+        return isAdded
     }
 }

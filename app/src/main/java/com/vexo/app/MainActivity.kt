@@ -22,8 +22,10 @@ class MainActivity : AppCompatActivity() {
     private fun setupBottomNavigation(savedInstanceState: Bundle?) {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
         
+        // Color de selección suave (Morado Vexo)
         bottomNav.itemActiveIndicatorColor = ColorStateList.valueOf(Color.parseColor("#267C3AED"))
         
+        // Al empezar, cargamos el fragmento de Explorar
         if (savedInstanceState == null) {
             loadFragment(ExploreFragment())
         }
@@ -33,7 +35,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_explore -> ExploreFragment()
                 R.id.nav_search -> SearchFragment()
                 R.id.nav_list -> ListFragment()
-                R.id.nav_news -> NewsFragment() // Nueva sección de noticias
+                R.id.nav_news -> NewsFragment() // Incorporado en la Cuarta Actualización
                 R.id.nav_profile -> ProfileFragment()
                 else -> null
             }

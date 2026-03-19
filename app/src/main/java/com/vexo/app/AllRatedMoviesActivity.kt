@@ -18,15 +18,19 @@ class AllRatedMoviesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_all_rated_movies)
-
         watchlistRepository = WatchlistRepository(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
         setupUI()
     }
 
     private fun setupUI() {
         findViewById<ImageButton>(R.id.btnBackAllRated).setOnClickListener { finish() }
-
         val recycler = findViewById<RecyclerView>(R.id.recyclerAllRatedMovies)
+        
+        // Obtenemos la lista tal cual se guarda (orden de valoración)
         val ratedMovies = watchlistRepository.getAllRatedMovies()
 
         if (ratedMovies.isEmpty()) {
@@ -35,9 +39,11 @@ class AllRatedMoviesActivity : AppCompatActivity() {
         } else {
             findViewById<View>(R.id.layoutEmptyAllRated).visibility = View.GONE
             recycler.visibility = View.VISIBLE
-            
-            // Usamos un Grid para que se vea como una colección
+
+            // Volvemos al Grid de 3 columnas limpio
             recycler.layoutManager = GridLayoutManager(this, 3)
+            
+            // Usamos el adaptador original que ya sabemos que carga bien los pósters
             adapter = RecentActivityAdapter(ratedMovies, watchlistRepository) { movie ->
                 val intent = Intent(this, DetailActivity::class.java)
                 intent.putExtra("movie", movie)

@@ -11,5 +11,14 @@ data class Movie(
     val posterPath: String?,
     val backdropPath: String? = null,
     val rating: Double,
-    val genreIds: List<Int> = emptyList()
-) : Parcelable
+    val genreIds: List<Int> = emptyList(),
+    val releaseDate: String? = "" 
+) : Parcelable {
+    fun getReleaseYear(): String {
+        return if (!releaseDate.isNullOrEmpty() && releaseDate.length >= 4) {
+            releaseDate.substring(0, 4)
+        } else {
+            ""
+        }
+    }
+}

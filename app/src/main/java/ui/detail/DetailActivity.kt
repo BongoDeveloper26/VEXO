@@ -96,7 +96,6 @@ class DetailActivity : AppCompatActivity() {
             it.setImageResource(R.drawable.ic_watched_modern)
         }
 
-        // Mostrar valoración del usuario en el apartado Letterboxd
         val userRating = watchlistRepository.getMovieRating(movieId)
         val layoutUserRating: View? = findViewById(R.id.layoutUserRatingDisplay)
         
@@ -162,7 +161,6 @@ class DetailActivity : AppCompatActivity() {
             val isFav = watchlistRepository.isFavorite(movie.id)
             val isWatched = watchlistRepository.isWatched(movie.id)
 
-            // Configurar botón de Vitrina
             val textVitrina = view.findViewById<TextView>(R.id.textMenuVitrina)
             val isInVitrina = watchlistRepository.isMovieInVitrina(movie.id)
             textVitrina?.text = if (isInVitrina) "Quitar de mi vitrina" else "Destacar en mi vitrina"
@@ -178,14 +176,14 @@ class DetailActivity : AppCompatActivity() {
             textWatched?.text = if (isWatched) (if (isSpanish) "Quitar de vistas" else "Mark as unwatched") 
                                else (if (isSpanish) "Marcar como vista" else "Mark as watched")
 
-            // Lógica opción Vitrina
             view.findViewById<View>(R.id.optionVitrina).setOnClickListener {
                 bottomSheet.dismiss()
+                val updatedMovie = currentMovie ?: movie
                 if (isInVitrina) {
-                    watchlistRepository.removeFromVitrina(movie.id)
+                    watchlistRepository.removeFromVitrina(updatedMovie.id)
                     showCustomToast("Quitada de tu vitrina", android.R.drawable.ic_menu_gallery)
                 } else {
-                    val result = watchlistRepository.addMovieToVitrinaAuto(movie)
+                    val result = watchlistRepository.addMovieToVitrinaAuto(updatedMovie)
                     when (result) {
                         0 -> showCustomToast("Añadida a tu vitrina", android.R.drawable.ic_menu_gallery)
                         1 -> showCustomToast("Ya está en tu vitrina", android.R.drawable.ic_menu_gallery)
@@ -196,17 +194,17 @@ class DetailActivity : AppCompatActivity() {
 
             view.findViewById<View>(R.id.optionAddList).setOnClickListener {
                 bottomSheet.dismiss()
-                showListSelectionDialog(movie) { setupWatchlistButton(movie) }
+                showListSelectionDialog(currentMovie ?: movie) { setupWatchlistButton(currentMovie ?: movie) }
             }
             
             view.findViewById<View>(R.id.optionViewPoster).setOnClickListener {
                 bottomSheet.dismiss()
-                showFullPoster(movie)
+                showFullPoster(currentMovie ?: movie)
             }
             
             view.findViewById<View>(R.id.optionMarkWatched).setOnClickListener {
                 bottomSheet.dismiss()
-                val added = watchlistRepository.toggleWatched(movie)
+                val added = watchlistRepository.toggleWatched(currentMovie ?: movie)
                 updateStatusIcons(movie.id)
                 showCustomToast(
                     if (added) (if (isSpanish) "Marcada como vista" else "Marked as watched") 
@@ -217,19 +215,19 @@ class DetailActivity : AppCompatActivity() {
             
             view.findViewById<View>(R.id.optionFavorite).setOnClickListener {
                 bottomSheet.dismiss()
-                val added = watchlistRepository.toggleFavorite(movie)
+                val added = watchlistRepository.toggleFavorite(currentMovie ?: movie)
                 updateStatusIcons(movie.id)
                 showCustomToast(
                     if (added) (if (isSpanish) "Añadida a Favoritos" else "Added to Favorites")
                     else (if (isSpanish) "Quitada de Favoritos" else "Removed from Favorites"),
                     if (added) R.drawable.ic_heart_filled else R.drawable.ic_heart_outline
                 )
-                setupWatchlistButton(movie)
+                setupWatchlistButton(currentMovie ?: movie)
             }
             
             view.findViewById<View>(R.id.optionRate).setOnClickListener {
                 bottomSheet.dismiss()
-                showRatingBottomSheet(movie)
+                showRatingBottomSheet(currentMovie ?: movie)
             }
             
             bottomSheet.setContentView(view)
@@ -374,7 +372,7 @@ class DetailActivity : AppCompatActivity() {
         updateButtonState()
 
         btnAdd.setOnClickListener {
-            showListSelectionDialog(movie) {
+            showListSelectionDialog(currentMovie ?: movie) {
                 updateButtonState()
             }
         }
@@ -481,6 +479,9 @@ class DetailActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val details = repository.getMovieDetails(movieId)
             if (details != null) {
+                // CORRECCIÓN CRÍTICA: Actualizamos el objeto actual con la fecha real de estreno
+                currentMovie = currentMovie?.copy(releaseDate = details.release_date)
+
                 val year = details.release_date.take(4)
                 findViewById<TextView>(R.id.textYearDetail)?.text = year
                 findViewById<TextView>(R.id.textRuntimeDetail)?.text = "${details.runtime} min"

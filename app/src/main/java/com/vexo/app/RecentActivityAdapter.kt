@@ -18,7 +18,6 @@ class RecentActivityAdapter(
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imgPoster: ImageView = view.findViewById(R.id.imgActivityPoster)
-        val layoutStars: LinearLayout = view.findViewById(R.id.layoutActivityStars)
         val stars = listOf<ImageView>(
             view.findViewById(R.id.actStar1),
             view.findViewById(R.id.actStar2),
@@ -37,19 +36,27 @@ class RecentActivityAdapter(
         val movie = movies[position]
         val userRating = watchlistRepository.getMovieRating(movie.id)
 
+        // Corregido: Aseguramos la URL completa de la imagen de TMDB
+        val fullPosterPath = if (!movie.posterPath.isNullOrEmpty() && !movie.posterPath.startsWith("http")) {
+            "https://image.tmdb.org/t/p/w500${movie.posterPath}"
+        } else {
+            movie.posterPath
+        }
+
         Glide.with(holder.itemView.context)
-            .load(movie.posterPath)
+            .load(fullPosterPath)
+            .placeholder(android.R.drawable.progress_horizontal)
+            .error(android.R.drawable.ic_menu_report_image)
             .centerCrop()
             .into(holder.imgPoster)
 
-        // Actualizar estrellas según la nota que puso el usuario
         holder.stars.forEachIndexed { index, imageView ->
             if (index < userRating) {
-                imageView.setImageResource(android.R.drawable.btn_star_big_on)
+                imageView.setImageResource(android.R.drawable.star_big_on)
                 imageView.alpha = 1.0f
             } else {
-                imageView.setImageResource(android.R.drawable.btn_star_big_off)
-                imageView.alpha = 0.2f
+                imageView.setImageResource(android.R.drawable.star_big_off)
+                imageView.alpha = 0.3f
             }
         }
 

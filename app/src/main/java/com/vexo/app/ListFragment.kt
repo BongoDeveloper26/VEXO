@@ -14,6 +14,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.button.MaterialButton
 import data.model.UserList
 import data.repository.WatchlistRepository
 
@@ -55,19 +57,28 @@ class ListFragment : Fragment() {
     }
 
     private fun showCreateListDialog() {
-        val input = EditText(requireContext()).apply { hint = "Nombre de la lista (ej: Terror)" }
-        AlertDialog.Builder(requireContext())
-            .setTitle("Nueva Colección")
-            .setView(input)
-            .setPositiveButton("Crear") { _, _ ->
-                val name = input.text.toString().trim()
-                if (name.isNotEmpty()) {
-                    watchlistRepository.createUserList(name)
-                    refreshLists()
-                }
+        val bottomSheet = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
+        val view = layoutInflater.inflate(R.layout.dialog_create_list, null)
+        
+        val editName = view.findViewById<EditText>(R.id.editListName)
+        val btnCreate = view.findViewById<MaterialButton>(R.id.btnConfirmCreate)
+        val btnCancel = view.findViewById<MaterialButton>(R.id.btnCancelCreate)
+
+        btnCreate.setOnClickListener {
+            val name = editName.text.toString().trim()
+            if (name.isNotEmpty()) {
+                watchlistRepository.createUserList(name)
+                refreshLists()
+                bottomSheet.dismiss()
+            } else {
+                editName.error = "Escribe un nombre"
             }
-            .setNegativeButton("Cancelar", null)
-            .show()
+        }
+
+        btnCancel.setOnClickListener { bottomSheet.dismiss() }
+
+        bottomSheet.setContentView(view)
+        bottomSheet.show()
     }
 
     private fun refreshLists() {

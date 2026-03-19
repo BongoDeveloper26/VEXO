@@ -1,23 +1,166 @@
 package com.vexo.app
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.card.MaterialCardView
+import data.model.Movie
+import data.repository.WatchlistRepository
+import ui.detail.DetailActivity
 
 class ProfileFragment : Fragment() {
+
+    private lateinit var watchlistRepository: WatchlistRepository
+    private lateinit var imgSlots: List<ImageView>
+    private lateinit var cardSlots: List<MaterialCardView>
+    private lateinit var activityAdapter: RecentActivityAdapter
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
         
+        watchlistRepository = WatchlistRepository(requireContext())
+        
+        setupUI(view)
+        loadVitrina()
+        loadRecentActivity(view)
+        
+        return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadVitrina()
+        view?.let { loadRecentActivity(it) }
+    }
+
+    private fun setupUI(view: View) {
         val btnLogout: Button = view.findViewById(R.id.btnLogout)
         btnLogout.setOnClickListener {
-            // Placeholder para la lógica de cerrar sesión
             Toast.makeText(requireContext(), "Cerrando sesión...", Toast.LENGTH_SHORT).show()
         }
 
-        return view
+        imgSlots = listOf(
+            view.findViewById(R.id.imgSlot1),
+            view.findViewById(R.id.imgSlot2),
+            view.findViewById(R.id.imgSlot3),
+            view.findViewById(R.id.imgSlot4)
+        )
+
+        cardSlots = listOf(
+            view.findViewById(R.id.slot1),
+            view.findViewById(R.id.slot2),
+            view.findViewById(R.id.slot3),
+            view.findViewById(R.id.slot4)
+        )
+
+        cardSlots.forEachIndexed { index, card ->
+            card.setOnClickListener {
+                val movie = watchlistRepository.getVitrinaMovies()[index]
+                if (movie != null) {
+                    showMovieOptionsBottomSheet(index, movie)
+                } else {
+                    showMoviePickerDialog(index)
+                }
+            }
+        }
+
+        // Configurar RecyclerView de Actividad con el nuevo adaptador moderno
+        val recyclerActivity = view.findViewById<RecyclerView>(R.id.recyclerRecentActivity)
+        recyclerActivity.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+    }
+
+    private fun loadRecentActivity(view: View) {
+        val recentMovies = watchlistRepository.getRecentActivity()
+        val layoutActivity = view.findViewById<View>(R.id.layoutActivity)
+        
+        if (recentMovies.isNotEmpty()) {
+            layoutActivity.visibility = View.VISIBLE
+            activityAdapter = RecentActivityAdapter(recentMovies, watchlistRepository) { movie ->
+                val intent = Intent(requireContext(), DetailActivity::class.java)
+                intent.putExtra("movie", movie)
+                startActivity(intent)
+            }
+            view.findViewById<RecyclerView>(R.id.recyclerRecentActivity).adapter = activityAdapter
+        } else {
+            layoutActivity.visibility = View.GONE
+        }
+    }
+
+    private fun showMovieOptionsBottomSheet(slotIndex: Int, movie: Movie) {
+        val dialog = BottomSheetDialog(requireContext())
+        val view = layoutInflater.inflate(R.layout.layout_vitrina_menu, null)
+        
+        view.findViewById<TextView>(R.id.vitrinaMenuTitle).text = movie.title
+
+        // Opción Ver Detalles
+        view.findViewById<View>(R.id.btnVitrinaDetails).setOnClickListener {
+            dialog.dismiss()
+            val intent = Intent(requireContext(), DetailActivity::class.java)
+            intent.putExtra("movie", movie)
+            startActivity(intent)
+        }
+
+        // Opción Quitar
+        view.findViewById<View>(R.id.btnVitrinaRemove).setOnClickListener {
+            dialog.dismiss()
+            watchlistRepository.setVitrinaMovie(slotIndex, null)
+            loadVitrina()
+            Toast.makeText(requireContext(), "Eliminada de la vitrina", Toast.LENGTH_SHORT).show()
+        }
+
+        dialog.setContentView(view)
+        dialog.show()
+    }
+
+    private fun loadVitrina() {
+        val vitrina = watchlistRepository.getVitrinaMovies()
+        vitrina.forEachIndexed { index, movie ->
+            val imgView = imgSlots[index]
+            if (movie != null) {
+                imgView.setPadding(0, 0, 0, 0)
+                Glide.with(this)
+                    .load(movie.posterPath)
+                    .centerCrop()
+                    .into(imgView)
+                imgView.imageTintList = null
+            } else {
+                imgView.setImageResource(android.R.drawable.ic_input_add)
+                val padding = (40 * resources.displayMetrics.density).toInt()
+                imgView.setPadding(padding, padding, padding, padding)
+                imgView.imageTintList = android.content.res.ColorStateList.valueOf(requireContext().getColor(R.color.primary))
+            }
+        }
+    }
+
+    private fun showMoviePickerDialog(slotIndex: Int) {
+        val favorites = watchlistRepository.getUserLists().find { it.name == WatchlistRepository.FAVORITES_LIST_NAME }?.movies ?: emptyList()
+
+        if (favorites.isEmpty()) {
+            Toast.makeText(requireContext(), "Añade primero alguna película a 'Mis Favoritos' para ponerla en tu vitrina", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val options = favorites.map { it.title }.toTypedArray()
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Selecciona para tu Vitrina")
+            .setItems(options) { _, which ->
+                val selectedMovie = favorites[which]
+                watchlistRepository.setVitrinaMovie(slotIndex, selectedMovie)
+                loadVitrina()
+            }
+            .show()
     }
 }

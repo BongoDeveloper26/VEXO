@@ -34,6 +34,7 @@
         <activity android:name=".ListActivity" android:exported="false"/>
         <activity android:name=".UserListDetailActivity" android:exported="false"/>
         <activity android:name="ui.explore.AboutActivity" android:exported="false"/>
+        <activity android:name=".AllRatedMoviesActivity" android:exported="false"/>
 
     </application>
 

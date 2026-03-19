@@ -90,7 +90,43 @@ class DetailActivity : AppCompatActivity() {
             it.visibility = if (watchlistRepository.isFavorite(movieId)) View.VISIBLE else View.GONE
             it.setImageResource(R.drawable.ic_heart_filled)
         }
-        findViewById<View>(R.id.statusWatched)?.visibility = if (watchlistRepository.isWatched(movieId)) View.VISIBLE else View.GONE
+        
+        findViewById<ImageView>(R.id.statusWatched)?.let {
+            it.visibility = if (watchlistRepository.isWatched(movieId)) View.VISIBLE else View.GONE
+            it.setImageResource(R.drawable.ic_watched_modern)
+        }
+
+        // Mostrar valoración del usuario en el apartado Letterboxd
+        val userRating = watchlistRepository.getMovieRating(movieId)
+        val layoutUserRating: View? = findViewById(R.id.layoutUserRatingDisplay)
+        
+        if (userRating > 0) {
+            layoutUserRating?.visibility = View.VISIBLE
+            val userStars = listOf<ImageView?>(
+                findViewById(R.id.userStar1),
+                findViewById(R.id.userStar2),
+                findViewById(R.id.userStar3),
+                findViewById(R.id.userStar4),
+                findViewById(R.id.userStar5)
+            )
+            
+            userStars.forEachIndexed { index, imageView ->
+                if (imageView != null) {
+                    if (index < userRating) {
+                        imageView.setImageResource(android.R.drawable.btn_star_big_on)
+                        imageView.imageTintList = android.content.res.ColorStateList.valueOf(getColor(R.color.primary))
+                        imageView.alpha = 1.0f
+                    } else {
+                        imageView.setImageResource(android.R.drawable.btn_star_big_off)
+                        imageView.imageTintList = android.content.res.ColorStateList.valueOf(getColor(R.color.text_secondary))
+                        imageView.alpha = 0.3f
+                    }
+                }
+            }
+            findViewById<TextView>(R.id.textUserRatingValue)?.text = "${userRating.toInt()} de 5"
+        } else {
+            layoutUserRating?.visibility = View.GONE
+        }
     }
 
     private fun showCustomToast(message: String, iconRes: Int) {
@@ -126,6 +162,11 @@ class DetailActivity : AppCompatActivity() {
             val isFav = watchlistRepository.isFavorite(movie.id)
             val isWatched = watchlistRepository.isWatched(movie.id)
 
+            // Configurar botón de Vitrina
+            val textVitrina = view.findViewById<TextView>(R.id.textMenuVitrina)
+            val isInVitrina = watchlistRepository.isMovieInVitrina(movie.id)
+            textVitrina?.text = if (isInVitrina) "Quitar de mi vitrina" else "Destacar en mi vitrina"
+
             val imgHeart = view.findViewById<ImageView>(R.id.imgMenuHeart)
             val textFav = view.findViewById<TextView>(R.id.textMenuFavorite)
             imgHeart?.setImageResource(if (isFav) R.drawable.ic_heart_filled else R.drawable.ic_heart_outline)
@@ -136,6 +177,22 @@ class DetailActivity : AppCompatActivity() {
             val textWatched = view.findViewById<TextView>(R.id.textMenuWatched)
             textWatched?.text = if (isWatched) (if (isSpanish) "Quitar de vistas" else "Mark as unwatched") 
                                else (if (isSpanish) "Marcar como vista" else "Mark as watched")
+
+            // Lógica opción Vitrina
+            view.findViewById<View>(R.id.optionVitrina).setOnClickListener {
+                bottomSheet.dismiss()
+                if (isInVitrina) {
+                    watchlistRepository.removeFromVitrina(movie.id)
+                    showCustomToast("Quitada de tu vitrina", android.R.drawable.ic_menu_gallery)
+                } else {
+                    val result = watchlistRepository.addMovieToVitrinaAuto(movie)
+                    when (result) {
+                        0 -> showCustomToast("Añadida a tu vitrina", android.R.drawable.ic_menu_gallery)
+                        1 -> showCustomToast("Ya está en tu vitrina", android.R.drawable.ic_menu_gallery)
+                        2 -> Toast.makeText(this, "Tu vitrina está llena (máximo 4 películas)", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
 
             view.findViewById<View>(R.id.optionAddList).setOnClickListener {
                 bottomSheet.dismiss()
@@ -172,12 +229,68 @@ class DetailActivity : AppCompatActivity() {
             
             view.findViewById<View>(R.id.optionRate).setOnClickListener {
                 bottomSheet.dismiss()
-                showRatingDialog()
+                showRatingBottomSheet(movie)
             }
             
             bottomSheet.setContentView(view)
             bottomSheet.show()
         }
+    }
+
+    private fun showRatingBottomSheet(movie: Movie) {
+        val bottomSheet = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+        val view = layoutInflater.inflate(R.layout.dialog_rating, null)
+        
+        view.findViewById<TextView>(R.id.textMovieNameRating).text = movie.title
+        
+        val stars = listOf<ImageView>(
+            view.findViewById(R.id.star1),
+            view.findViewById(R.id.star2),
+            view.findViewById(R.id.star3),
+            view.findViewById(R.id.star4),
+            view.findViewById(R.id.star5)
+        )
+
+        var selectedRating = watchlistRepository.getMovieRating(movie.id)
+        
+        fun updateStarsUI(rating: Float) {
+            stars.forEachIndexed { index, imageView ->
+                if (index < rating) {
+                    imageView.setImageResource(android.R.drawable.btn_star_big_on)
+                    imageView.imageTintList = android.content.res.ColorStateList.valueOf(getColor(R.color.primary))
+                } else {
+                    imageView.setImageResource(android.R.drawable.btn_star_big_off)
+                    imageView.imageTintList = android.content.res.ColorStateList.valueOf(getColor(R.color.text_secondary))
+                }
+            }
+        }
+
+        updateStarsUI(selectedRating)
+
+        stars.forEachIndexed { index, imageView ->
+            imageView.setOnClickListener {
+                selectedRating = (index + 1).toFloat()
+                updateStarsUI(selectedRating)
+            }
+        }
+
+        view.findViewById<View>(R.id.btnSaveRating).setOnClickListener {
+            if (selectedRating > 0) {
+                watchlistRepository.setMovieRating(movie, selectedRating)
+                updateStatusIcons(movie.id)
+                bottomSheet.dismiss()
+                showCustomToast("¡Valoración guardada!", android.R.drawable.btn_star_big_on)
+            }
+        }
+
+        view.findViewById<View>(R.id.btnRemoveRating).setOnClickListener {
+            watchlistRepository.setMovieRating(movie, 0f)
+            updateStatusIcons(movie.id)
+            bottomSheet.dismiss()
+        }
+
+        bottomSheet.setContentView(view)
+        bottomSheet.show()
     }
 
     private fun showFullPoster(movie: Movie) {
@@ -234,17 +347,6 @@ class DetailActivity : AppCompatActivity() {
             }
             progressBar.visibility = View.GONE
         }
-    }
-
-    private fun showRatingDialog() {
-        val isSpanish = repository.getLanguage() == "es-ES"
-        val ratings = arrayOf("⭐", "⭐⭐", "⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐⭐⭐")
-        AlertDialog.Builder(this)
-            .setTitle(if (isSpanish) "Valora esta película" else "Rate this movie")
-            .setItems(ratings) { _, which ->
-                Toast.makeText(this, "${if (isSpanish) "Valorado con" else "Rated with"} ${which + 1} estrellas", Toast.LENGTH_SHORT).show()
-            }
-            .show()
     }
 
     private fun setupWatchlistButton(movie: Movie) {

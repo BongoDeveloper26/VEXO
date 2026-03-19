@@ -56,6 +56,31 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/optionVitrina"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:paddingVertical="16dp">
+            <ImageView
+                android:id="@+id/imgMenuVitrina"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@android:drawable/ic_menu_slideshow"
+                app:tint="@color/primary" />
+            <TextView
+                android:id="@+id/textMenuVitrina"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="Destacar en mi vitrina"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/optionViewPoster"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -67,7 +92,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_gallery"
+                android:src="@android:drawable/ic_menu_report_image"
                 app:tint="@color/primary" />
             <TextView
                 android:layout_width="wrap_content"
@@ -94,11 +119,11 @@
                 android:src="@android:drawable/ic_menu_view"
                 app:tint="@color/primary" />
             <TextView
+                android:text="Marcar como vista"
                 android:id="@+id/textMenuWatched"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:text="Marcar como vista"
                 android:textColor="@color/text_primary"
                 android:textSize="16sp" />
         </LinearLayout>

@@ -70,9 +70,9 @@
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:layout_marginTop="8dp"
-                android:src="@android:drawable/ic_menu_view"
+                android:src="@drawable/ic_watched_modern"
                 android:visibility="gone"
-                app:tint="@color/accent"
+                app:tint="@color/primary"
                 tools:visibility="visible" />
 
         </LinearLayout>
@@ -172,7 +172,7 @@
                         tools:visibility="visible" />
                 </LinearLayout>
 
-                <!-- NUEVA SECCIÓN VALORACIONES EXTERNAS REDISEÑADA -->
+                <!-- NUEVA SECCIÓN VALORACIONES EXTERNAS -->
                 <LinearLayout
                     android:id="@+id/layoutExternalRatings"
                     android:layout_width="match_parent"
@@ -405,6 +405,50 @@
                     android:lineSpacingExtra="6dp"
                     android:textColor="@color/text_secondary"
                     android:textSize="16sp" />
+
+                <!-- SECCIÓN TU VALORACIÓN (Debajo de la descripción) -->
+                <LinearLayout
+                    android:id="@+id/layoutUserRatingDisplay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_vertical"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/textYourRatingLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tu valoración:"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:layout_marginEnd="8dp" />
+
+                    <LinearLayout
+                        android:id="@+id/containerUserStars"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ImageView android:id="@+id/userStar1" android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/btn_star_big_on" app:tint="@color/primary" android:layout_marginEnd="2dp" />
+                        <ImageView android:id="@+id/userStar2" android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/btn_star_big_on" app:tint="@color/primary" android:layout_marginEnd="2dp" />
+                        <ImageView android:id="@+id/userStar3" android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/btn_star_big_on" app:tint="@color/primary" android:layout_marginEnd="2dp" />
+                        <ImageView android:id="@+id/userStar4" android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/btn_star_big_off" app:tint="@color/text_secondary" android:alpha="0.3" android:layout_marginEnd="2dp" />
+                        <ImageView android:id="@+id/userStar5" android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/btn_star_big_off" app:tint="@color/text_secondary" android:alpha="0.3" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/textUserRatingValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textColor="@color/primary"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        tools:text="3 de 5" />
+                </LinearLayout>
 
                 <!-- Menú Horizontal Premium -->
                 <HorizontalScrollView

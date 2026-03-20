@@ -9,11 +9,11 @@ interface NewsService {
     /**
      * Filtro de Élite Vexo:
      * - qInTitle: Fuerza a que el tema principal sea cine/actores.
-     * - Filtros negativos (-): Eliminamos ruido de bolsa, política y economía.
+     * - Filtros negativos (-): Eliminamos ruido de bolsa, política, economía y videojuegos.
      */
     @GET("everything")
     suspend fun getMovieNews(
-        @Query("qInTitle") query: String = "(película OR cine OR estreno OR tráiler OR reparto OR Oscars OR Hollywood) -bolsa -acciones -política -economía -sucesos",
+        @Query("qInTitle") query: String = "(película OR cine OR estreno OR tráiler OR reparto OR Oscars OR Hollywood) -bolsa -acciones -política -economía -sucesos -videojuegos -gaming -nintendo -playstation -xbox -pc -gobierno -partido",
         @Query("language") language: String = "es",
         @Query("sortBy") sortBy: String = "publishedAt",
         @Query("apiKey") apiKey: String = "0633bd51c20545028d04efe81cde61ed"

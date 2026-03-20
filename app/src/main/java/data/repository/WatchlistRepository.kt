@@ -6,6 +6,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import data.model.Movie
 import data.model.UserList
+import data.model.DiaryEntry
+import java.text.SimpleDateFormat
 import java.util.*
 
 class WatchlistRepository(context: Context) {
@@ -20,6 +22,7 @@ class WatchlistRepository(context: Context) {
         private const val KEY_RATINGS = "user_movie_ratings"
         private const val KEY_RATED_MOVIES_DATA = "user_rated_movies_data"
         private const val KEY_CUSTOM_LISTS = "user_custom_lists"
+        private const val KEY_DIARY = "user_diary"
     }
 
     // --- ESTADÍSTICAS ---
@@ -32,27 +35,51 @@ class WatchlistRepository(context: Context) {
         return UserStats(total, avg)
     }
 
-    // --- VALORACIONES ---
+    // --- VALORACIONES Y DIARIO ---
     fun setMovieRating(movie: Movie, rating: Float) {
         val ratings = getRatingsMap().toMutableMap()
         val ratedMovies = getRatedMoviesList().toMutableList()
+        val diary = getDiary().toMutableList()
 
         if (rating <= 0) {
             ratings.remove(movie.id)
             ratedMovies.removeAll { it.id == movie.id }
+            diary.removeAll { it.movieId == movie.id }
         } else {
             ratings[movie.id] = rating
+            
+            // Actualizar lista de pelis valoradas
             ratedMovies.removeAll { it.id == movie.id }
             ratedMovies.add(0, movie)
+
+            // Actualizar Diario con la fecha actual
+            val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+            diary.removeAll { it.movieId == movie.id }
+            diary.add(0, DiaryEntry(
+                movieId = movie.id,
+                movieTitle = movie.title,
+                moviePosterPath = movie.posterPath,
+                rating = rating.toInt(),
+                date = currentDate
+            ))
         }
 
         prefs.edit().putString(KEY_RATINGS, gson.toJson(ratings)).apply()
         prefs.edit().putString(KEY_RATED_MOVIES_DATA, gson.toJson(ratedMovies)).apply()
+        prefs.edit().putString(KEY_DIARY, gson.toJson(diary)).apply()
     }
 
     fun getMovieRating(movieId: Int): Float = getRatingsMap()[movieId] ?: 0f
     
+    fun getRecentActivity(): List<Movie> = getRatedMoviesList().take(5)
+    
     fun getAllRatedMovies(): List<Movie> = getRatedMoviesList()
+
+    fun getDiary(): List<DiaryEntry> {
+        val json = prefs.getString(KEY_DIARY, null) ?: return emptyList()
+        val type = object : TypeToken<List<DiaryEntry>>() {}.type
+        return gson.fromJson(json, type)
+    }
 
     private fun getRatingsMap(): Map<Int, Float> {
         val json = prefs.getString(KEY_RATINGS, null) ?: return emptyMap()
@@ -108,6 +135,16 @@ class WatchlistRepository(context: Context) {
     }
 
     // --- GESTIÓN DE LISTAS ---
+    fun getUserLists(): List<UserList> {
+        val json = prefs.getString(KEY_CUSTOM_LISTS, null) ?: return emptyList()
+        val type = object : TypeToken<List<UserList>>() {}.type
+        return gson.fromJson(json, type)
+    }
+
+    private fun saveUserLists(lists: List<UserList>) {
+        prefs.edit().putString(KEY_CUSTOM_LISTS, gson.toJson(lists)).apply()
+    }
+
     fun createUserList(name: String): String {
         val lists = getUserLists().toMutableList()
         val id = UUID.randomUUID().toString()
@@ -141,16 +178,6 @@ class WatchlistRepository(context: Context) {
             lists[listIndex].movies.removeAll { it.id == movieId }
             saveUserLists(lists)
         }
-    }
-
-    fun getUserLists(): List<UserList> {
-        val json = prefs.getString(KEY_CUSTOM_LISTS, null) ?: return emptyList()
-        val type = object : TypeToken<List<UserList>>() {}.type
-        return gson.fromJson(json, type)
-    }
-
-    private fun saveUserLists(lists: List<UserList>) {
-        prefs.edit().putString(KEY_CUSTOM_LISTS, gson.toJson(lists)).apply()
     }
 
     // --- FAVORITOS Y VISTAS ---

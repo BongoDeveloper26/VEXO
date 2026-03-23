@@ -68,12 +68,10 @@ class SearchFragment : Fragment() {
         val tabLayout: TabLayout = view.findViewById(R.id.tabLayoutSearch)
         val recyclerResults: RecyclerView = view.findViewById(R.id.recyclerSearchResults)
 
-        // Ocultamos la flecha de atrás como pediste
         btnBack.visibility = View.GONE
 
         movieAdapter = MovieAdapter(emptyList())
         movieAdapter.onItemClick = { movie ->
-            // Al hacer click en una peli, guardamos la búsqueda
             saveSearchQuery(movie.title)
             val intent = Intent(requireContext(), DetailActivity::class.java)
             intent.putExtra("movie", movie)
@@ -105,7 +103,6 @@ class SearchFragment : Fragment() {
             clearAllHistory(view)
         }
 
-        // Mejoramos la acción de buscar del teclado
         editSearch.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val query = editSearch.text.toString().trim()
@@ -143,20 +140,22 @@ class SearchFragment : Fragment() {
             showLoading(view, true)
             
             val queryLower = query.lowercase().trim()
-            val movies = repository.searchMovies(query).filter { 
-                it.posterPath != null && (it.rating >= 5.0 || it.title.lowercase().trim() == queryLower)
+            
+            // CORREGIDO: Ahora usamos searchAll para traer pelis y series
+            val results = repository.searchAll(query).filter { 
+                it.posterPath != null && (it.rating >= 4.0 || it.title.lowercase().trim() == queryLower)
             }
-            movieAdapter.updateMovies(movies)
+            movieAdapter.updateMovies(results)
             
             val smartPeopleMap = mutableMapOf<Int, PersonDTO>()
             repository.searchPeople(query).forEach { p ->
                 smartPeopleMap[p.id] = p
             }
             
-            if (movies.isNotEmpty()) {
-                val topMovies = movies.take(5)
-                topMovies.forEach { movie ->
-                    val credits = repository.getMovieCredits(movie.id)
+            if (results.isNotEmpty()) {
+                results.take(4).forEach { movie ->
+                    // CORREGIDO: Buscamos créditos según si es serie o peli
+                    val credits = if (movie.isTvShow) repository.getTVCredits(movie.id) else repository.getMovieCredits(movie.id)
                     credits?.cast?.forEach { cast ->
                         if (cast.character.contains(query, ignoreCase = true) || 
                             cast.name.contains(query, ignoreCase = true)) {
@@ -171,7 +170,7 @@ class SearchFragment : Fragment() {
             
             showLoading(view, false)
             view.findViewById<View>(R.id.recyclerSearchResults).visibility = View.VISIBLE
-            view.findViewById<View>(R.id.layoutNoResults).visibility = if (movies.isEmpty() && finalPeople.isEmpty()) View.VISIBLE else View.GONE
+            view.findViewById<View>(R.id.layoutNoResults).visibility = if (results.isEmpty() && finalPeople.isEmpty()) View.VISIBLE else View.GONE
         }
     }
 
@@ -183,8 +182,6 @@ class SearchFragment : Fragment() {
         history.remove(trimmed)
         history.add(0, trimmed)
         prefs.edit().putString(KEY_HISTORY, history.take(15).joinToString("|")).apply()
-        // Importante: No actualizamos la UI aquí para no interrumpir la búsqueda, 
-        // se actualizará al volver al estado inicial o onResume
     }
 
     private fun getSearchHistory(): List<String> = requireContext()
@@ -264,7 +261,6 @@ class SearchFragment : Fragment() {
             val trending = repository.getTrendingMovies()
             trendingAdapter = MovieHorizontalAdapter(trending.filter { it.posterPath != null })
             trendingAdapter.onItemClick = { movie ->
-                // Al hacer click en una de tendencias, también guardamos su título
                 saveSearchQuery(movie.title)
                 val intent = Intent(requireContext(), DetailActivity::class.java)
                 intent.putExtra("movie", movie)
@@ -283,7 +279,7 @@ class SearchFragment : Fragment() {
         view.findViewById<View>(R.id.tabLayoutSearch).visibility = View.GONE
         view.findViewById<View>(R.id.recyclerSearchResults).visibility = View.GONE
         view.findViewById<View>(R.id.layoutInitialState).visibility = View.VISIBLE
-        updateHistoryList(view) // Refrescamos el historial al volver al inicio
+        updateHistoryList(view)
         showLoading(view, false)
     }
 }

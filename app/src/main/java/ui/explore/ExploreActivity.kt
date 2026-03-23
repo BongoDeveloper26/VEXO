@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vexo.app.R
+import data.model.Category
 import data.repository.TMDBRepository
 import ui.detail.DetailActivity
 import ui.search.SearchActivity
@@ -61,7 +62,7 @@ class ExploreActivity : AppCompatActivity() {
             showLanguageDialog()
         }
 
-        // Opción Quiénes Somos (NAVEGAR A LA NUEVA PÁGINA)
+        // Opción Quiénes Somos
         view.findViewById<View>(R.id.optionAbout).setOnClickListener {
             bottomSheet.dismiss()
             val intent = Intent(this, AboutActivity::class.java)

@@ -37,8 +37,8 @@ class CategoryAdapter(
         val category = categories[position]
         holder.textTitle.text = category.title
         
-        // El botón ">" (ver más) solo aparecerá a partir de la cuarta fila (géneros)
-        if (position in 0..2) {
+        // El botón ">" (ver más) solo aparecerá a partir de las categorías generales
+        if (position in 0..3) {
             holder.btnViewMore.visibility = View.GONE
         } else {
             holder.btnViewMore.visibility = View.VISIBLE
@@ -50,30 +50,19 @@ class CategoryAdapter(
             }
         }
 
-        // Estilo diferencial para las 3 primeras categorías
-        if (position in 0..2) {
-            holder.indicator.visibility = View.VISIBLE
-            holder.textSubtitle.visibility = View.VISIBLE
-            
-            holder.textSubtitle.text = when(position) {
-                0 -> if (categories[0].title.contains("Semana", true)) "Tendencias de hoy" else "Weekly Hits"
-                1 -> if (categories[1].title.contains("Valoradas", true)) "Joyas del cine" else "Masterpieces"
-                2 -> if (categories[2].title.contains("Cines", true)) "Cartelera actual" else "Now on theaters"
-                else -> ""
-            }
+        // LIMPIEZA: Quitamos subtítulos (WEEKLY, MASTERPIECE...) e indicadores
+        holder.indicator.visibility = View.GONE
+        holder.textSubtitle.visibility = View.GONE
 
+        if (position in 0..3) {
             holder.textTitle.apply {
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 26f)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f)
                 setTypeface(null, Typeface.BOLD)
                 letterSpacing = 0.05f
                 setTextColor(context.getColor(R.color.text_primary))
+                alpha = 1.0f
             }
-            holder.textSubtitle.setTextColor(holder.itemView.context.getColor(R.color.primary_dark))
-            
         } else {
-            holder.indicator.visibility = View.GONE
-            holder.textSubtitle.visibility = View.GONE
-            
             holder.textTitle.apply {
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f)
                 setTypeface(null, Typeface.BOLD)
@@ -83,7 +72,7 @@ class CategoryAdapter(
             }
         }
         
-        val horizontalAdapter = if (position in 0..2) {
+        val horizontalAdapter = if (position in 0..3) {
             MovieFeaturedAdapter(category.movies, position).apply { onItemClick = onMovieClick }
         } else {
             MovieHorizontalAdapter(category.movies).apply { onItemClick = onMovieClick }
@@ -129,7 +118,7 @@ class MovieFeaturedAdapter(
         holder.textTitle.text = movie.title
         holder.textRating.text = "★ ${String.format("%.1f", movie.rating)}"
 
-        holder.badgeTop.visibility = if (categoryPos == 2) View.GONE else View.VISIBLE
+        holder.badgeTop.visibility = if (categoryPos == 3) View.GONE else View.VISIBLE
 
         val imageToLoad = movie.backdropPath ?: movie.posterPath
         com.bumptech.glide.Glide.with(holder.itemView.context)

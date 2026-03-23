@@ -51,7 +51,7 @@ class SearchActivity : AppCompatActivity() {
 
         setupUI()
         loadTrendingInitial()
-        updateHistoryList() // Cargamos el historial inmediatamente al entrar
+        updateHistoryList()
     }
 
     override fun onResume() {
@@ -71,7 +71,7 @@ class SearchActivity : AppCompatActivity() {
 
         movieAdapter = MovieAdapter(emptyList())
         movieAdapter.onItemClick = { movie ->
-            saveSearchQuery(movie.title) // Guardar título de la película en el historial
+            saveSearchQuery(movie.title)
             val intent = Intent(this, DetailActivity::class.java)
             intent.putExtra("movie", movie)
             startActivity(intent)
@@ -119,7 +119,6 @@ class SearchActivity : AppCompatActivity() {
                 btnClear.visibility = if (query.isNotEmpty()) View.VISIBLE else View.GONE
                 
                 if (query.isNotEmpty()) {
-                    // OCULTAR HISTORIAL Y TENDENCIAS AL INSTANTE
                     findViewById<View>(R.id.layoutInitialState).visibility = View.GONE
                     tabLayout.visibility = View.VISIBLE
                     recyclerResults.visibility = View.VISIBLE
@@ -135,7 +134,6 @@ class SearchActivity : AppCompatActivity() {
     private fun performSearch(query: String) {
         searchJob?.cancel()
         
-        // Garantizar que nada de lo inicial se vea
         findViewById<View>(R.id.layoutInitialState).visibility = View.GONE
         findViewById<View>(R.id.tabLayoutSearch).visibility = View.VISIBLE
         findViewById<View>(R.id.recyclerSearchResults).visibility = View.VISIBLE
@@ -145,19 +143,23 @@ class SearchActivity : AppCompatActivity() {
             showLoading(true)
             
             val queryLower = query.lowercase().trim()
-            val movies = repository.searchMovies(query).filter { 
-                it.posterPath != null && (it.rating >= 5.0 || it.title.lowercase().trim() == queryLower)
+            
+            // CORREGIDO: Ahora buscamos en TODO (películas y series)
+            val results = repository.searchAll(query).filter { 
+                it.posterPath != null && (it.rating >= 4.0 || it.title.lowercase().trim() == queryLower)
             }
-            movieAdapter.updateMovies(movies)
+            movieAdapter.updateMovies(results)
             
             val smartPeopleMap = mutableMapOf<Int, PersonDTO>()
-            if (movies.isNotEmpty()) {
-                val deferredCredits = movies.take(6).map { async { repository.getMovieCredits(it.id) } }
+            
+            // Si hay películas/series famosas, buscamos a sus protagonistas (especial para Batman, etc)
+            if (results.isNotEmpty()) {
+                val deferredCredits = results.take(4).map { async { repository.getMovieCredits(it.id) } }
                 deferredCredits.awaitAll().forEach { credits ->
                     credits?.cast?.forEach { cast ->
                         if (cast.profile_path != null && cast.name.trim().contains(" ")) {
                             val charLower = cast.character.lowercase()
-                            if (charLower.contains(queryLower) || (queryLower == "batman" && charLower.contains("bruce wayne"))) {
+                            if (charLower.contains(queryLower)) {
                                 smartPeopleMap[cast.id] = PersonDTO(cast.id, cast.name, cast.profile_path, cast.character)
                             }
                         }
@@ -175,7 +177,7 @@ class SearchActivity : AppCompatActivity() {
             personAdapter.updatePeople(finalPeople)
             
             showLoading(false)
-            findViewById<View>(R.id.layoutNoResults).visibility = if (movies.isEmpty() && finalPeople.isEmpty()) View.VISIBLE else View.GONE
+            findViewById<View>(R.id.layoutNoResults).visibility = if (results.isEmpty() && finalPeople.isEmpty()) View.VISIBLE else View.GONE
         }
     }
 
@@ -294,12 +296,11 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showInitialState() {
-        searchJob?.cancel() // Cancelar cualquier búsqueda al volver
+        searchJob?.cancel()
         findViewById<View>(R.id.layoutInitialState).visibility = View.VISIBLE
         findViewById<View>(R.id.tabLayoutSearch).visibility = View.GONE
         findViewById<View>(R.id.recyclerSearchResults).visibility = View.GONE
         findViewById<View>(R.id.layoutNoResults).visibility = View.GONE
-        updateHistoryList() // Volvemos a cargar el historial al mostrar el estado inicial
-        showLoading(false)
+        updateHistoryList()
     }
 }

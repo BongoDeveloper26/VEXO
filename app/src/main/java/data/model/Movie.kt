@@ -12,7 +12,8 @@ data class Movie(
     val backdropPath: String? = null,
     val rating: Double,
     val genreIds: List<Int> = emptyList(),
-    val releaseDate: String? = "" 
+    val releaseDate: String? = "",
+    val isTvShow: Boolean = false // Nuevo campo para diferenciar series
 ) : Parcelable {
     fun getReleaseYear(): String {
         return if (!releaseDate.isNullOrEmpty() && releaseDate.length >= 4) {

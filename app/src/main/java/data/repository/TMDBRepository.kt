@@ -103,6 +103,13 @@ interface TMDBApi {
         @Path("movie_id") movieId: Int,
         @Query("api_key") apiKey: String
     ): MovieImagesDTO
+
+    @GET("movie/{movie_id}/videos")
+    suspend fun getMovieVideos(
+        @Path("movie_id") movieId: Int,
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String
+    ): MovieVideosDTO
 }
 
 data class TMDBResponse(
@@ -140,7 +147,7 @@ data class MovieDTO(
             backdropPath = backdrop_path?.let { "https://image.tmdb.org/t/p/w780$it" },
             rating = vote_average,
             genreIds = genre_ids ?: emptyList(),
-            releaseDate = release_date ?: "" // CORREGIDO: Capturamos la fecha de TMDB
+            releaseDate = release_date ?: ""
         )
     }
 }
@@ -255,6 +262,18 @@ data class PersonDetailDTO(
     val birthday: String?,
     val place_of_birth: String?,
     val popularity: Double?
+)
+
+data class MovieVideosDTO(
+    val results: List<VideoDTO>
+)
+
+data class VideoDTO(
+    val id: String,
+    val key: String,
+    val name: String,
+    val site: String,
+    val type: String
 )
 
 class TMDBRepository {
@@ -405,6 +424,27 @@ class TMDBRepository {
         return try {
             val response = api.getMovieImages(movieId, apiKey)
             response.posters.map { "https://image.tmdb.org/t/p/original${it.file_path}" }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun getMovieTrailers(movieId: Int): List<VideoDTO> {
+        return try {
+            val response = api.getMovieVideos(movieId, apiKey, currentLanguage)
+
+            val youtubeTrailers = response.results.filter {
+                it.site.equals("YouTube", ignoreCase = true) &&
+                        it.type.equals("Trailer", ignoreCase = true)
+            }
+
+            if (youtubeTrailers.isNotEmpty()) {
+                youtubeTrailers
+            } else {
+                response.results.filter {
+                    it.site.equals("YouTube", ignoreCase = true)
+                }
+            }
         } catch (e: Exception) {
             emptyList()
         }

@@ -39,6 +39,8 @@ import ui.explore.MovieHorizontalAdapter
 import ui.genre.GenreActivity
 import java.text.NumberFormat
 import java.util.*
+import android.net.Uri
+import data.repository.VideoDTO
 
 class DetailActivity : AppCompatActivity() {
 
@@ -46,6 +48,7 @@ class DetailActivity : AppCompatActivity() {
     private val omdbRepository = OMDbRepository.getInstance()
     private lateinit var watchlistRepository: WatchlistRepository
     private var currentMovie: Movie? = null
+    private var currentTrailer: VideoDTO? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +67,7 @@ class DetailActivity : AppCompatActivity() {
             loadCastAndCrew(movie.id)
             loadSagaIfAvailable(movie.id)
             loadRecommendations(movie.id)
+            loadMovieTrailer(movie.id)
         } ?: finish()
     }
 
@@ -668,6 +672,67 @@ class DetailActivity : AppCompatActivity() {
                     onItemClick = { refreshDetailWithMovie(it) }
                 }
             }
+        }
+    }
+
+    private fun loadMovieTrailer(movieId: Int) {
+        lifecycleScope.launch {
+            val trailers = repository.getMovieTrailers(movieId)
+
+            val layoutTrailer: View = findViewById(R.id.layoutTrailer)
+            val btnWatchTrailer: MaterialButton = findViewById(R.id.btnWatchTrailer)
+            val textTrailerTitle: TextView? = findViewById(R.id.textTrailerTitle)
+
+            if (trailers.isNotEmpty()) {
+                currentTrailer = selectBestTrailer(trailers)
+                layoutTrailer.visibility = View.VISIBLE
+
+                textTrailerTitle?.text = currentTrailer?.name ?: "VER TRÁILER OFICIAL"
+
+                btnWatchTrailer.setOnClickListener {
+                    currentTrailer?.let { trailer ->
+                        openTrailer(trailer)
+                    }
+                }
+
+                layoutTrailer.setOnClickListener {
+                    currentTrailer?.let { trailer ->
+                        openTrailer(trailer)
+                    }
+                }
+            } else {
+                currentTrailer = null
+                layoutTrailer.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun selectBestTrailer(videos: List<VideoDTO>): VideoDTO {
+        return videos.firstOrNull {
+            it.site.equals("YouTube", ignoreCase = true) &&
+                    it.type.equals("Trailer", ignoreCase = true) &&
+                    it.name.contains("official", ignoreCase = true)
+        } ?: videos.firstOrNull {
+            it.site.equals("YouTube", ignoreCase = true) &&
+                    it.type.equals("Trailer", ignoreCase = true)
+        } ?: videos.firstOrNull {
+            it.site.equals("YouTube", ignoreCase = true)
+        } ?: videos.first()
+    }
+
+    private fun openTrailer(video: VideoDTO) {
+        if (!video.site.equals("YouTube", ignoreCase = true)) {
+            Toast.makeText(this, "Proveedor de vídeo no soportado", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val appIntent = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:${video.key}"))
+        val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=${video.key}"))
+
+        try {
+            startActivity(appIntent)
+        } catch (e: Exception) {
+            startActivity(webIntent)
         }
     }
 

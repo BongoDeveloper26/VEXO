@@ -26,15 +26,17 @@ class ProfileFragment : Fragment() {
     private lateinit var imgSlots: List<ImageView>
     private lateinit var cardSlots: List<MaterialCardView>
     private lateinit var activityAdapter: RecentActivityAdapter
+    private lateinit var diaryAdapter: DiaryAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
         
         watchlistRepository = WatchlistRepository(requireContext())
-        
+
         setupUI(view)
         loadVitrina()
         loadRecentActivity(view)
+        loadDiary(view)
         updateStats(view)
         
         return view
@@ -43,8 +45,9 @@ class ProfileFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         loadVitrina()
-        view?.let { 
+        view?.let {
             loadRecentActivity(it)
+            loadDiary(it)
             updateStats(it)
         }
     }
@@ -58,6 +61,10 @@ class ProfileFragment : Fragment() {
         // Botón Ver todas las valoraciones
         view.findViewById<TextView>(R.id.btnViewAllRated).setOnClickListener {
             startActivity(Intent(requireContext(), AllRatedMoviesActivity::class.java))
+        }
+
+        view.findViewById<TextView>(R.id.btnViewAllDiary).setOnClickListener {
+            startActivity(Intent(requireContext(), DiaryActivity::class.java))
         }
 
         imgSlots = listOf(
@@ -87,6 +94,9 @@ class ProfileFragment : Fragment() {
 
         val recyclerActivity = view.findViewById<RecyclerView>(R.id.recyclerRecentActivity)
         recyclerActivity.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        val recyclerDiary = view.findViewById<RecyclerView>(R.id.recyclerDiary)
+        recyclerDiary.layoutManager = LinearLayoutManager(requireContext())
+        recyclerDiary.isNestedScrollingEnabled = false
     }
 
     private fun updateStats(view: View) {
@@ -110,6 +120,30 @@ class ProfileFragment : Fragment() {
             view.findViewById<RecyclerView>(R.id.recyclerRecentActivity).adapter = activityAdapter
         } else {
             layoutActivity.visibility = View.GONE
+        }
+    }
+
+    private fun loadDiary(view: View) {
+        val diaryEntries = watchlistRepository.getDiary().take(3)
+        val layoutDiary = view.findViewById<View>(R.id.layoutDiary)
+
+        if (diaryEntries.isNotEmpty()) {
+            layoutDiary.visibility = View.VISIBLE
+
+            diaryAdapter = DiaryAdapter(diaryEntries) { entry ->
+                val movie = watchlistRepository.getAllRatedMovies().find { it.id == entry.movieId }
+                if (movie != null) {
+                    val intent = Intent(requireContext(), DetailActivity::class.java)
+                    intent.putExtra("movie", movie)
+                    startActivity(intent)
+                } else {
+                    Toast.makeText(requireContext(), "No se pudo abrir la película", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            view.findViewById<RecyclerView>(R.id.recyclerDiary).adapter = diaryAdapter
+        } else {
+            layoutDiary.visibility = View.GONE
         }
     }
 

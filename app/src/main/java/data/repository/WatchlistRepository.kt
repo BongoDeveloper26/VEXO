@@ -44,7 +44,6 @@ class WatchlistRepository(context: Context) {
         if (rating <= 0) {
             ratings.remove(movie.id)
             ratedMovies.removeAll { it.id == movie.id }
-            diary.removeAll { it.movieId == movie.id }
         } else {
             ratings[movie.id] = rating
             
@@ -53,8 +52,8 @@ class WatchlistRepository(context: Context) {
             ratedMovies.add(0, movie)
 
             // Actualizar Diario con la fecha actual
+            // Añadir entrada al diario con la fecha actual
             val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
-            diary.removeAll { it.movieId == movie.id }
             diary.add(0, DiaryEntry(
                 movieId = movie.id,
                 movieTitle = movie.title,

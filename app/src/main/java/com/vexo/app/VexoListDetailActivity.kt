@@ -25,15 +25,22 @@ class VexoListDetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_user_list_detail) // Reutilizamos el layout que ya es perfecto
+        setContentView(R.layout.activity_user_list_detail)
 
+        val listId = intent.getStringExtra("listId") ?: "top_250_movies"
         val listName = intent.getStringExtra("listName") ?: "Top 250"
+        
         setupUI(listName)
-        loadTop250Movies()
+        
+        if (listId == "top_250_tv") {
+            loadTop250Series()
+        } else {
+            loadTop250Movies()
+        }
     }
 
     private fun setupUI(name: String) {
-        findViewById<TextView>(R.id.textUserListNameHeader).text = name
+        findViewById<TextView>(R.id.textUserListNameHeader).text = name.uppercase()
         findViewById<ImageButton>(R.id.btnBackUserListDetail).setOnClickListener { finish() }
 
         val recycler = findViewById<RecyclerView>(R.id.recyclerUserListMovies)
@@ -54,19 +61,34 @@ class VexoListDetailActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                // TMDB devuelve 20 pelis por página. Para 250 necesitamos unas 13 páginas.
                 val allMovies = mutableListOf<Movie>()
                 val deferredPages = (1..13).map { page ->
                     async { repository.getTopRatedMovies(page) }
                 }
-                
-                deferredPages.awaitAll().forEach { pageResults ->
-                    allMovies.addAll(pageResults)
-                }
-
+                deferredPages.awaitAll().forEach { allMovies.addAll(it) }
                 movieAdapter.updateMovies(allMovies.take(250))
             } catch (e: Exception) {
-                // Manejar error si no hay internet
+                e.printStackTrace()
+            } finally {
+                progress.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun loadTop250Series() {
+        val progress = findViewById<ProgressBar>(R.id.progressUserList)
+        progress.visibility = View.VISIBLE
+
+        lifecycleScope.launch {
+            try {
+                val allSeries = mutableListOf<Movie>()
+                val deferredPages = (1..13).map { page ->
+                    async { repository.getTopRatedTV(page) }
+                }
+                deferredPages.awaitAll().forEach { allSeries.addAll(it) }
+                movieAdapter.updateMovies(allSeries.take(250))
+            } catch (e: Exception) {
+                e.printStackTrace()
             } finally {
                 progress.visibility = View.GONE
             }

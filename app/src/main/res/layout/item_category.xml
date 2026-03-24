@@ -2,74 +2,102 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingVertical="16dp">
 
-    <!-- Contenedor Premium para los títulos -->
-    <LinearLayout
+    <!-- Cabecera de Categoría Premium -->
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutTitleContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="12dp"
-        android:paddingHorizontal="20dp">
+        android:paddingHorizontal="20dp"
+        android:layout_marginBottom="12dp">
 
+        <!-- Barra lateral de acento moderno -->
         <View
             android:id="@+id/viewIndicator"
-            android:layout_width="6dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="16dp"
+            android:layout_width="4dp"
+            android:layout_height="0dp"
             android:background="@drawable/rounded_corners"
             android:backgroundTint="@color/primary"
-            android:visibility="gone" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/textCategoryTitle"
+            app:layout_constraintBottom_toBottomOf="@id/textCategoryTitle" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/textCategoryTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_marginStart="14dp"
+            android:textColor="@color/text_primary"
+            android:textSize="22sp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="-0.02"
+            app:layout_constraintEnd_toStartOf="@id/layoutViewMore"
+            app:layout_constraintStart_toEndOf="@id/viewIndicator"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Tendencias" />
+
+        <TextView
+            android:id="@+id/textCategorySubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/primary"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:letterSpacing="0.15"
+            android:alpha="0.8"
+            app:layout_constraintStart_toStartOf="@id/textCategoryTitle"
+            app:layout_constraintTop_toBottomOf="@id/textCategoryTitle"
+            tools:text="LO MÁS VISTO ESTA SEMANA" />
+
+        <!-- Botón Ver Más Estilo Link -->
+        <LinearLayout
+            android:id="@+id/layoutViewMore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:paddingVertical="4dp"
+            android:paddingStart="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/textCategoryTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/textCategoryTitle">
 
             <TextView
-                android:id="@+id/textCategoryTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_primary"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.02"
-                android:text="Categoría" />
-
-            <TextView
-                android:id="@+id/textCategorySubtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/primary"
+                android:text="VER TODO"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:alpha="0.8"
-                android:textAllCaps="true"
-                android:letterSpacing="0.1"
-                android:visibility="gone" />
+                android:letterSpacing="0.05" />
+
+            <ImageView
+                android:id="@+id/btnViewMoreIcon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="4dp"
+                android:src="@drawable/ic_back_custom"
+                android:rotation="180"
+                app:tint="@color/text_secondary" />
         </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/btnViewMore"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_back_custom"
-            android:rotation="180"
-            app:tint="@color/primary" />
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerMoviesHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clipToPadding="false"
-        android:paddingHorizontal="8dp" />
+        android:paddingHorizontal="12dp"
+        android:overScrollMode="never" />
 
 </LinearLayout>

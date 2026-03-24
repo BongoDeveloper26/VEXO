@@ -6,7 +6,6 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,7 +23,7 @@ class CategoryAdapter(
         val textSubtitle: TextView = itemView.findViewById(R.id.textCategorySubtitle)
         val recyclerHorizontal: RecyclerView = itemView.findViewById(R.id.recyclerMoviesHorizontal)
         val indicator: View = itemView.findViewById(R.id.viewIndicator)
-        val btnViewMore: ImageButton = itemView.findViewById(R.id.btnViewMore)
+        val layoutViewMore: View = itemView.findViewById(R.id.layoutViewMore)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
@@ -37,12 +36,42 @@ class CategoryAdapter(
         val category = categories[position]
         holder.textTitle.text = category.title
         
-        // El botón ">" (ver más) solo aparecerá a partir de las categorías generales
+        // Estilo Premium: Títulos con fuente Black y Subtítulos dinámicos
+        holder.textTitle.typeface = Typeface.create("sans-serif-black", Typeface.NORMAL)
+        
+        holder.textSubtitle.visibility = View.VISIBLE
+        val title = category.title
+        holder.textSubtitle.text = when {
+            position == 0 -> "TENDENCIAS GLOBALES"
+            position == 1 -> "LAS MEJOR VALORADAS"
+            position == 2 -> "PRÓXIMOS ESTRENOS"
+            position == 3 -> "LO MÁS RECIENTE"
+            title.contains("Acción", true) -> "ADRENALINA PURA"
+            title.contains("Comedia", true) -> "DIVERSIÓN ASEGURADA"
+            title.contains("Terror", true) -> "PESADILLAS REALES"
+            title.contains("Drama", true) -> "HISTORIAS QUE EMOCIONAN"
+            title.contains("Ciencia ficción", true) || title.contains("Sci-Fi", true) -> "MUNDOS INCREÍBLES"
+            title.contains("Animación", true) -> "ARTE Y MAGIA VISUAL"
+            title.contains("Aventura", true) -> "EPICIDAD SIN LÍMITES"
+            title.contains("Crimen", true) || title.contains("Suspense", true) || title.contains("Thriller", true) -> "TENSIÓN AL MÁXIMO"
+            title.contains("Documental", true) -> "CONOCE LA REALIDAD"
+            title.contains("Fantasía", true) -> "MAGIA EN CADA ESCENA"
+            title.contains("Romance", true) -> "HISTORIAS DE AMOR"
+            title.contains("Misterio", true) -> "DESCUBRE EL SECRETO"
+            title.contains("Familia", true) -> "PARA DISFRUTAR JUNTOS"
+            title.contains("Bélica", true) || title.contains("War", true) -> "CRÓNICAS DE GUERRA"
+            title.contains("Historia", true) -> "RELATOS DEL PASADO"
+            title.contains("Música", true) || title.contains("Music", true) -> "RITMO Y ESPECTÁCULO"
+            title.contains("Western", true) -> "DUELOS Y LEYENDAS"
+            else -> "CONTENIDO SELECCIONADO PARA TI"
+        }
+
+        // El nuevo botón "VER TODO" (layoutViewMore)
         if (position in 0..3) {
-            holder.btnViewMore.visibility = View.GONE
+            holder.layoutViewMore.visibility = View.GONE
         } else {
-            holder.btnViewMore.visibility = View.VISIBLE
-            holder.btnViewMore.setOnClickListener {
+            holder.layoutViewMore.visibility = View.VISIBLE
+            holder.layoutViewMore.setOnClickListener {
                 val intent = Intent(holder.itemView.context, CategoryMoviesActivity::class.java)
                 intent.putExtra("categoryTitle", category.title)
                 intent.putParcelableArrayListExtra("movies", ArrayList(category.movies))
@@ -50,26 +79,16 @@ class CategoryAdapter(
             }
         }
 
-        // LIMPIEZA: Quitamos subtítulos (WEEKLY, MASTERPIECE...) e indicadores
-        holder.indicator.visibility = View.GONE
-        holder.textSubtitle.visibility = View.GONE
+        // Indicador lateral elegante
+        holder.indicator.visibility = View.VISIBLE
 
+        // Destacar visualmente las primeras filas
         if (position in 0..3) {
-            holder.textTitle.apply {
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f)
-                setTypeface(null, Typeface.BOLD)
-                letterSpacing = 0.05f
-                setTextColor(context.getColor(R.color.text_primary))
-                alpha = 1.0f
-            }
+            holder.textTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f)
+            holder.textSubtitle.alpha = 1.0f
         } else {
-            holder.textTitle.apply {
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f)
-                setTypeface(null, Typeface.BOLD)
-                letterSpacing = 0.02f
-                setTextColor(context.getColor(R.color.text_primary))
-                alpha = 0.8f
-            }
+            holder.textTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
+            holder.textSubtitle.alpha = 0.7f
         }
         
         val horizontalAdapter = if (position in 0..3) {

@@ -44,7 +44,7 @@ class WatchlistRepository(context: Context) {
         if (rating <= 0) {
             ratings.remove(movie.id)
             ratedMovies.removeAll { it.id == movie.id }
-            diary.removeAll { it.movieId == movie.id }
+            // IMPORTANTE: No eliminamos del Diario para que quede constancia del visionado
         } else {
             ratings[movie.id] = rating
             

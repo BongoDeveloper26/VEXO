@@ -26,16 +26,27 @@
             android:background="@drawable/gradient_overlay"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/btnBackDetail"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardBackDetail"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_margin="16dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_back_custom"
-            app:tint="@color/white"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#80000000"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/btnBackDetail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_back_custom"
+                android:padding="8dp"
+                app:tint="@color/white" />
+
+        </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
             android:id="@+id/layoutStatusIcons"
@@ -47,19 +58,29 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
-                android:id="@+id/btnMenuDetail"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_menu_more"
-                app:tint="@color/white" />
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btnMenuDetailContainer"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                app:cardCornerRadius="21dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#AA000000"
+                app:strokeWidth="0dp">
+
+                <ImageButton
+                    android:id="@+id/btnMenuDetail"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_more_vert_white"
+                    android:padding="8dp" />
+            </com.google.android.material.card.MaterialCardView>
 
             <ImageView
                 android:id="@+id/statusHeart"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="12dp"
                 android:src="@android:drawable/btn_star_big_on"
                 android:visibility="gone"
                 app:tint="@color/primary"
@@ -529,7 +550,7 @@
                         tools:text="3 de 5" />
                 </LinearLayout>
 
-                <!-- SECCIÓN TRÁILER -->
+                <!-- SECCIÓN TRÁILER (REDESIGNADA) -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/layoutTrailer"
                     android:layout_width="match_parent"

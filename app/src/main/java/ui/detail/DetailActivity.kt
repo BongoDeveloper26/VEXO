@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -66,11 +67,13 @@ class DetailActivity : AppCompatActivity() {
                 loadFullTVDetails(movie.id)
                 loadTVCredits(movie.id)
                 loadTVRecommendations(movie.id)
+                loadTVTrailers(movie.id)
             } else {
                 loadFullMovieDetails(movie.id)
                 loadMovieCredits(movie.id)
                 loadMovieRecommendations(movie.id)
                 loadSagaIfAvailable(movie.id)
+                loadMovieTrailers(movie.id)
             }
         } ?: finish()
     }
@@ -526,11 +529,19 @@ class DetailActivity : AppCompatActivity() {
         }
         updateStarsUI(selectedRating)
         stars.forEachIndexed { index, img -> img.setOnClickListener { selectedRating = (index + 1).toFloat(); updateStarsUI(selectedRating) } }
+        
         view.findViewById<View>(R.id.btnSaveRating).setOnClickListener {
             watchlistRepository.setMovieRating(movie, selectedRating)
             updateStatusIcons(movie.id)
             bottomSheet.dismiss()
         }
+
+        view.findViewById<View>(R.id.btnRemoveRating).setOnClickListener {
+            watchlistRepository.setMovieRating(movie, 0f)
+            updateStatusIcons(movie.id)
+            bottomSheet.dismiss()
+        }
+
         bottomSheet.setContentView(view)
         bottomSheet.show()
     }
@@ -608,6 +619,35 @@ class DetailActivity : AppCompatActivity() {
                 thumbAdapter.notifyDataSetChanged()
                 textPosterCount.text = "1 / ${posterUrls.size}"
             }
+        }
+    }
+
+    private fun loadMovieTrailers(movieId: Int) {
+        lifecycleScope.launch {
+            val videos = repository.getMovieTrailers(movieId)
+            if (videos.isNotEmpty()) {
+                setupTrailerUI(videos[0].key)
+            }
+        }
+    }
+
+    private fun loadTVTrailers(tvId: Int) {
+        lifecycleScope.launch {
+            val videos = repository.getTVTrailers(tvId)
+            if (videos.isNotEmpty()) {
+                setupTrailerUI(videos[0].key)
+            }
+        }
+    }
+
+    private fun setupTrailerUI(youtubeKey: String) {
+        val layoutTrailer = findViewById<View>(R.id.layoutTrailer)
+        val btnWatch = findViewById<MaterialButton>(R.id.btnWatchTrailer)
+        
+        layoutTrailer.visibility = View.VISIBLE
+        btnWatch.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=$youtubeKey"))
+            startActivity(intent)
         }
     }
 

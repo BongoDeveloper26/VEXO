@@ -30,6 +30,9 @@ interface TMDBApi {
     @GET("movie/{movie_id}/recommendations")
     suspend fun getMovieRecommendations(@Path("movie_id") movieId: Int, @Query("api_key") apiKey: String, @Query("language") language: String): TMDBResponse
 
+    @GET("movie/{movie_id}/videos")
+    suspend fun getMovieVideos(@Path("movie_id") movieId: Int, @Query("api_key") apiKey: String, @Query("language") language: String): MovieVideosDTO
+
     // --- TV ---
     @GET("trending/tv/week")
     suspend fun getTrendingTV(@Query("api_key") apiKey: String, @Query("language") language: String, @Query("page") page: Int = 1): TMDBResponse
@@ -46,20 +49,15 @@ interface TMDBApi {
     @GET("tv/{tv_id}/recommendations")
     suspend fun getTVRecommendations(@Path("tv_id") tvId: Int, @Query("api_key") apiKey: String, @Query("language") language: String): TMDBResponse
 
-    // --- IMÁGENES (Traer todos los idiomas para que el visor esté lleno) ---
+    @GET("tv/{tv_id}/videos")
+    suspend fun getTVVideos(@Path("tv_id") tvId: Int, @Query("api_key") apiKey: String, @Query("language") language: String): MovieVideosDTO
+
+    // --- IMÁGENES ---
     @GET("movie/{movie_id}/images")
-    suspend fun getMovieImages(
-        @Path("movie_id") movieId: Int, 
-        @Query("api_key") apiKey: String,
-        @Query("include_image_language") languages: String = "en,es,null,fr,de,it,pt"
-    ): MovieImagesDTO
+    suspend fun getMovieImages(@Path("movie_id") movieId: Int, @Query("api_key") apiKey: String, @Query("include_image_language") languages: String = "en,es,null,fr,de,it,pt"): MovieImagesDTO
 
     @GET("tv/{tv_id}/images")
-    suspend fun getTVImages(
-        @Path("tv_id") tvId: Int, 
-        @Query("api_key") apiKey: String,
-        @Query("include_image_language") languages: String = "en,es,null,fr,de,it,pt"
-    ): MovieImagesDTO
+    suspend fun getTVImages(@Path("tv_id") tvId: Int, @Query("api_key") apiKey: String, @Query("include_image_language") languages: String = "en,es,null,fr,de,it,pt"): MovieImagesDTO
 
     @GET("search/multi")
     suspend fun searchMulti(@Query("api_key") apiKey: String, @Query("query") query: String, @Query("language") language: String): TMDBResponse
@@ -124,6 +122,9 @@ data class TVContentRatingsResponse(val results: List<TVContentRating>)
 data class TVContentRating(val iso_3166_1: String, val rating: String)
 data class TVExternalIds(val imdb_id: String?)
 
+data class MovieVideosDTO(val results: List<VideoDTO>)
+data class VideoDTO(val id: String, val key: String, val name: String, val site: String, val type: String)
+
 data class GenreDTO(val id: Int, val name: String)
 data class CollectionInfoDTO(val id: Int, val name: String, val poster_path: String?, val backdrop_path: String?)
 data class CollectionResponse(val id: Int, val name: String, val parts: List<MovieDTO>)
@@ -185,6 +186,14 @@ class TMDBRepository {
     suspend fun getCollectionMovies(collectionId: Int): List<Movie> = try { api.getCollectionDetails(collectionId, apiKey, currentLanguage).parts.map { it.toMovie() } } catch (e: Exception) { emptyList() }
     suspend fun getPersonDetails(personId: Int): PersonDetailDTO? = try { api.getPersonDetails(personId, apiKey, currentLanguage) } catch (e: Exception) { null }
     suspend fun getMoviesByPerson(personId: Int): List<Movie> = try { val response = api.getPersonMovieCredits(personId, apiKey, currentLanguage); (response.cast + response.crew).map { it.toMovie() }.distinctBy { it.id } } catch (e: Exception) { emptyList() }
+
+    suspend fun getMovieTrailers(movieId: Int): List<VideoDTO> = try { 
+        api.getMovieVideos(movieId, apiKey, currentLanguage).results.filter { it.site.lowercase() == "youtube" && it.type.lowercase() == "trailer" }
+    } catch (e: Exception) { emptyList() }
+
+    suspend fun getTVTrailers(tvId: Int): List<VideoDTO> = try { 
+        api.getTVVideos(tvId, apiKey, currentLanguage).results.filter { it.site.lowercase() == "youtube" && it.type.lowercase() == "trailer" }
+    } catch (e: Exception) { emptyList() }
 
     companion object {
         private var instance: TMDBRepository? = null

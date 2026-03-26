@@ -10,7 +10,6 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -36,6 +35,7 @@ import data.repository.TMDBRepository
 import data.repository.WatchlistRepository
 import data.repository.WatchProviderItem
 import data.repository.OMDbRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ui.explore.MovieHorizontalAdapter
 import ui.genre.GenreActivity
@@ -217,7 +217,6 @@ class DetailActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.textYearDetail)?.text = year
                 findViewById<TextView>(R.id.textTagline)?.text = details.tagline ?: ""
                 
-                // OCULTAR TEXTO PEQUEÑO Y MOSTRAR CARD ELEGANTE
                 findViewById<TextView>(R.id.textRuntimeDetail)?.visibility = View.GONE
                 findViewById<View>(R.id.cardSeasonsHighlight)?.apply {
                     visibility = View.VISIBLE
@@ -534,16 +533,56 @@ class DetailActivity : AppCompatActivity() {
             watchlistRepository.setMovieRating(movie, selectedRating)
             updateStatusIcons(movie.id)
             bottomSheet.dismiss()
+            showDopamineSuccess("¡VALORACIÓN GUARDADA!", "Tu opinión se ha registrado en el diario.")
         }
 
         view.findViewById<View>(R.id.btnRemoveRating).setOnClickListener {
             watchlistRepository.setMovieRating(movie, 0f)
             updateStatusIcons(movie.id)
             bottomSheet.dismiss()
+            showDopamineSuccess("ELIMINADA", "Se ha quitado la valoración de la película.")
         }
 
         bottomSheet.setContentView(view)
         bottomSheet.show()
+    }
+
+    private fun showDopamineSuccess(title: String, msg: String) {
+        val rootLayout = findViewById<ViewGroup>(android.R.id.content)
+        val dopamineView = layoutInflater.inflate(R.layout.layout_rating_success, rootLayout, false)
+        
+        // CORRECCIÓN: Ahora sí asignamos el título dinámicamente al TextView
+        dopamineView.findViewById<TextView>(R.id.textSuccessTitle).text = title
+        dopamineView.findViewById<TextView>(R.id.textSuccessMsg).text = msg
+        
+        val params = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        params.gravity = Gravity.CENTER
+        dopamineView.layoutParams = params
+        
+        rootLayout.addView(dopamineView)
+        
+        dopamineView.alpha = 0f
+        dopamineView.scaleX = 0.5f
+        dopamineView.scaleY = 0.5f
+        dopamineView.animate()
+            .alpha(1f)
+            .scaleX(1.1f)
+            .scaleY(1.1f)
+            .setDuration(300)
+            .withEndAction {
+                dopamineView.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start()
+                lifecycleScope.launch {
+                    delay(2000)
+                    dopamineView.animate()
+                        .alpha(0f)
+                        .scaleX(0.8f)
+                        .scaleY(0.8f)
+                        .setDuration(300)
+                        .withEndAction { rootLayout.removeView(dopamineView) }
+                        .start()
+                }
+            }
+            .start()
     }
 
     private fun showListSelectionDialog(movie: Movie, onComplete: () -> Unit) {
@@ -556,8 +595,13 @@ class DetailActivity : AppCompatActivity() {
         val checkedItems = BooleanArray(lists.size) { i -> lists[i].movies.any { it.id == movie.id } }
 
         AlertDialog.Builder(this).setTitle("Selecciona Listas").setMultiChoiceItems(listNames, checkedItems) { _, which, isChecked ->
-            if (isChecked) watchlistRepository.addMovieToList(lists[which].id, movie)
-            else watchlistRepository.removeMovieFromList(lists[which].id, movie.id)
+            if (isChecked) {
+                watchlistRepository.addMovieToList(lists[which].id, movie)
+                showDopamineSuccess("¡AÑADIDA!", "La película ya está en '${lists[which].name}'")
+            } else {
+                watchlistRepository.removeMovieFromList(lists[which].id, movie.id)
+                showDopamineSuccess("QUITADA", "Se ha eliminado de '${lists[which].name}'")
+            }
         }.setPositiveButton("Listo") { _, _ -> onComplete() }
         .setNeutralButton("+ Nueva Lista") { _, _ -> showCreateListDialog(movie, onComplete) }.show()
     }
@@ -568,7 +612,10 @@ class DetailActivity : AppCompatActivity() {
             val name = input.text.toString().trim()
             if (name.isNotEmpty()) {
                 watchlistRepository.createUserList(name)
-                movie?.let { watchlistRepository.addMovieToList(watchlistRepository.getUserLists().last().id, it) }
+                movie?.let { 
+                    watchlistRepository.addMovieToList(watchlistRepository.getUserLists().last().id, it)
+                    showDopamineSuccess("¡LISTA CREADA!", "Se ha añadido la película a '$name'")
+                }
                 onComplete?.invoke()
             }
         }.show()

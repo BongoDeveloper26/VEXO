@@ -24,18 +24,37 @@ class ListActivity : AppCompatActivity() {
     private lateinit var listAdapter: UserListAdapter
     private lateinit var vexoAdapter: VexoListAdapter
 
-    // DEFINICIÓN ÚNICA Y FIJA DE LAS LISTAS OFICIALES
     private val officialVexoLists = listOf(
-        VexoList("top_250_movies", "Las 250 mejores películas", "La selección oficial con las obras maestras del cine.", R.drawable.vexo_logo),
-        VexoList("top_250_tv", "Las 250 mejores series", "El ranking definitivo con las mejores series de la historia.", R.drawable.vexo_logo)
+        VexoList(
+            "top_250_movies", 
+            "LAS 250 MEJORES PELÍCULAS", 
+            "La selección oficial de cine.", 
+            R.drawable.vexo_logo,
+            listOf(
+                "https://image.tmdb.org/t/p/w500/q6y0Go1tsYmUuAtfj6KyB30OXvN.jpg", // Cadena Perpetua
+                "https://image.tmdb.org/t/p/w500/3bhkrjSTWv4ayisdqAs6arW0Lja.jpg", // El Padrino
+                "https://image.tmdb.org/t/p/w500/8S9NoP10n5S5G87G9vGf56zP167.jpg", // La lista de Schindler
+                "https://image.tmdb.org/t/p/w500/v9970pP2XF8X8Z6n1P2pS5X8X8Z.jpg"  // Batman
+            )
+        ),
+        VexoList(
+            "top_250_tv", 
+            "LAS 250 MEJORES SERIES", 
+            "El ranking oficial de televisión.", 
+            R.drawable.vexo_logo,
+            listOf(
+                "https://image.tmdb.org/t/p/w500/ztkUQvBZ77Z7iB1u66NuJvSTN7h.jpg", // Breaking Bad
+                "https://image.tmdb.org/t/p/w500/7WsyChvLEz79BMo33owrR7Z9XnS.jpg", // Juego de Tronos
+                "https://image.tmdb.org/t/p/w500/reksS7S7S7S7S7S7S7S7S7S7S7S.jpg", // Los Soprano
+                "https://image.tmdb.org/t/p/w500/69Uqt7vSbeFwb1L3rsLbt64H64o.jpg"  // Better Call Saul
+            )
+        )
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
-
         watchlistRepository = WatchlistRepository(this)
-        
         setupUserListsView()
         setupVexoListsView()
         setupTabs()
@@ -47,22 +66,16 @@ class ListActivity : AppCompatActivity() {
     }
 
     private fun setupUserListsView() {
-        findViewById<ImageButton>(R.id.btnBackList).setOnClickListener { finish() }
         findViewById<View>(R.id.btnCreateList).setOnClickListener { showCreateListDialog() }
-
         val recycler = findViewById<RecyclerView>(R.id.recyclerUserLists)
         recycler.layoutManager = LinearLayoutManager(this)
-        listAdapter = UserListAdapter(emptyList(), 
-            onListClick = { openListDetail(it) },
-            onDeleteClick = { showDeleteConfirmDialog(it) }
-        )
+        listAdapter = UserListAdapter(emptyList(), { openListDetail(it) }, { showDeleteConfirmDialog(it) })
         recycler.adapter = listAdapter
     }
 
     private fun setupVexoListsView() {
         val recyclerVexo = findViewById<RecyclerView>(R.id.recyclerVexoLists)
         recyclerVexo.layoutManager = LinearLayoutManager(this)
-        
         vexoAdapter = VexoListAdapter(officialVexoLists) { item ->
             val intent = Intent(this, VexoListDetailActivity::class.java)
             intent.putExtra("listId", item.id)
@@ -109,31 +122,19 @@ class ListActivity : AppCompatActivity() {
     }
 
     private fun showCreateListDialog() {
-        val input = EditText(this).apply { hint = "Nombre de la lista" }
-        AlertDialog.Builder(this)
-            .setTitle("Nueva Colección")
-            .setView(input)
+        val input = EditText(this).apply { hint = "Nombre" }
+        AlertDialog.Builder(this).setTitle("Nueva Lista").setView(input)
             .setPositiveButton("Crear") { _, _ ->
                 val name = input.text.toString().trim()
-                if (name.isNotEmpty()) {
-                    watchlistRepository.createUserList(name)
-                    refreshUserListsData()
-                }
-            }
-            .setNegativeButton("Cancelar", null)
-            .show()
+                if (name.isNotEmpty()) { watchlistRepository.createUserList(name); refreshUserListsData() }
+            }.setNegativeButton("Cancelar", null).show()
     }
 
     private fun showDeleteConfirmDialog(userList: UserList) {
-        AlertDialog.Builder(this)
-            .setTitle("¿Eliminar?")
-            .setMessage("¿Borrar '${userList.name}'?")
+        AlertDialog.Builder(this).setTitle("¿Borrar?").setMessage(userList.name)
             .setPositiveButton("Eliminar") { _, _ ->
-                watchlistRepository.deleteUserList(userList.id)
-                refreshUserListsData()
-            }
-            .setNegativeButton("Cancelar", null)
-            .show()
+                watchlistRepository.deleteUserList(userList.id); refreshUserListsData()
+            }.setNegativeButton("No", null).show()
     }
 }
 
@@ -158,14 +159,22 @@ class UserListAdapter(
 
     override fun onBindViewHolder(h: ViewHolder, p: Int) {
         val l = lists[p]
-        h.name.text = l.name
-        h.count.text = "${l.movies.size} ELEMENTOS"
+        h.name.text = l.name.uppercase()
+        h.count.text = "POR USUARIO VEXO • ${l.movies.size} ELEMENTOS"
         val imgs = listOf(h.img1, h.img2, h.img3, h.img4)
-        imgs.forEach { it.visibility = View.GONE }
+        imgs.forEach { it.visibility = View.GONE; it.setPadding(0, 0, 0, 0); it.imageTintList = null }
         h.textMore.visibility = View.GONE
-        l.movies.take(4).forEachIndexed { i, m ->
-            imgs[i].visibility = View.VISIBLE
-            Glide.with(h.itemView.context).load(m.posterPath).centerCrop().into(imgs[i])
+        
+        if (l.movies.isEmpty()) {
+            h.img1.visibility = View.VISIBLE
+            h.img1.setImageResource(R.drawable.ic_nav_profile)
+            h.img1.setPadding(12, 12, 12, 12)
+            h.img1.imageTintList = android.content.res.ColorStateList.valueOf(h.itemView.context.getColor(R.color.text_secondary))
+        } else {
+            l.movies.take(4).forEachIndexed { i, m ->
+                imgs[i].visibility = View.VISIBLE
+                Glide.with(h.itemView.context).load(m.posterPath).centerCrop().into(imgs[i])
+            }
         }
         if (l.movies.size > 4) { h.textMore.visibility = View.VISIBLE; h.textMore.text = "+${l.movies.size-4}" }
         h.itemView.setOnClickListener { onListClick(l) }

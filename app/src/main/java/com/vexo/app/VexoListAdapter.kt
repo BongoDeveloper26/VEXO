@@ -6,13 +6,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.vexo.app.R
 
 data class VexoList(
     val id: String,
     val name: String,
     val description: String,
-    val imageRes: Int
+    val imageRes: Int,
+    val previewPosters: List<String> = emptyList()
 )
 
 class VexoListAdapter(
@@ -39,21 +41,39 @@ class VexoListAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val list = lists[position]
         holder.name.text = list.name
-        holder.count.text = list.description
-        
-        // Para las listas de Vexo, ocultamos el botón borrar
+        holder.count.text = "COLECCIÓN OFICIAL • 250 ELEMENTOS"
         holder.btnDelete.visibility = View.GONE
         
-        // Usamos el logo de Vexo para la preview principal
-        holder.img1.visibility = View.VISIBLE
-        holder.img1.setImageResource(list.imageRes)
-        holder.img1.setPadding(20, 20, 20, 20) // Un poco de padding para que el logo no pegue a los bordes
+        val imgs = listOf(holder.img1, holder.img2, holder.img3, holder.img4)
         
-        // Ocultamos el resto de previews
-        holder.img2.visibility = View.GONE
-        holder.img3.visibility = View.GONE
-        holder.img4.visibility = View.GONE
+        // Reset inicial para evitar huecos blancos
+        imgs.forEach { 
+            it.visibility = View.GONE
+            it.setPadding(0,0,0,0)
+            it.imageTintList = null 
+        }
         holder.textMore.visibility = View.GONE
+
+        if (list.previewPosters.isEmpty()) {
+            // Si no hay posters, ponemos el logo de Vexo para que no quede vacío
+            holder.img1.visibility = View.VISIBLE
+            holder.img1.setImageResource(R.drawable.vexo_logo)
+            holder.img1.setPadding(12, 12, 12, 12)
+        } else {
+            // Cargamos los posters reales
+            list.previewPosters.forEachIndexed { index, url ->
+                if (index < imgs.size) {
+                    imgs[index].visibility = View.VISIBLE
+                    Glide.with(holder.itemView.context)
+                        .load(url)
+                        .centerCrop()
+                        .placeholder(R.drawable.vexo_logo) // Logo mientras carga
+                        .into(imgs[index])
+                }
+            }
+            holder.textMore.visibility = View.VISIBLE
+            holder.textMore.text = "+246"
+        }
 
         holder.itemView.setOnClickListener { onListClick(list) }
     }

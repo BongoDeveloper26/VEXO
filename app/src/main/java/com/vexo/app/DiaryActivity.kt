@@ -3,6 +3,7 @@ package com.vexo.app
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -48,12 +49,17 @@ class DiaryActivity : AppCompatActivity() {
 
         val recycler = findViewById<RecyclerView>(R.id.recyclerDiaryFull)
         recycler.layoutManager = LinearLayoutManager(this)
+        
         recycler.adapter = DiaryGroupedAdapter(groupedItems) { entry ->
-            val movie = watchlistRepository.getAllRatedMovies().find { it.id == entry.movieId }
-            if (movie != null) {
+            // CORRECCIÓN: Usamos el objeto movie guardado en la entrada o lo buscamos como backup
+            val movieToOpen = entry.movie ?: watchlistRepository.getAllRatedMovies().find { it.id == entry.movieId }
+            
+            if (movieToOpen != null) {
                 val intent = Intent(this, DetailActivity::class.java)
-                intent.putExtra("movie", movie)
+                intent.putExtra("movie", movieToOpen)
                 startActivity(intent)
+            } else {
+                Toast.makeText(this, "No se pudo abrir la ficha de la película", Toast.LENGTH_SHORT).show()
             }
         }
     }

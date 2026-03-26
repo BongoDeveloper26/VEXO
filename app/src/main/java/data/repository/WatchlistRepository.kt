@@ -44,23 +44,26 @@ class WatchlistRepository(context: Context) {
         if (rating <= 0) {
             ratings.remove(movie.id)
             ratedMovies.removeAll { it.id == movie.id }
-            // IMPORTANTE: No eliminamos del Diario para que quede constancia del visionado
+            // Al quitar la nota, no borramos el Diario para mantener el historial de visionados
         } else {
             ratings[movie.id] = rating
             
-            // Actualizar lista de pelis valoradas
+            // Actualizar lista de pelis valoradas (aquí sí mantenemos solo una instancia de la peli)
             ratedMovies.removeAll { it.id == movie.id }
             ratedMovies.add(0, movie)
 
-            // Actualizar Diario con la fecha actual
+            // AÑADIR AL DIARIO (SIN BORRAR LO ANTERIOR)
             val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
-            diary.removeAll { it.movieId == movie.id }
+            
+            // He eliminado la línea diary.removeAll que causaba el borrado del historial
+            
             diary.add(0, DiaryEntry(
                 movieId = movie.id,
                 movieTitle = movie.title,
                 moviePosterPath = movie.posterPath,
                 rating = rating.toInt(),
-                date = currentDate
+                date = currentDate,
+                movie = movie // Guardamos el objeto completo para poder abrirlo desde el Diario
             ))
         }
 

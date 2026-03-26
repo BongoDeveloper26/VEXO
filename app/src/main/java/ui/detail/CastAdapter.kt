@@ -35,12 +35,13 @@ class CastAdapter(
         val profileUrl = if (actor.profile_path != null) {
             "https://image.tmdb.org/t/p/w185${actor.profile_path}"
         } else {
-            "https://ui-avatars.com/api/?name=${actor.name.replace(" ", "+")}&background=random"
+            null // Forzamos que Glide use el error/placeholder
         }
 
         Glide.with(holder.itemView.context)
             .load(profileUrl)
-            .placeholder(android.R.drawable.ic_menu_gallery)
+            .placeholder(R.drawable.vexo_logo)
+            .error(R.drawable.vexo_logo)
             .centerCrop()
             .into(holder.imgCast)
 

@@ -1,9 +1,11 @@
 package com.vexo.app
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -41,17 +43,22 @@ class UserListDetailActivity : AppCompatActivity() {
     }
 
     private fun setupUI(name: String) {
-        findViewById<TextView>(R.id.textUserListNameHeader).text = name
+        findViewById<TextView>(R.id.textUserListNameHeader).text = name.uppercase()
         findViewById<ImageButton>(R.id.btnBackUserListDetail).setOnClickListener { finish() }
 
-        val recycler = findViewById<RecyclerView>(R.id.recyclerUserListMovies)
+        // Personalización para "Mis Listas" (Cuenta del usuario)
+        val imgProfile = findViewById<ImageView>(R.id.imgCreatorProfile)
+        imgProfile.setImageResource(R.drawable.ic_nav_profile)
+        imgProfile.setPadding(15, 15, 15, 15)
+        imgProfile.imageTintList = ColorStateList.valueOf(getColor(R.color.text_secondary))
         
-        // Cambiamos a 3 columnas. Es el estándar de la industria (Netflix, Disney+) 
-        // para que los posters se vean grandes, nítidos y profesionales en el móvil.
+        findViewById<TextView>(R.id.textCreatorName).text = "Usuario VEXO"
+        findViewById<TextView>(R.id.textListInfo).text = "Tu colección personal"
+
+        val recycler = findViewById<RecyclerView>(R.id.recyclerUserListMovies)
         val gridLayoutManager = GridLayoutManager(this, 3)
         recycler.layoutManager = gridLayoutManager
 
-        // Usamos el modo Grid (true) en el adaptador
         movieAdapter = MovieAdapter(emptyList(), isGridView = true)
         movieAdapter.onItemClick = { movie ->
             val intent = Intent(this, DetailActivity::class.java)
@@ -59,8 +66,6 @@ class UserListDetailActivity : AppCompatActivity() {
             startActivity(intent)
         }
         recycler.adapter = movieAdapter
-        
-        // Añadimos un poco de padding al recycler para que no pegue a los bordes
         recycler.setPadding(12, 0, 12, 20)
     }
 

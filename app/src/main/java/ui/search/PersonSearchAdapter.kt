@@ -51,8 +51,9 @@ class PersonSearchAdapter(private var people: List<PersonDTO>) :
             
             Glide.with(itemView.context)
                 .load(profilePath)
-                .placeholder(R.drawable.ic_image_placeholder)
-                .error(R.drawable.ic_image_placeholder)
+                .placeholder(R.drawable.vexo_logo)
+                .error(R.drawable.vexo_logo)
+                .centerCrop()
                 .into(imgPerson)
 
             itemView.setOnClickListener {

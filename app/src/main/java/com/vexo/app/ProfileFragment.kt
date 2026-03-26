@@ -58,7 +58,6 @@ class ProfileFragment : Fragment() {
             Toast.makeText(requireContext(), "Cerrando sesión...", Toast.LENGTH_SHORT).show()
         }
 
-        // Botón Ver todas las valoraciones
         view.findViewById<TextView>(R.id.btnViewAllRated).setOnClickListener {
             startActivity(Intent(requireContext(), AllRatedMoviesActivity::class.java))
         }
@@ -106,7 +105,6 @@ class ProfileFragment : Fragment() {
     }
 
     private fun loadRecentActivity(view: View) {
-        // Corregido: Usamos la función disponible en el repositorio
         val recentMovies = watchlistRepository.getAllRatedMovies().take(5)
         val layoutActivity = view.findViewById<View>(R.id.layoutActivity)
         
@@ -131,13 +129,15 @@ class ProfileFragment : Fragment() {
             layoutDiary.visibility = View.VISIBLE
 
             diaryAdapter = DiaryAdapter(diaryEntries) { entry ->
-                val movie = watchlistRepository.getAllRatedMovies().find { it.id == entry.movieId }
-                if (movie != null) {
+                // CORRECCIÓN: Usamos el objeto movie que ya está dentro del entry
+                val movieToOpen = entry.movie ?: watchlistRepository.getAllRatedMovies().find { it.id == entry.movieId }
+                
+                if (movieToOpen != null) {
                     val intent = Intent(requireContext(), DetailActivity::class.java)
-                    intent.putExtra("movie", movie)
+                    intent.putExtra("movie", movieToOpen)
                     startActivity(intent)
                 } else {
-                    Toast.makeText(requireContext(), "No se pudo abrir la película", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "No se pudo abrir la ficha", Toast.LENGTH_SHORT).show()
                 }
             }
 

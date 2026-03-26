@@ -43,9 +43,6 @@ class ListFragment : Fragment() {
     }
 
     private fun setupUI(view: View) {
-        // En el fragmento principal, ocultamos el botón de volver
-        view.findViewById<ImageButton>(R.id.btnBackList).visibility = View.GONE
-        
         view.findViewById<View>(R.id.btnCreateList).setOnClickListener { showCreateListDialog() }
 
         val recycler = view.findViewById<RecyclerView>(R.id.recyclerUserLists)
@@ -56,7 +53,6 @@ class ListFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = listAdapter
 
-        // Configuración de pestañas (Tabs)
         val tabLayout = view.findViewById<TabLayout>(R.id.tabLayoutLists)
         val containerMisColecciones = view.findViewById<View>(R.id.containerMisColecciones)
         val containerOtrasListas = view.findViewById<View>(R.id.containerOtrasListas)
@@ -87,22 +83,38 @@ class ListFragment : Fragment() {
     private fun setupVexoLists(view: View) {
         val recyclerVexo = view.findViewById<RecyclerView>(R.id.recyclerVexoLists)
         
-        // Creamos la lista oficial de Vexo: Top 250
         val officialLists = listOf(
             VexoList(
-                id = "top_250",
-                name = "TOP 250 PELÍCULAS",
-                description = "Las 250 mejores películas de la historia según la crítica mundial.",
-                imageRes = R.drawable.logo_vexo_app
+                id = "top_250_movies",
+                name = "LAS 250 MEJORES PELÍCULAS",
+                description = "La selección oficial de Vexo con las obras maestras del cine.",
+                imageRes = R.drawable.vexo_logo,
+                previewPosters = listOf(
+                    "https://image.tmdb.org/t/p/w500/q6y0Go1tsYmUuAtfj6KyB30OXvN.jpg",
+                    "https://image.tmdb.org/t/p/w500/3bhkrjSTWv4ayisdqAs6arW0Lja.jpg",
+                    "https://image.tmdb.org/t/p/w500/8S9NoP10n5S5G87G9vGf56zP167.jpg",
+                    "https://image.tmdb.org/t/p/w500/v9970pP2XF8X8Z6n1P2pS5X8X8Z.jpg"
+                )
+            ),
+            VexoList(
+                id = "top_250_tv",
+                name = "LAS 250 MEJORES SERIES",
+                description = "El ranking definitivo de Vexo con las mejores producciones de TV.",
+                imageRes = R.drawable.vexo_logo,
+                previewPosters = listOf(
+                    "https://image.tmdb.org/t/p/w500/ggm8bbv9v0f15c10v9f9f15c10v.jpg",
+                    "https://image.tmdb.org/t/p/w500/7WsyChvLEz79BMo33owrR7Z9XnS.jpg",
+                    "https://image.tmdb.org/t/p/w500/reksS7S7S7S7S7S7S7S7S7S7S7S.jpg",
+                    "https://image.tmdb.org/t/p/w500/y6y6y6y6y6y6y6y6y6y6y6y6y6y.jpg"
+                )
             )
         )
 
         vexoListAdapter = VexoListAdapter(officialLists) { vexolist ->
-            if (vexolist.id == "top_250") {
-                val intent = Intent(requireContext(), VexoListDetailActivity::class.java)
-                intent.putExtra("listName", vexolist.name)
-                startActivity(intent)
-            }
+            val intent = Intent(requireContext(), VexoListDetailActivity::class.java)
+            intent.putExtra("listId", vexolist.id)
+            intent.putExtra("listName", vexolist.name)
+            startActivity(intent)
         }
 
         recyclerVexo.layoutManager = LinearLayoutManager(requireContext())

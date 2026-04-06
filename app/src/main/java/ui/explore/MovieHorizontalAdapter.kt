@@ -3,6 +3,7 @@ package ui.explore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -37,7 +38,12 @@ class MovieHorizontalAdapter(private val movies: List<Movie>) :
             .into(holder.imgPoster)
 
         holder.itemView.setOnClickListener {
-            onItemClick?.invoke(movie)
+            val animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.click_scale)
+            holder.itemView.startAnimation(animation)
+            
+            holder.itemView.postDelayed({
+                onItemClick?.invoke(movie)
+            }, 150)
         }
     }
 

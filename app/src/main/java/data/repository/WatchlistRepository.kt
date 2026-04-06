@@ -23,6 +23,8 @@ class WatchlistRepository(context: Context) {
         private const val KEY_RATED_MOVIES_DATA = "user_rated_movies_data"
         private const val KEY_CUSTOM_LISTS = "user_custom_lists"
         private const val KEY_DIARY = "user_diary"
+        private const val KEY_PROFILE_IMAGE = "user_profile_image"
+        private const val KEY_USER_NAME = "user_name"
     }
 
     // --- ESTADÍSTICAS ---
@@ -35,8 +37,25 @@ class WatchlistRepository(context: Context) {
         return UserStats(total, avg)
     }
 
+    // --- PERFIL ---
+    fun setProfileImageUri(uri: String?) {
+        prefs.edit().putString(KEY_PROFILE_IMAGE, uri).apply()
+    }
+
+    fun getProfileImageUri(): String? {
+        return prefs.getString(KEY_PROFILE_IMAGE, null)
+    }
+
+    fun setUserName(name: String) {
+        prefs.edit().putString(KEY_USER_NAME, name).apply()
+    }
+
+    fun getUserName(): String {
+        return prefs.getString(KEY_USER_NAME, "Usuario VEXO") ?: "Usuario VEXO"
+    }
+
     // --- VALORACIONES Y DIARIO ---
-    fun setMovieRating(movie: Movie, rating: Float) {
+    fun setMovieRating(movie: Movie, rating: Float, review: String? = null) {
         val ratings = getRatingsMap().toMutableMap()
         val ratedMovies = getRatedMoviesList().toMutableList()
         val diary = getDiary().toMutableList()
@@ -44,18 +63,13 @@ class WatchlistRepository(context: Context) {
         if (rating <= 0) {
             ratings.remove(movie.id)
             ratedMovies.removeAll { it.id == movie.id }
-            // Al quitar la nota, no borramos el Diario para mantener el historial de visionados
         } else {
             ratings[movie.id] = rating
             
-            // Actualizar lista de pelis valoradas (aquí sí mantenemos solo una instancia de la peli)
             ratedMovies.removeAll { it.id == movie.id }
             ratedMovies.add(0, movie)
 
-            // AÑADIR AL DIARIO (SIN BORRAR LO ANTERIOR)
             val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
-            
-            // He eliminado la línea diary.removeAll que causaba el borrado del historial
             
             diary.add(0, DiaryEntry(
                 movieId = movie.id,
@@ -63,7 +77,8 @@ class WatchlistRepository(context: Context) {
                 moviePosterPath = movie.posterPath,
                 rating = rating.toInt(),
                 date = currentDate,
-                movie = movie // Guardamos el objeto completo para poder abrirlo desde el Diario
+                review = review,
+                movie = movie
             ))
         }
 
@@ -148,12 +163,21 @@ class WatchlistRepository(context: Context) {
         prefs.edit().putString(KEY_CUSTOM_LISTS, gson.toJson(lists)).apply()
     }
 
-    fun createUserList(name: String): String {
+    fun createUserList(name: String, description: String? = null): String {
         val lists = getUserLists().toMutableList()
         val id = UUID.randomUUID().toString()
-        lists.add(UserList(id = id, name = name))
+        lists.add(UserList(id = id, name = name, description = description))
         saveUserLists(lists)
         return id
+    }
+
+    fun updateUserList(listId: String, name: String, description: String?) {
+        val lists = getUserLists().toMutableList()
+        val index = lists.indexOfFirst { it.id == listId }
+        if (index != -1) {
+            lists[index] = lists[index].copy(name = name, description = description)
+            saveUserLists(lists)
+        }
     }
 
     fun deleteUserList(listId: String) {

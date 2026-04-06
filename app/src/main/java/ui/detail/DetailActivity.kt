@@ -10,6 +10,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.OvershootInterpolator
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -17,7 +18,6 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,8 +29,10 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vexo.app.R
 import data.model.Movie
+import data.model.UserList
 import data.repository.TMDBRepository
 import data.repository.WatchlistRepository
 import data.repository.WatchProviderItem
@@ -40,6 +42,7 @@ import kotlinx.coroutines.launch
 import ui.explore.MovieHorizontalAdapter
 import ui.genre.GenreActivity
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 class DetailActivity : AppCompatActivity() {
@@ -48,6 +51,7 @@ class DetailActivity : AppCompatActivity() {
     private val omdbRepository = OMDbRepository.getInstance()
     private lateinit var watchlistRepository: WatchlistRepository
     private var currentMovie: Movie? = null
+    private var totalSeasons: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,12 +66,21 @@ class DetailActivity : AppCompatActivity() {
             setupWatchlistButton(movie)
             setupTopMenu(movie)
             updateStatusIcons(movie.id)
+            loadUserReview(movie.id)
             
             if (movie.isTvShow) {
                 loadFullTVDetails(movie.id)
                 loadTVCredits(movie.id)
                 loadTVRecommendations(movie.id)
                 loadTVTrailers(movie.id)
+                
+                findViewById<View>(R.id.cardSeasonsHighlight).setOnClickListener {
+                    val intent = Intent(this, TVSeasonsActivity::class.java)
+                    intent.putExtra("seriesId", movie.id)
+                    intent.putExtra("seriesName", movie.title)
+                    intent.putExtra("totalSeasons", totalSeasons)
+                    startActivity(intent)
+                }
             } else {
                 loadFullMovieDetails(movie.id)
                 loadMovieCredits(movie.id)
@@ -96,6 +109,15 @@ class DetailActivity : AppCompatActivity() {
             .into(imgPoster)
 
         imgPoster.setOnClickListener { showFullPoster(movie) }
+        
+        // Animación elegante de entrada
+        textTitle.alpha = 0f
+        textTitle.translationY = 30f
+        val tagline = findViewById<View>(R.id.textTagline)
+        
+        tagline.alpha = 0f
+        tagline.animate().alpha(0.85f).translationY(0f).setDuration(800).setStartDelay(100).start()
+        textTitle.animate().alpha(1f).translationY(0f).setDuration(800).setStartDelay(250).start()
     }
 
     private fun updateStatusIcons(movieId: Int) {
@@ -108,34 +130,37 @@ class DetailActivity : AppCompatActivity() {
             it.visibility = if (watchlistRepository.isWatched(movieId)) View.VISIBLE else View.GONE
             it.setImageResource(R.drawable.ic_watched_modern)
         }
+    }
 
-        val userRating = watchlistRepository.getMovieRating(movieId)
-        val layoutUserRating: View? = findViewById(R.id.layoutUserRatingDisplay)
+    private fun loadUserReview(movieId: Int) {
+        val entry = watchlistRepository.getDiary().find { it.movieId == movieId }
+        val layoutReview = findViewById<View>(R.id.layoutUserReviewDetail)
+        val textReview = findViewById<TextView>(R.id.textUserReviewValue)
         
-        if (userRating > 0) {
-            layoutUserRating?.visibility = View.VISIBLE
-            val userStars = listOf<ImageView?>(
-                findViewById(R.id.userStar1), findViewById(R.id.userStar2),
-                findViewById(R.id.userStar3), findViewById(R.id.userStar4),
-                findViewById(R.id.userStar5)
+        if (entry != null && (entry.rating > 0 || !entry.review.isNullOrEmpty())) {
+            layoutReview.visibility = View.VISIBLE
+            textReview.text = if (!entry.review.isNullOrEmpty()) "\"${entry.review}\"" else "Has valorado este contenido."
+            
+            // Actualizar las estrellas dentro de la tarjeta de reseña
+            val reviewStars = listOf<ImageView>(
+                findViewById(R.id.revStar1), findViewById(R.id.revStar2),
+                findViewById(R.id.revStar3), findViewById(R.id.revStar4),
+                findViewById(R.id.revStar5)
             )
             
-            userStars.forEachIndexed { index, imageView ->
-                if (imageView != null) {
-                    if (index < userRating) {
-                        imageView.setImageResource(android.R.drawable.btn_star_big_on)
-                        imageView.imageTintList = android.content.res.ColorStateList.valueOf(getColor(R.color.primary))
-                        imageView.alpha = 1.0f
-                    } else {
-                        imageView.setImageResource(android.R.drawable.btn_star_big_off)
-                        imageView.imageTintList = android.content.res.ColorStateList.valueOf(getColor(R.color.text_secondary))
-                        imageView.alpha = 0.3f
-                    }
+            reviewStars.forEachIndexed { index, imageView ->
+                if (index < entry.rating) {
+                    imageView.setImageResource(R.drawable.ic_star_active)
+                    imageView.imageTintList = ColorStateList.valueOf(getColor(R.color.primary))
+                    imageView.alpha = 1.0f
+                } else {
+                    imageView.setImageResource(R.drawable.ic_star_border)
+                    imageView.imageTintList = ColorStateList.valueOf(getColor(R.color.text_secondary))
+                    imageView.alpha = 0.3f
                 }
             }
-            findViewById<TextView>(R.id.textUserRatingValue)?.text = "${userRating.toInt()} de 5"
         } else {
-            layoutUserRating?.visibility = View.GONE
+            layoutReview.visibility = View.GONE
         }
     }
 
@@ -187,8 +212,14 @@ class DetailActivity : AppCompatActivity() {
                 setupGenres(details.genres)
                 
                 val currencyFormat = NumberFormat.getCurrencyInstance(Locale.US)
-                findViewById<TextView>(R.id.textBudget)?.text = if (details.budget > 0) currencyFormat.format(details.budget) else "--"
-                findViewById<TextView>(R.id.textRevenue)?.text = if (details.revenue > 0) currencyFormat.format(details.revenue) else "--"
+                if (details.budget > 0) {
+                    findViewById<View>(R.id.layoutBudgetData)?.visibility = View.VISIBLE
+                    findViewById<TextView>(R.id.textBudget)?.text = currencyFormat.format(details.budget)
+                }
+                if (details.revenue > 0) {
+                    findViewById<View>(R.id.layoutRevenueData)?.visibility = View.VISIBLE
+                    findViewById<TextView>(R.id.textRevenue)?.text = currencyFormat.format(details.revenue)
+                }
                 
                 findViewById<TextView>(R.id.textStatus)?.text = details.status
                 findViewById<TextView>(R.id.textReleaseDateFull)?.text = details.release_date
@@ -197,12 +228,23 @@ class DetailActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.textProductionCountries)?.text = details.production_countries.joinToString(", ") { it.name }
                 findViewById<TextView>(R.id.textProductionCompanies)?.text = details.production_companies.joinToString(", ") { it.name }
 
-                val providers = details.watchProviders?.results?.get("ES")?.flatrate
-                if (!providers.isNullOrEmpty()) {
-                    findViewById<View>(R.id.layoutWatchProviders).visibility = View.VISIBLE
+                val providersFlat = details.watchProviders?.results?.get("ES")?.flatrate ?: emptyList()
+                val providersBuy = details.watchProviders?.results?.get("ES")?.buy ?: emptyList()
+                val providersRent = details.watchProviders?.results?.get("ES")?.rent ?: emptyList()
+                val allProviders = (providersFlat + providersBuy + providersRent).distinctBy { it.provider_id }
+
+                if (allProviders.isNotEmpty()) {
+                    val layoutProviders = findViewById<View>(R.id.layoutWatchProviders)
+                    layoutProviders.visibility = View.VISIBLE
                     val recycler: RecyclerView = findViewById(R.id.recyclerWatchProviders)
                     recycler.layoutManager = LinearLayoutManager(this@DetailActivity, LinearLayoutManager.HORIZONTAL, false)
-                    recycler.adapter = WatchProviderAdapter(providers)
+                    recycler.adapter = WatchProviderAdapter(allProviders)
+                    
+                    layoutProviders.setOnClickListener {
+                        val intent = Intent(this@DetailActivity, WatchProvidersActivity::class.java)
+                        intent.putParcelableArrayListExtra("providers", ArrayList(allProviders))
+                        startActivity(intent)
+                    }
                 }
             }
         }
@@ -212,6 +254,7 @@ class DetailActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val details = repository.getTVDetails(tvId)
             if (details != null) {
+                totalSeasons = details.number_of_seasons
                 currentMovie = currentMovie?.copy(releaseDate = details.first_air_date)
                 val year = details.first_air_date.take(4)
                 findViewById<TextView>(R.id.textYearDetail)?.text = year
@@ -231,10 +274,8 @@ class DetailActivity : AppCompatActivity() {
                     updatePegiUI(pegi)
                 }
 
-                findViewById<View>(R.id.labelBudget)?.visibility = View.GONE
-                findViewById<View>(R.id.textBudget)?.visibility = View.GONE
-                findViewById<View>(R.id.labelRevenue)?.visibility = View.GONE
-                findViewById<View>(R.id.textRevenue)?.visibility = View.GONE
+                findViewById<View>(R.id.layoutBudgetData)?.visibility = View.GONE
+                findViewById<View>(R.id.layoutRevenueData)?.visibility = View.GONE
                 
                 val imdbId = details.external_ids?.imdb_id
                 if (!imdbId.isNullOrEmpty()) {
@@ -247,17 +288,28 @@ class DetailActivity : AppCompatActivity() {
                 
                 findViewById<TextView>(R.id.textStatus)?.text = details.status
                 findViewById<TextView>(R.id.textReleaseDateFull)?.text = details.first_air_date
-                findViewById<TextView>(R.id.textOriginalTitle)?.text = details.name
+                findViewById<TextView>(R.id.textOriginalTitle)?.text = details.original_name
                 findViewById<TextView>(R.id.textOriginalLanguage)?.text = details.original_language.uppercase()
                 findViewById<TextView>(R.id.textProductionCountries)?.text = details.production_countries.joinToString(", ") { it.name }
                 findViewById<TextView>(R.id.textProductionCompanies)?.text = details.production_companies.joinToString(", ") { it.name }
 
-                val providers = details.watchProviders?.results?.get("ES")?.flatrate
-                if (!providers.isNullOrEmpty()) {
-                    findViewById<View>(R.id.layoutWatchProviders).visibility = View.VISIBLE
+                val providersFlat = details.watchProviders?.results?.get("ES")?.flatrate ?: emptyList()
+                val providersBuy = details.watchProviders?.results?.get("ES")?.buy ?: emptyList()
+                val providersRent = details.watchProviders?.results?.get("ES")?.rent ?: emptyList()
+                val allProviders = (providersFlat + providersBuy + providersRent).distinctBy { it.provider_id }
+
+                if (allProviders.isNotEmpty()) {
+                    val layoutProviders = findViewById<View>(R.id.layoutWatchProviders)
+                    layoutProviders.visibility = View.VISIBLE
                     val recycler: RecyclerView = findViewById(R.id.recyclerWatchProviders)
                     recycler.layoutManager = LinearLayoutManager(this@DetailActivity, LinearLayoutManager.HORIZONTAL, false)
-                    recycler.adapter = WatchProviderAdapter(providers)
+                    recycler.adapter = WatchProviderAdapter(allProviders)
+                    
+                    layoutProviders.setOnClickListener {
+                        val intent = Intent(this@DetailActivity, WatchProvidersActivity::class.java)
+                        intent.putParcelableArrayListExtra("providers", ArrayList(allProviders))
+                        startActivity(intent)
+                    }
                 }
             }
         }
@@ -379,15 +431,21 @@ class DetailActivity : AppCompatActivity() {
                 bottomSheet.dismiss()
                 if (isInVitrina) {
                     watchlistRepository.removeFromVitrina(movie.id)
+                    showDopamineSuccess("QUITADA DE VITRINA", "Se ha liberado un espacio en tu escaparate.")
                 } else {
-                    watchlistRepository.addMovieToVitrinaAuto(currentMovie ?: movie)
+                    val result = watchlistRepository.addMovieToVitrinaAuto(currentMovie ?: movie)
+                    when (result) {
+                        0 -> showDopamineSuccess("¡DESTACADA!", "La película ya luce en tu vitrina personal.")
+                        1 -> Toast.makeText(this, "Esta película ya está en tu vitrina", Toast.LENGTH_SHORT).show()
+                        2 -> Toast.makeText(this, "Tu vitrina está llena (máx. 4)", Toast.LENGTH_SHORT).show()
+                    }
                 }
                 updateStatusIcons(movie.id)
             }
 
             view.findViewById<View>(R.id.optionAddList).setOnClickListener {
                 bottomSheet.dismiss()
-                showListSelectionDialog(currentMovie ?: movie) { setupWatchlistButton(currentMovie ?: movie) }
+                showAddToListSheet(currentMovie ?: movie) { setupWatchlistButton(currentMovie ?: movie) }
             }
             
             view.findViewById<View>(R.id.optionMarkWatched).setOnClickListener {
@@ -438,7 +496,7 @@ class DetailActivity : AppCompatActivity() {
             }
         }
         updateButtonState()
-        btnAdd.setOnClickListener { showListSelectionDialog(currentMovie ?: movie) { updateButtonState() } }
+        btnAdd.setOnClickListener { showAddToListSheet(currentMovie ?: movie) { updateButtonState() } }
     }
 
     private fun setupTabs() {
@@ -513,25 +571,108 @@ class DetailActivity : AppCompatActivity() {
             view.findViewById(R.id.star1), view.findViewById(R.id.star2),
             view.findViewById(R.id.star3), view.findViewById(R.id.star4), view.findViewById(R.id.star5)
         )
-        var selectedRating = watchlistRepository.getMovieRating(movie.id)
+        val imgHeart: ImageView = view.findViewById(R.id.imgHeartRating)
+        val editReview: EditText = view.findViewById(R.id.editReview)
+        val textDate: TextView = view.findViewById(R.id.textRatingDate)
         
-        fun updateStarsUI(rating: Float) {
+        var selectedRating = watchlistRepository.getMovieRating(movie.id)
+        var isFavorite = watchlistRepository.isFavorite(movie.id)
+        
+        // Cargar reseña existente si la hay
+        val existingEntry = watchlistRepository.getDiary().find { it.movieId == movie.id }
+        editReview.setText(existingEntry?.review ?: "")
+        
+        // Mostrar fecha actual
+        val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+        textDate.text = currentDate
+        
+        fun updateStarsUI(rating: Float, animated: Boolean = false) {
             stars.forEachIndexed { index, img ->
-                if (index < rating) {
-                    img.setImageResource(android.R.drawable.btn_star_big_on)
-                    img.imageTintList = android.content.res.ColorStateList.valueOf(getColor(R.color.primary))
+                val isActive = index < rating
+                
+                if (animated) {
+                    img.animate()
+                        .scaleX(if (isActive) 1.3f else 0.8f)
+                        .scaleY(if (isActive) 1.3f else 0.8f)
+                        .setDuration(120)
+                        .setStartDelay(index * 20L)
+                        .withEndAction {
+                            if (isActive) {
+                                img.setImageResource(R.drawable.ic_star_active)
+                                img.imageTintList = ColorStateList.valueOf(getColor(R.color.primary))
+                            } else {
+                                img.setImageResource(R.drawable.ic_star_border)
+                                img.imageTintList = ColorStateList.valueOf(getColor(R.color.text_secondary))
+                            }
+                            img.animate()
+                                .scaleX(1.0f)
+                                .scaleY(1.0f)
+                                .setInterpolator(OvershootInterpolator(2f))
+                                .setDuration(250)
+                                .setStartDelay(0)
+                                .start()
+                        }
+                        .start()
                 } else {
-                    img.setImageResource(android.R.drawable.btn_star_big_off)
-                    img.imageTintList = android.content.res.ColorStateList.valueOf(getColor(R.color.text_secondary))
+                    if (isActive) {
+                        img.setImageResource(R.drawable.ic_star_active)
+                        img.imageTintList = ColorStateList.valueOf(getColor(R.color.primary))
+                    } else {
+                        img.setImageResource(R.drawable.ic_star_border)
+                        img.imageTintList = ColorStateList.valueOf(getColor(R.color.text_secondary))
+                    }
                 }
             }
         }
+
+        fun updateHeartUI(animated: Boolean = false) {
+            if (isFavorite) {
+                imgHeart.setImageResource(R.drawable.ic_heart_filled)
+                imgHeart.imageTintList = ColorStateList.valueOf(getColor(R.color.primary))
+                if (animated) {
+                    imgHeart.scaleX = 0.7f
+                    imgHeart.scaleY = 0.7f
+                    imgHeart.animate().scaleX(1.2f).scaleY(1.2f).setDuration(150).withEndAction {
+                        imgHeart.animate().scaleX(1.0f).scaleY(1.0f).setInterpolator(OvershootInterpolator()).setDuration(200).start()
+                    }.start()
+                }
+            } else {
+                imgHeart.setImageResource(R.drawable.ic_heart_outline)
+                imgHeart.imageTintList = ColorStateList.valueOf(getColor(R.color.text_secondary))
+            }
+        }
+
         updateStarsUI(selectedRating)
-        stars.forEachIndexed { index, img -> img.setOnClickListener { selectedRating = (index + 1).toFloat(); updateStarsUI(selectedRating) } }
+        updateHeartUI()
+
+        view.postDelayed({ updateStarsUI(selectedRating, true) }, 200)
+
+        stars.forEachIndexed { index, img -> 
+            img.setOnClickListener { 
+                selectedRating = (index + 1).toFloat()
+                updateStarsUI(selectedRating, true) 
+            } 
+        }
+
+        imgHeart.setOnClickListener {
+            isFavorite = !isFavorite
+            updateHeartUI(true)
+        }
         
         view.findViewById<View>(R.id.btnSaveRating).setOnClickListener {
-            watchlistRepository.setMovieRating(movie, selectedRating)
+            val reviewText = editReview.text.toString().trim()
+            
+            // Guardar valoración
+            watchlistRepository.setMovieRating(movie, selectedRating, if (reviewText.isEmpty()) null else reviewText)
+            
+            // Sincronizar corazón si ha cambiado
+            if (isFavorite != watchlistRepository.isFavorite(movie.id)) {
+                watchlistRepository.toggleFavorite(movie)
+            }
+
             updateStatusIcons(movie.id)
+            loadUserReview(movie.id)
+            setupWatchlistButton(movie)
             bottomSheet.dismiss()
             showDopamineSuccess("¡VALORACIÓN GUARDADA!", "Tu opinión se ha registrado en el diario.")
         }
@@ -539,6 +680,7 @@ class DetailActivity : AppCompatActivity() {
         view.findViewById<View>(R.id.btnRemoveRating).setOnClickListener {
             watchlistRepository.setMovieRating(movie, 0f)
             updateStatusIcons(movie.id)
+            loadUserReview(movie.id)
             bottomSheet.dismiss()
             showDopamineSuccess("ELIMINADA", "Se ha quitado la valoración de la película.")
         }
@@ -551,7 +693,6 @@ class DetailActivity : AppCompatActivity() {
         val rootLayout = findViewById<ViewGroup>(android.R.id.content)
         val dopamineView = layoutInflater.inflate(R.layout.layout_rating_success, rootLayout, false)
         
-        // CORRECCIÓN: Ahora sí asignamos el título dinámicamente al TextView
         dopamineView.findViewById<TextView>(R.id.textSuccessTitle).text = title
         dopamineView.findViewById<TextView>(R.id.textSuccessMsg).text = msg
         
@@ -585,40 +726,66 @@ class DetailActivity : AppCompatActivity() {
             .start()
     }
 
-    private fun showListSelectionDialog(movie: Movie, onComplete: () -> Unit) {
-        val lists = watchlistRepository.getUserLists()
-        if (lists.isEmpty()) {
-            showCreateListDialog(movie, onComplete)
-            return
-        }
-        val listNames = lists.map { it.name }.toTypedArray()
-        val checkedItems = BooleanArray(lists.size) { i -> lists[i].movies.any { it.id == movie.id } }
-
-        AlertDialog.Builder(this).setTitle("Selecciona Listas").setMultiChoiceItems(listNames, checkedItems) { _, which, isChecked ->
+    private fun showAddToListSheet(movie: Movie, onComplete: () -> Unit) {
+        val bottomSheet = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+        val view = layoutInflater.inflate(R.layout.layout_add_to_list, null)
+        
+        val recycler = view.findViewById<RecyclerView>(R.id.recyclerLists)
+        val btnCreate = view.findViewById<LinearLayout>(R.id.btnCreateNewList)
+        
+        val userLists = watchlistRepository.getUserLists()
+        
+        recycler.layoutManager = LinearLayoutManager(this)
+        recycler.adapter = ListSelectionAdapter(userLists, movie.id) { list: UserList, isChecked: Boolean ->
             if (isChecked) {
-                watchlistRepository.addMovieToList(lists[which].id, movie)
-                showDopamineSuccess("¡AÑADIDA!", "La película ya está en '${lists[which].name}'")
+                watchlistRepository.addMovieToList(list.id, movie)
+                showDopamineSuccess("¡AÑADIDA!", "En '${list.name}'")
             } else {
-                watchlistRepository.removeMovieFromList(lists[which].id, movie.id)
-                showDopamineSuccess("QUITADA", "Se ha eliminado de '${lists[which].name}'")
+                watchlistRepository.removeMovieFromList(list.id, movie.id)
+                showDopamineSuccess("QUITADA", "De '${list.name}'")
             }
-        }.setPositiveButton("Listo") { _, _ -> onComplete() }
-        .setNeutralButton("+ Nueva Lista") { _, _ -> showCreateListDialog(movie, onComplete) }.show()
+            onComplete()
+        }
+
+        btnCreate.setOnClickListener {
+            bottomSheet.dismiss()
+            showModernCreateListDialog(movie, onComplete)
+        }
+
+        bottomSheet.setContentView(view)
+        bottomSheet.show()
     }
 
-    private fun showCreateListDialog(movie: Movie? = null, onComplete: (() -> Unit)? = null) {
-        val input = EditText(this).apply { hint = "Nombre de la lista" }
-        AlertDialog.Builder(this).setTitle("Nueva Colección").setView(input).setPositiveButton("Crear") { _, _ ->
+    private fun showModernCreateListDialog(movie: Movie? = null, onComplete: (() -> Unit)? = null) {
+        val builder = MaterialAlertDialogBuilder(this)
+        builder.setTitle("Nueva Colección")
+        
+        val input = EditText(this)
+        val container = LinearLayout(this)
+        container.orientation = LinearLayout.VERTICAL
+        val params = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        params.setMargins(64, 0, 64, 0)
+        input.layoutParams = params
+        input.hint = "Nombre de la lista"
+        container.addView(input)
+        
+        builder.setView(container)
+        builder.setPositiveButton("Crear") { _, _ ->
             val name = input.text.toString().trim()
             if (name.isNotEmpty()) {
                 watchlistRepository.createUserList(name)
                 movie?.let { 
-                    watchlistRepository.addMovieToList(watchlistRepository.getUserLists().last().id, it)
-                    showDopamineSuccess("¡LISTA CREADA!", "Se ha añadido la película a '$name'")
+                    val allLists = watchlistRepository.getUserLists()
+                    if (allLists.isNotEmpty()) {
+                        watchlistRepository.addMovieToList(allLists.last().id, it)
+                        showDopamineSuccess("¡LISTA CREADA!", "Se ha añadido a '$name'")
+                    }
                 }
                 onComplete?.invoke()
             }
-        }.show()
+        }
+        builder.setNegativeButton("Cancelar", null)
+        builder.show()
     }
 
     private fun showFullPoster(movie: Movie) {
@@ -743,7 +910,7 @@ class DetailActivity : AppCompatActivity() {
         override fun onCreateViewHolder(p: ViewGroup, t: Int) = ViewHolder(LayoutInflater.from(p.context).inflate(R.layout.item_poster_thumbnail, p, false))
         override fun onBindViewHolder(h: ViewHolder, p: Int) {
             Glide.with(h.itemView).load(urls[p].replace("original", "w185")).into(h.img)
-            h.card.strokeWidth = if (selectedPos == p) 6 else 0
+            h.card.strokeWidth = if (selectedPos == p) { (6 * h.itemView.context.resources.displayMetrics.density).toInt() } else 0
             h.card.strokeColor = getColor(R.color.primary)
             h.itemView.setOnClickListener { onClick(p) }
         }

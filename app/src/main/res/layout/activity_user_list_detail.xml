@@ -25,17 +25,52 @@
             android:src="@drawable/ic_back_custom"
             app:tint="@color/primary" />
 
-        <TextView
-            android:id="@+id/textUserListNameHeader"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:paddingHorizontal="24dp"
-            android:textColor="@color/text_primary"
-            android:textSize="26sp"
-            android:fontFamily="sans-serif-black"
-            android:letterSpacing="-0.02"
-            tools:text="Mi Lista de Terror" />
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:id="@+id/textUserListNameHeader"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/text_primary"
+                android:textSize="26sp"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="-0.02"
+                tools:text="MI LISTA DE TERROR" />
+
+            <ImageButton
+                android:id="@+id/btnEditListName"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_edit"
+                app:tint="@color/text_secondary" />
+
+            <ImageButton
+                android:id="@+id/btnDeleteUserList"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_delete"
+                app:tint="@color/primary" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textUserListDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="24dp"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif"
+            tools:text="Esta es una descripción de prueba para la lista del usuario." />
 
         <View
             android:layout_width="match_parent"

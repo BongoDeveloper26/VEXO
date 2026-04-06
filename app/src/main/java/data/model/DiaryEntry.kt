@@ -10,5 +10,6 @@ data class DiaryEntry(
     val moviePosterPath: String?,
     val rating: Int,
     val date: String,
-    val movie: Movie? = null // Añadimos el objeto completo para poder abrir la ficha siempre
+    val review: String? = null,
+    val movie: Movie? = null
 ) : Parcelable

@@ -6,6 +6,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -34,41 +35,46 @@ class CategoryAdapter(
 
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
         val category = categories[position]
-        holder.textTitle.text = category.title
-        
-        // Estilo Premium: Títulos con fuente Black y Subtítulos dinámicos
+        val title = category.title
+        val titleLower = title.lowercase()
+
+        // Definimos si es una categoría "Destacada" (Trending, Top Rated o Now Playing)
+        val isFeatured = titleLower.contains("tendencia") || titleLower.contains("trending") || 
+                         titleLower.contains("valoradas") || titleLower.contains("top rated") || 
+                         titleLower.contains("cines") || titleLower.contains("now playing")
+
+        holder.textTitle.text = title
         holder.textTitle.typeface = Typeface.create("sans-serif-black", Typeface.NORMAL)
         
         holder.textSubtitle.visibility = View.VISIBLE
-        val title = category.title
         holder.textSubtitle.text = when {
-            position == 0 -> "TENDENCIAS GLOBALES"
-            position == 1 -> "LAS MEJOR VALORADAS"
-            position == 2 -> "PRÓXIMOS ESTRENOS"
-            position == 3 -> "LO MÁS RECIENTE"
-            title.contains("Acción", true) -> "ADRENALINA PURA"
-            title.contains("Comedia", true) -> "DIVERSIÓN ASEGURADA"
-            title.contains("Terror", true) -> "PESADILLAS REALES"
-            title.contains("Drama", true) -> "HISTORIAS QUE EMOCIONAN"
-            title.contains("Ciencia ficción", true) || title.contains("Sci-Fi", true) -> "MUNDOS INCREÍBLES"
-            title.contains("Animación", true) -> "ARTE Y MAGIA VISUAL"
-            title.contains("Aventura", true) -> "EPICIDAD SIN LÍMITES"
-            title.contains("Crimen", true) || title.contains("Suspense", true) || title.contains("Thriller", true) -> "TENSIÓN AL MÁXIMO"
-            title.contains("Documental", true) -> "CONOCE LA REALIDAD"
-            title.contains("Fantasía", true) -> "MAGIA EN CADA ESCENA"
-            title.contains("Romance", true) -> "HISTORIAS DE AMOR"
-            title.contains("Misterio", true) -> "DESCUBRE EL SECRETO"
-            title.contains("Familia", true) -> "PARA DISFRUTAR JUNTOS"
-            title.contains("Bélica", true) || title.contains("War", true) -> "CRÓNICAS DE GUERRA"
-            title.contains("Historia", true) -> "RELATOS DEL PASADO"
-            title.contains("Música", true) || title.contains("Music", true) -> "RITMO Y ESPECTÁCULO"
-            title.contains("Western", true) -> "DUELOS Y LEYENDAS"
+            titleLower.contains("tendencia") || titleLower.contains("trending") -> "TENDENCIAS GLOBALES"
+            titleLower.contains("valoradas") || titleLower.contains("top rated") -> "LAS MEJOR VALORADAS"
+            titleLower.contains("cines") || titleLower.contains("now playing") -> "EN CARTELERA"
+            titleLower.contains("acción", true) -> "ADRENALINA PURA"
+            titleLower.contains("comedia", true) -> "DIVERSIÓN ASEGURADA"
+            titleLower.contains("terror", true) -> "PESADILLAS REALES"
+            titleLower.contains("drama", true) -> "HISTORIAS QUE EMOCIONAN"
+            titleLower.contains("ciencia ficción", true) || titleLower.contains("sci-fi", true) -> "MUNDOS INCREÍBLES"
+            titleLower.contains("animación", true) -> "ARTE Y MAGIA VISUAL"
+            titleLower.contains("aventura", true) -> "EPICIDAD SIN LÍMITES"
+            titleLower.contains("crimen", true) || titleLower.contains("suspense", true) || titleLower.contains("thriller", true) -> "TENSIÓN AL MÁXIMO"
+            titleLower.contains("documental", true) -> "CONOCE LA REALIDAD"
+            titleLower.contains("fantasía", true) -> "MAGIA EN CADA ESCENA"
+            titleLower.contains("romance", true) -> "HISTORIAS DE AMOR"
+            titleLower.contains("misterio", true) -> "DESCUBRE EL SECRETO"
+            titleLower.contains("familia", true) -> "PARA DISFRUTAR JUNTOS"
+            titleLower.contains("bélica", true) || titleLower.contains("war", true) -> "CRÓNICAS DE GUERRA"
+            titleLower.contains("historia", true) -> "RELATOS DEL PASADO"
+            titleLower.contains("música", true) || titleLower.contains("music", true) -> "RITMO Y ESPECTÁCULO"
+            titleLower.contains("western", true) -> "DUELOS Y LEYENDAS"
             else -> "CONTENIDO SELECCIONADO PARA TI"
         }
 
-        // El nuevo botón "VER TODO" (layoutViewMore)
-        if (position in 0..3) {
+        if (isFeatured) {
             holder.layoutViewMore.visibility = View.GONE
+            holder.textTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f)
+            holder.textSubtitle.alpha = 1.0f
         } else {
             holder.layoutViewMore.visibility = View.VISIBLE
             holder.layoutViewMore.setOnClickListener {
@@ -77,22 +83,16 @@ class CategoryAdapter(
                 intent.putParcelableArrayListExtra("movies", ArrayList(category.movies))
                 holder.itemView.context.startActivity(intent)
             }
-        }
-
-        // Indicador lateral elegante
-        holder.indicator.visibility = View.VISIBLE
-
-        // Destacar visualmente las primeras filas
-        if (position in 0..3) {
-            holder.textTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f)
-            holder.textSubtitle.alpha = 1.0f
-        } else {
             holder.textTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
             holder.textSubtitle.alpha = 0.7f
         }
-        
-        val horizontalAdapter = if (position in 0..3) {
-            MovieFeaturedAdapter(category.movies, position).apply { onItemClick = onMovieClick }
+
+        holder.indicator.visibility = View.VISIBLE
+
+        val horizontalAdapter = if (isFeatured) {
+            // Pasamos 3 para ocultar el badge "TOP" en "En Cines"
+            val mockPos = if (titleLower.contains("cines") || titleLower.contains("now playing")) 3 else 0
+            MovieFeaturedAdapter(category.movies, mockPos).apply { onItemClick = onMovieClick }
         } else {
             MovieHorizontalAdapter(category.movies).apply { onItemClick = onMovieClick }
         }
@@ -145,7 +145,14 @@ class MovieFeaturedAdapter(
             .centerCrop()
             .into(holder.imgPoster)
 
-        holder.itemView.setOnClickListener { onItemClick?.invoke(movie) }
+        holder.itemView.setOnClickListener {
+            val animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.click_scale)
+            holder.itemView.startAnimation(animation)
+            
+            holder.itemView.postDelayed({
+                onItemClick?.invoke(movie)
+            }, 150)
+        }
     }
 
     override fun getItemCount(): Int = movies.size

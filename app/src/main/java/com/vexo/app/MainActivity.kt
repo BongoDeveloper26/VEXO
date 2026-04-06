@@ -22,20 +22,21 @@ class MainActivity : AppCompatActivity() {
     private fun setupBottomNavigation(savedInstanceState: Bundle?) {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
         
-        // Color de selección suave (Morado Vexo)
+        // Efecto visual moderno: indicador de selección suave (Morado Vexo con transparencia)
         bottomNav.itemActiveIndicatorColor = ColorStateList.valueOf(Color.parseColor("#267C3AED"))
+        bottomNav.itemIconTintList = ColorStateList.valueOf(Color.parseColor("#7C3AED"))
         
-        // Al empezar, cargamos el fragmento de Explorar
+        // Cargar el fragmento inicial
         if (savedInstanceState == null) {
             loadFragment(ExploreFragment())
         }
 
         bottomNav.setOnItemSelectedListener { item ->
-            val fragment = when (item.itemId) {
+            val fragment: Fragment? = when (item.itemId) {
                 R.id.nav_explore -> ExploreFragment()
                 R.id.nav_search -> SearchFragment()
                 R.id.nav_list -> ListFragment()
-                R.id.nav_news -> NewsFragment() // Incorporado en la Cuarta Actualización
+                R.id.nav_news -> NewsFragment()
                 R.id.nav_profile -> ProfileFragment()
                 else -> null
             }

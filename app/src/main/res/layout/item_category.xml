@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingVertical="16dp">
+    android:paddingTop="20dp"
+    android:paddingBottom="12dp">
 
     <!-- Cabecera de Categoría Premium -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -14,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="20dp"
-        android:layout_marginBottom="12dp">
+        android:layout_marginBottom="14dp">
 
         <!-- Barra lateral de acento moderno -->
         <View
@@ -99,5 +100,13 @@
         android:clipToPadding="false"
         android:paddingHorizontal="12dp"
         android:overScrollMode="never" />
+
+    <!-- SEPARACIÓN MODERNA Y ELEGANTE -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginHorizontal="24dp"
+        android:background="#15000000" />
 
 </LinearLayout>

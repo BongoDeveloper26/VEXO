@@ -5,90 +5,75 @@
     android:layout_height="match_parent"
     android:background="@color/background_app">
 
-    <!-- Buscador Fijo Arriba -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/searchCard"
+    <!-- Buscador Elegante y Plano -->
+    <LinearLayout
+        android:id="@+id/layoutSearchContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="8dp"
-        app:cardBackgroundColor="@color/surface_app"
-        app:strokeWidth="0dp"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="56dp"
+        android:background="@drawable/rounded_background_subtle"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="16dp">
+        <ImageButton
+            android:id="@+id/btnBackSearch"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_back_custom"
+            app:tint="@color/text_secondary" />
 
-            <ImageButton
-                android:id="@+id/btnBackSearch"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_back_custom"
-                app:tint="@color/primary"
-                android:visibility="gone" />
+        <EditText
+            android:id="@+id/editSearch"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:background="@android:color/transparent"
+            android:hint="Busca películas, series o actores"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_secondary"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif"
+            android:maxLines="1"
+            android:imeOptions="actionSearch"
+            android:inputType="textFilter" />
 
-            <EditText
-                android:id="@+id/editSearch"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:background="@android:color/transparent"
-                android:hint="busca peliculas y actores"
-                android:paddingHorizontal="12dp"
-                android:textColor="@color/text_primary"
-                android:textColorHint="@color/text_secondary"
-                android:textSize="17sp"
-                android:maxLines="1"
-                android:imeOptions="actionSearch"
-                android:inputType="textFilter" />
+        <ImageButton
+            android:id="@+id/btnClearSearch"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            app:tint="@color/text_secondary"
+            android:visibility="gone" />
+    </LinearLayout>
 
-            <ImageButton
-                android:id="@+id/btnClearSearch"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_menu_close_clear_cancel"
-                app:tint="@color/text_secondary"
-                android:visibility="gone" />
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <!-- Selector de Categoría (Pestañas) -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayoutSearch"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
         android:background="@android:color/transparent"
         app:tabIndicatorColor="@color/primary"
+        app:tabIndicatorHeight="2dp"
         app:tabSelectedTextColor="@color/primary"
         app:tabTextColor="@color/text_secondary"
-        app:tabTextAppearance="@style/TextAppearance.MaterialComponents.Button"
-        app:tabIndicatorHeight="3dp"
         app:tabRippleColor="@null"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/searchCard">
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="PELÍCULAS" />
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ACTORES" />
+        app:layout_constraintTop_toBottomOf="@id/layoutSearchContainer">
+        <com.google.android.material.tabs.TabItem android:text="PELÍCULAS" />
+        <com.google.android.material.tabs.TabItem android:text="ACTORES" />
     </com.google.android.material.tabs.TabLayout>
 
-    <!-- Contenedor Principal -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/mainScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@id/tabLayoutSearch"
         app:layout_constraintBottom_toBottomOf="parent">
 
@@ -97,7 +82,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Estado Inicial: Historial y Tendencias -->
             <LinearLayout
                 android:id="@+id/layoutInitialState"
                 android:layout_width="match_parent"
@@ -110,27 +94,54 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:visibility="gone"
-                    android:paddingTop="16dp">
-                    <RelativeLayout
+                    android:paddingTop="24dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingHorizontal="24dp">
+                        android:paddingHorizontal="20dp"
+                        android:layout_marginBottom="16dp">
+
+                        <!-- Barra de acento moderna -->
+                        <View
+                            android:id="@+id/accentBarHistory"
+                            android:layout_width="4dp"
+                            android:layout_height="16dp"
+                            android:background="@color/primary"
+                            app:layout_constraintTop_toTopOf="@id/titleHistory"
+                            app:layout_constraintBottom_toBottomOf="@id/titleHistory"
+                            app:layout_constraintStart_toStartOf="parent" />
+
                         <TextView
+                            android:id="@+id/titleHistory"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="RECIENTES"
-                            android:textColor="@color/primary"
+                            android:layout_marginStart="12dp"
+                            android:text="BÚSQUEDAS RECIENTES"
+                            android:textColor="@color/text_secondary"
                             android:textSize="12sp"
-                            android:textStyle="bold" />
+                            android:letterSpacing="0.15"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toEndOf="@id/accentBarHistory"
+                            app:layout_constraintTop_toTopOf="parent" />
+
                         <TextView
                             android:id="@+id/btnClearAllHistory"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:text="BORRAR TODO"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="11sp" />
-                    </RelativeLayout>
+                            android:text="LIMPIAR TODO"
+                            android:textColor="@color/primary"
+                            android:textSize="11sp"
+                            android:letterSpacing="0.05"
+                            android:textStyle="bold"
+                            android:paddingVertical="4dp"
+                            android:paddingHorizontal="8dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/titleHistory"
+                            app:layout_constraintBottom_toBottomOf="@id/titleHistory" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
                     <LinearLayout
                         android:id="@+id/containerHistoryItems"
                         android:layout_width="match_parent"
@@ -143,47 +154,67 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingTop="24dp"
+                    android:paddingTop="32dp"
                     android:paddingBottom="32dp">
-                    <TextView
-                        android:layout_width="wrap_content"
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="24dp"
-                        android:text="TENDENCIAS"
-                        android:textColor="@color/primary"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:paddingHorizontal="20dp"
+                        android:layout_marginBottom="16dp">
+
+                        <View
+                            android:id="@+id/accentBarTrends"
+                            android:layout_width="4dp"
+                            android:layout_height="16dp"
+                            android:background="@color/primary"
+                            app:layout_constraintTop_toTopOf="@id/titleTrends"
+                            app:layout_constraintBottom_toBottomOf="@id/titleTrends"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/titleTrends"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:text="TENDENCIAS DE HOY"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp"
+                            android:letterSpacing="0.15"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toEndOf="@id/accentBarTrends"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recyclerInitial"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
                         android:paddingHorizontal="16dp" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Resultados -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerSearchResults"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp"
-                android:paddingTop="16dp"
+                android:paddingTop="8dp"
                 android:visibility="gone"
                 android:nestedScrollingEnabled="false" />
 
             <LinearLayout
                 android:id="@+id/layoutNoResults"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="300dp"
                 android:gravity="center"
                 android:visibility="gone"
                 android:orientation="vertical">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No hay resultados"
-                    android:textColor="@color/text_secondary" />
+                    android:text="No encontramos resultados"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="16sp" />
             </LinearLayout>
 
         </LinearLayout>
@@ -191,8 +222,8 @@
 
     <ProgressBar
         android:id="@+id/progressSearch"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

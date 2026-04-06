@@ -44,7 +44,7 @@ class VexoListDetailActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btnBackUserListDetail).setOnClickListener { finish() }
 
         val recycler = findViewById<RecyclerView>(R.id.recyclerUserListMovies)
-        recycler.layoutManager = GridLayoutManager(this, 3)
+        recycler.layoutManager = GridLayoutManager(this, 4)
         
         movieAdapter = MovieAdapter(emptyList(), isGridView = true)
         movieAdapter.onItemClick = { movie ->

@@ -2,11 +2,10 @@ package ui.search
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -31,13 +30,12 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ui.detail.DetailActivity
-import ui.explore.MovieAdapter
 import ui.explore.MovieHorizontalAdapter
 
 class SearchActivity : AppCompatActivity() {
 
     private val repository = TMDBRepository.getInstance()
-    private lateinit var movieAdapter: MovieAdapter
+    private lateinit var movieSearchAdapter: MovieSearchAdapter
     private lateinit var personAdapter: PersonSearchAdapter
     private lateinit var trendingAdapter: MovieHorizontalAdapter
     
@@ -69,8 +67,8 @@ class SearchActivity : AppCompatActivity() {
 
         btnBack.setOnClickListener { finish() }
 
-        movieAdapter = MovieAdapter(emptyList())
-        movieAdapter.onItemClick = { movie ->
+        movieSearchAdapter = MovieSearchAdapter(emptyList())
+        movieSearchAdapter.onItemClick = { movie ->
             saveSearchQuery(movie.title)
             val intent = Intent(this, DetailActivity::class.java)
             intent.putExtra("movie", movie)
@@ -79,12 +77,12 @@ class SearchActivity : AppCompatActivity() {
         
         personAdapter = PersonSearchAdapter(emptyList())
         recyclerResults.layoutManager = LinearLayoutManager(this)
-        recyclerResults.adapter = movieAdapter
+        recyclerResults.adapter = movieSearchAdapter
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when (tab?.position) {
-                    0 -> recyclerResults.adapter = movieAdapter
+                    0 -> recyclerResults.adapter = movieSearchAdapter
                     1 -> recyclerResults.adapter = personAdapter
                 }
             }
@@ -143,41 +141,17 @@ class SearchActivity : AppCompatActivity() {
             showLoading(true)
             
             val queryLower = query.lowercase().trim()
-            
-            // CORREGIDO: Ahora buscamos en TODO (películas y series)
-            val results = repository.searchAll(query).filter { 
-                it.posterPath != null && (it.rating >= 4.0 || it.title.lowercase().trim() == queryLower)
-            }
-            movieAdapter.updateMovies(results)
+            val results = repository.searchAll(query).filter { it.posterPath != null }
+            movieSearchAdapter.updateMovies(results)
             
             val smartPeopleMap = mutableMapOf<Int, PersonDTO>()
-            
-            // Si hay películas/series famosas, buscamos a sus protagonistas (especial para Batman, etc)
-            if (results.isNotEmpty()) {
-                val deferredCredits = results.take(4).map { async { repository.getMovieCredits(it.id) } }
-                deferredCredits.awaitAll().forEach { credits ->
-                    credits?.cast?.forEach { cast ->
-                        if (cast.profile_path != null && cast.name.trim().contains(" ")) {
-                            val charLower = cast.character.lowercase()
-                            if (charLower.contains(queryLower)) {
-                                smartPeopleMap[cast.id] = PersonDTO(cast.id, cast.name, cast.profile_path, cast.character)
-                            }
-                        }
-                    }
-                }
-            }
-            
             repository.searchPeople(query).forEach { p ->
-                if (p.profile_path != null && p.name.trim().contains(" ")) {
-                    if (!smartPeopleMap.containsKey(p.id)) smartPeopleMap[p.id] = p
-                }
+                if (p.profile_path != null) smartPeopleMap[p.id] = p
             }
-            
-            val finalPeople = smartPeopleMap.values.toList().sortedByDescending { it.name.lowercase().startsWith(queryLower) }
-            personAdapter.updatePeople(finalPeople)
+            personAdapter.updatePeople(smartPeopleMap.values.toList())
             
             showLoading(false)
-            findViewById<View>(R.id.layoutNoResults).visibility = if (results.isEmpty() && finalPeople.isEmpty()) View.VISIBLE else View.GONE
+            findViewById<View>(R.id.layoutNoResults).visibility = if (results.isEmpty() && smartPeopleMap.isEmpty()) View.VISIBLE else View.GONE
         }
     }
 
@@ -220,59 +194,21 @@ class SearchActivity : AppCompatActivity() {
         layoutHistory.visibility = View.VISIBLE
         
         history.forEach { query ->
-            val row = LinearLayout(this).apply {
-                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                setPadding(48, 24, 24, 24)
-                background = getDrawable(android.R.drawable.list_selector_background)
-                isClickable = true
-                setOnClickListener {
-                    findViewById<EditText>(R.id.editSearch).setText(query)
-                    findViewById<EditText>(R.id.editSearch).setSelection(query.length)
-                    performSearch(query)
-                }
-            }
-
-            val icon = ImageView(this).apply {
-                layoutParams = LinearLayout.LayoutParams(36, 36)
-                setImageResource(android.R.drawable.ic_menu_recent_history)
-                imageTintList = ColorStateList.valueOf(getColor(R.color.text_secondary))
-                alpha = 0.5f
-            }
-
-            val text = TextView(this).apply {
-                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-                setPadding(32, 0, 0, 0)
-                this.text = query
-                setTextColor(getColor(R.color.text_primary))
-                textSize = 15f
-            }
-
-            val deleteBtn = ImageButton(this).apply {
-                layoutParams = LinearLayout.LayoutParams(80, 80)
-                setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
-                background = null
-                imageTintList = ColorStateList.valueOf(getColor(R.color.text_secondary))
-                alpha = 0.5f
-                setOnClickListener { deleteSingleHistoryItem(query) }
-            }
-
-            row.addView(icon)
-            row.addView(text)
-            row.addView(deleteBtn)
-            container.addView(row)
+            val itemView = LayoutInflater.from(this).inflate(R.layout.item_search_history, container, false)
             
-            val divider = View(this).apply {
-                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1)
-                val params = layoutParams as LinearLayout.LayoutParams
-                params.marginStart = 112
-                params.marginEnd = 48
-                layoutParams = params
-                setBackgroundColor(getColor(R.color.text_secondary))
-                alpha = 0.1f
+            itemView.findViewById<TextView>(R.id.textHistoryQuery).text = query
+            
+            itemView.setOnClickListener {
+                findViewById<EditText>(R.id.editSearch).setText(query)
+                findViewById<EditText>(R.id.editSearch).setSelection(query.length)
+                performSearch(query)
             }
-            container.addView(divider)
+            
+            itemView.findViewById<ImageButton>(R.id.btnDeleteHistory).setOnClickListener {
+                deleteSingleHistoryItem(query)
+            }
+            
+            container.addView(itemView)
         }
     }
 

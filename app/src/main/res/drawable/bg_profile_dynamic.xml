@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Capa 1: Fondo Lavanda Sedoso Base -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#EBE9FF" />
+        </shape>
+    </item>
+
+    <!-- Capa 2: Mancha de luz Púrpura Eléctrica (Arriba Izquierda) -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="600dp"
+                android:startColor="#1A7C3AED"
+                android:endColor="@android:color/transparent"
+                android:centerX="0%"
+                android:centerY="20%" />
+        </shape>
+    </item>
+
+    <!-- Capa 3: Reflejo de luz Rosa/Violeta (Centro Derecha) -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="500dp"
+                android:startColor="#12C026FF"
+                android:endColor="@android:color/transparent"
+                android:centerX="100%"
+                android:centerY="50%" />
+        </shape>
+    </item>
+
+    <!-- Capa 4: Bruma de luz Púrpura Suave (Abajo Centro) -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="700dp"
+                android:startColor="#107C3AED"
+                android:endColor="@android:color/transparent"
+                android:centerX="50%"
+                android:centerY="90%" />
+        </shape>
+    </item>
+</layer-list>

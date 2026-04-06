@@ -28,7 +28,7 @@
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnDeleteList"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:text="Películas de Acción" />
 
         <TextView
@@ -106,16 +106,6 @@
                 android:visibility="gone" />
 
         </LinearLayout>
-
-        <ImageButton
-            android:id="@+id/btnDeleteList"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_delete"
-            app:tint="@color/text_secondary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

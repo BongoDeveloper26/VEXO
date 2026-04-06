@@ -1,6 +1,8 @@
 package data.repository
 
+import android.os.Parcelable
 import data.model.Movie
+import kotlinx.parcelize.Parcelize
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -20,6 +22,9 @@ interface TMDBApi {
 
     @GET("discover/movie")
     suspend fun getMoviesByGenre(@Query("api_key") apiKey: String, @Query("with_genres") genreId: String, @Query("page") page: Int = 1, @Query("language") language: String, @Query("sort_by") sortBy: String = "vote_average.desc", @Query("vote_count.gte") voteCount: Int = 500): TMDBResponse
+
+    @GET("discover/tv")
+    suspend fun getTVByGenre(@Query("api_key") apiKey: String, @Query("with_genres") genreId: String, @Query("page") page: Int = 1, @Query("language") language: String, @Query("sort_by") sortBy: String = "vote_average.desc", @Query("vote_count.gte") voteCount: Int = 100): TMDBResponse
 
     @GET("movie/{movie_id}")
     suspend fun getMovieDetails(@Path("movie_id") movieId: Int, @Query("api_key") apiKey: String, @Query("language") language: String, @Query("append_to_response") append: String = "belongs_to_collection,release_dates,watch/providers"): MovieDetailDTO
@@ -51,6 +56,9 @@ interface TMDBApi {
 
     @GET("tv/{tv_id}/videos")
     suspend fun getTVVideos(@Path("tv_id") tvId: Int, @Query("api_key") apiKey: String, @Query("language") language: String): MovieVideosDTO
+
+    @GET("tv/{tv_id}/season/{season_number}")
+    suspend fun getTVSeasonDetails(@Path("tv_id") tvId: Int, @Path("season_number") seasonNumber: Int, @Query("api_key") apiKey: String, @Query("language") language: String): TVSeasonDetailDTO
 
     // --- IMÁGENES ---
     @GET("movie/{movie_id}/images")
@@ -118,6 +126,25 @@ data class TVDetailDTO(
     @com.google.gson.annotations.SerializedName("watch/providers") val watchProviders: WatchProvidersResponse?
 )
 
+data class TVSeasonDetailDTO(
+    val id: String,
+    val name: String,
+    val overview: String,
+    val poster_path: String?,
+    val season_number: Int,
+    val episodes: List<TVEpisodeDTO>
+)
+
+data class TVEpisodeDTO(
+    val id: Int,
+    val name: String,
+    val overview: String,
+    val still_path: String?,
+    val episode_number: Int,
+    val vote_average: Double,
+    val runtime: Int?
+)
+
 data class TVContentRatingsResponse(val results: List<TVContentRating>)
 data class TVContentRating(val iso_3166_1: String, val rating: String)
 data class TVExternalIds(val imdb_id: String?)
@@ -132,8 +159,15 @@ data class ReleaseDatesResponse(val results: List<CountryReleaseDates>)
 data class CountryReleaseDates(val iso_3166_1: String, val release_dates: List<ReleaseDateItem>)
 data class ReleaseDateItem(val certification: String)
 data class WatchProvidersResponse(val results: Map<String, WatchCountryProviders>)
-data class WatchCountryProviders(val flatrate: List<WatchProviderItem>? = null)
-data class WatchProviderItem(val provider_id: Int, val provider_name: String, val logo_path: String)
+data class WatchCountryProviders(
+    val flatrate: List<WatchProviderItem>? = null,
+    val buy: List<WatchProviderItem>? = null,
+    val rent: List<WatchProviderItem>? = null
+)
+
+@Parcelize
+data class WatchProviderItem(val provider_id: Int, val provider_name: String, val logo_path: String) : Parcelable
+
 data class MovieImagesDTO(val posters: List<ImageDTO>, val backdrops: List<ImageDTO>)
 data class ImageDTO(val file_path: String, val aspect_ratio: Double)
 data class ProductionCompanyDTO(val id: Int, val name: String, val logo_path: String?, val origin_country: String)
@@ -166,6 +200,7 @@ class TMDBRepository {
     suspend fun searchAll(query: String): List<Movie> = try { api.searchMulti(apiKey, query, currentLanguage).results.filter { it.media_type == "movie" || it.media_type == "tv" }.map { it.toMovie() } } catch (e: Exception) { emptyList() }
     suspend fun searchPeople(query: String): List<PersonDTO> = try { api.searchPeople(apiKey, query, currentLanguage).results } catch (e: Exception) { emptyList() }
     suspend fun getMoviesByGenre(genreIds: List<Int>, page: Int = 1, sortBy: String = "vote_average.desc", voteCountGte: Int = 500): List<Movie> = try { api.getMoviesByGenre(apiKey, genreIds.joinToString(","), page, currentLanguage, sortBy, voteCountGte).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
+    suspend fun getTVByGenre(genreIds: List<Int>, page: Int = 1, sortBy: String = "vote_average.desc", voteCountGte: Int = 100): List<Movie> = try { api.getTVByGenre(apiKey, genreIds.joinToString(","), page, currentLanguage, sortBy, voteCountGte).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
     suspend fun getMovieDetails(movieId: Int): MovieDetailDTO? = try { api.getMovieDetails(movieId, apiKey, currentLanguage) } catch (e: Exception) { null }
     suspend fun getTVDetails(tvId: Int): TVDetailDTO? = try { api.getTVDetails(tvId, apiKey, currentLanguage) } catch (e: Exception) { null }
     suspend fun getMovieRecommendations(movieId: Int): List<Movie> = try { api.getMovieRecommendations(movieId, apiKey, currentLanguage).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
@@ -194,6 +229,10 @@ class TMDBRepository {
     suspend fun getTVTrailers(tvId: Int): List<VideoDTO> = try { 
         api.getTVVideos(tvId, apiKey, currentLanguage).results.filter { it.site.lowercase() == "youtube" && it.type.lowercase() == "trailer" }
     } catch (e: Exception) { emptyList() }
+
+    suspend fun getTVSeasonDetails(tvId: Int, seasonNumber: Int): TVSeasonDetailDTO? = try {
+        api.getTVSeasonDetails(tvId, seasonNumber, apiKey, currentLanguage)
+    } catch (e: Exception) { null }
 
     companion object {
         private var instance: TMDBRepository? = null

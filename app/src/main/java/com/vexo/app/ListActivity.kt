@@ -69,7 +69,7 @@ class ListActivity : AppCompatActivity() {
         findViewById<View>(R.id.btnCreateList).setOnClickListener { showCreateListDialog() }
         val recycler = findViewById<RecyclerView>(R.id.recyclerUserLists)
         recycler.layoutManager = LinearLayoutManager(this)
-        listAdapter = UserListAdapter(emptyList(), { openListDetail(it) }, { showDeleteConfirmDialog(it) })
+        listAdapter = UserListAdapter(emptyList()) { openListDetail(it) }
         recycler.adapter = listAdapter
     }
 
@@ -129,25 +129,16 @@ class ListActivity : AppCompatActivity() {
                 if (name.isNotEmpty()) { watchlistRepository.createUserList(name); refreshUserListsData() }
             }.setNegativeButton("Cancelar", null).show()
     }
-
-    private fun showDeleteConfirmDialog(userList: UserList) {
-        AlertDialog.Builder(this).setTitle("¿Borrar?").setMessage(userList.name)
-            .setPositiveButton("Eliminar") { _, _ ->
-                watchlistRepository.deleteUserList(userList.id); refreshUserListsData()
-            }.setNegativeButton("No", null).show()
-    }
 }
 
 class UserListAdapter(
     private var lists: List<UserList>,
-    private val onListClick: (UserList) -> Unit,
-    private val onDeleteClick: (UserList) -> Unit
+    private val onListClick: (UserList) -> Unit
 ) : RecyclerView.Adapter<UserListAdapter.ViewHolder>() {
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val name: TextView = v.findViewById(R.id.textListName)
         val count: TextView = v.findViewById(R.id.textMovieCount)
-        val btnDelete: View = v.findViewById(R.id.btnDeleteList)
         val img1: ImageView = v.findViewById(R.id.imgPreview1)
         val img2: ImageView = v.findViewById(R.id.imgPreview2)
         val img3: ImageView = v.findViewById(R.id.imgPreview3)
@@ -178,7 +169,6 @@ class UserListAdapter(
         }
         if (l.movies.size > 4) { h.textMore.visibility = View.VISIBLE; h.textMore.text = "+${l.movies.size-4}" }
         h.itemView.setOnClickListener { onListClick(l) }
-        h.btnDelete.setOnClickListener { onDeleteClick(l) }
     }
 
     override fun getItemCount() = lists.size

@@ -2,7 +2,9 @@ package com.vexo.app
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +15,7 @@ import data.model.Movie
 import data.repository.WatchlistRepository
 import ui.detail.DetailActivity
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 
 class DiaryActivity : AppCompatActivity() {
@@ -34,6 +37,9 @@ class DiaryActivity : AppCompatActivity() {
 
     private fun loadDiary() {
         val diaryEntries = watchlistRepository.getDiary()
+        
+        // Calcular estadísticas
+        updateStats(diaryEntries)
 
         val groupedItems = mutableListOf<DiaryListItem>()
         var lastMonth = ""
@@ -51,7 +57,6 @@ class DiaryActivity : AppCompatActivity() {
         recycler.layoutManager = LinearLayoutManager(this)
         
         recycler.adapter = DiaryGroupedAdapter(groupedItems) { entry ->
-            // CORRECCIÓN: Usamos el objeto movie guardado en la entrada o lo buscamos como backup
             val movieToOpen = entry.movie ?: watchlistRepository.getAllRatedMovies().find { it.id == entry.movieId }
             
             if (movieToOpen != null) {
@@ -62,6 +67,28 @@ class DiaryActivity : AppCompatActivity() {
                 Toast.makeText(this, "No se pudo abrir la ficha de la película", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun updateStats(entries: List<DiaryEntry>) {
+        val textTotal = findViewById<TextView>(R.id.textTotalCount)
+        val textMonth = findViewById<TextView>(R.id.textMonthCount)
+        val textAvg = findViewById<TextView>(R.id.textAvgRating)
+
+        // Total
+        textTotal.text = entries.size.toString()
+
+        // Media
+        if (entries.isNotEmpty()) {
+            val avg = entries.map { it.rating }.average()
+            textAvg.text = String.format(Locale.getDefault(), "%.1f", avg)
+        } else {
+            textAvg.text = "0.0"
+        }
+
+        // Este mes
+        val currentMonthYear = SimpleDateFormat("MM/yyyy", Locale.getDefault()).format(Calendar.getInstance().time)
+        val countThisMonth = entries.count { it.date.contains(currentMonthYear) }
+        textMonth.text = countThisMonth.toString()
     }
 
     private fun formatMonth(date: String): String {

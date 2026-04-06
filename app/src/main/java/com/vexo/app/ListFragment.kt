@@ -47,8 +47,7 @@ class ListFragment : Fragment() {
 
         val recycler = view.findViewById<RecyclerView>(R.id.recyclerUserLists)
         listAdapter = UserListAdapter(emptyList(), 
-            onListClick = { userList -> openListDetail(userList) },
-            onDeleteClick = { userList -> showDeleteConfirmDialog(userList) }
+            onListClick = { userList -> openListDetail(userList) }
         )
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = listAdapter
@@ -126,13 +125,15 @@ class ListFragment : Fragment() {
         val view = layoutInflater.inflate(R.layout.dialog_create_list, null)
         
         val editName = view.findViewById<EditText>(R.id.editListName)
+        val editDescription = view.findViewById<EditText>(R.id.editListDescription)
         val btnCreate = view.findViewById<MaterialButton>(R.id.btnConfirmCreate)
         val btnCancel = view.findViewById<MaterialButton>(R.id.btnCancelCreate)
 
         btnCreate.setOnClickListener {
             val name = editName.text.toString().trim()
+            val description = editDescription.text.toString().trim()
             if (name.isNotEmpty()) {
-                watchlistRepository.createUserList(name)
+                watchlistRepository.createUserList(name, if (description.isEmpty()) null else description)
                 refreshLists()
                 bottomSheet.dismiss()
             } else {
@@ -158,17 +159,5 @@ class ListFragment : Fragment() {
         intent.putExtra("listId", userList.id)
         intent.putExtra("listName", userList.name)
         startActivity(intent)
-    }
-
-    private fun showDeleteConfirmDialog(userList: UserList) {
-        AlertDialog.Builder(requireContext())
-            .setTitle("¿Eliminar lista?")
-            .setMessage("Se borrará la colección '${userList.name}' y todas las pelis que contiene.")
-            .setPositiveButton("Eliminar") { _, _ ->
-                watchlistRepository.deleteUserList(userList.id)
-                refreshLists()
-            }
-            .setNegativeButton("Cancelar", null)
-            .show()
     }
 }

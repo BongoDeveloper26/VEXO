@@ -3,6 +3,7 @@ package com.vexo.app
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
@@ -36,7 +37,6 @@ class RecentActivityAdapter(
         val movie = movies[position]
         val userRating = watchlistRepository.getMovieRating(movie.id)
 
-        // Corregido: Aseguramos la URL completa de la imagen de TMDB
         val fullPosterPath = if (!movie.posterPath.isNullOrEmpty() && !movie.posterPath.startsWith("http")) {
             "https://image.tmdb.org/t/p/w500${movie.posterPath}"
         } else {
@@ -60,7 +60,14 @@ class RecentActivityAdapter(
             }
         }
 
-        holder.itemView.setOnClickListener { onMovieClick(movie) }
+        holder.itemView.setOnClickListener {
+            val animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.click_scale)
+            holder.itemView.startAnimation(animation)
+            
+            holder.itemView.postDelayed({
+                onMovieClick(movie)
+            }, 150)
+        }
     }
 
     override fun getItemCount() = movies.size

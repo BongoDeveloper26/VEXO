@@ -1,14 +1,22 @@
 package com.vexo.app
 
+import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.text.InputFilter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import data.model.Movie
 import data.repository.WatchlistRepository
 import ui.detail.DetailActivity
@@ -27,6 +36,21 @@ class ProfileFragment : Fragment() {
     private lateinit var cardSlots: List<MaterialCardView>
     private lateinit var activityAdapter: RecentActivityAdapter
     private lateinit var diaryAdapter: DiaryAdapter
+    private lateinit var imgProfile: ImageView
+    private lateinit var textUserName: TextView
+
+    private val pickImageLauncher: ActivityResultLauncher<String> =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let {
+                try {
+                    requireContext().contentResolver.takePersistableUriPermission(
+                        it, Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                } catch (e: Exception) {}
+                watchlistRepository.setProfileImageUri(it.toString())
+                loadProfileImage()
+            }
+        }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
@@ -34,6 +58,8 @@ class ProfileFragment : Fragment() {
         watchlistRepository = WatchlistRepository(requireContext())
 
         setupUI(view)
+        loadProfileImage()
+        loadUserName()
         loadVitrina()
         loadRecentActivity(view)
         loadDiary(view)
@@ -44,6 +70,8 @@ class ProfileFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        loadProfileImage()
+        loadUserName()
         loadVitrina()
         view?.let {
             loadRecentActivity(it)
@@ -53,6 +81,19 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setupUI(view: View) {
+        imgProfile = view.findViewById(R.id.imgProfile)
+        textUserName = view.findViewById(R.id.textUserNameProfile)
+        val cardProfileImage: MaterialCardView = view.findViewById(R.id.cardProfileImage)
+        val btnEditName: ImageButton = view.findViewById(R.id.btnEditName)
+        
+        cardProfileImage.setOnClickListener {
+            pickImageLauncher.launch("image/*")
+        }
+
+        btnEditName.setOnClickListener {
+            showEditNameDialog()
+        }
+
         val btnLogout: Button = view.findViewById(R.id.btnLogout)
         btnLogout.setOnClickListener {
             Toast.makeText(requireContext(), "Cerrando sesión...", Toast.LENGTH_SHORT).show()
@@ -98,6 +139,58 @@ class ProfileFragment : Fragment() {
         recyclerDiary.isNestedScrollingEnabled = false
     }
 
+    private fun loadProfileImage() {
+        val uriString = watchlistRepository.getProfileImageUri()
+        if (uriString != null) {
+            imgProfile.setPadding(0, 0, 0, 0)
+            imgProfile.imageTintList = null
+            imgProfile.alpha = 1.0f
+            Glide.with(this)
+                .load(Uri.parse(uriString))
+                .centerCrop()
+                .placeholder(R.drawable.ic_nav_profile)
+                .into(imgProfile)
+        }
+    }
+
+    private fun loadUserName() {
+        textUserName.text = watchlistRepository.getUserName()
+    }
+
+    private fun showEditNameDialog() {
+        val builder = MaterialAlertDialogBuilder(requireContext())
+        builder.setTitle("Cambiar nombre")
+        
+        val input = EditText(requireContext())
+        input.filters = arrayOf(InputFilter.LengthFilter(15))
+        input.setText(watchlistRepository.getUserName())
+        input.setSelection(input.text.length)
+        input.isSingleLine = true
+        
+        val lp = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        val container = LinearLayout(requireContext())
+        val margin = (24 * resources.displayMetrics.density).toInt()
+        lp.setMargins(margin, 0, margin, 0)
+        input.layoutParams = lp
+        container.addView(input)
+        
+        builder.setView(container)
+        
+        builder.setPositiveButton("Guardar") { _, _ ->
+            val newName = input.text.toString().trim()
+            if (newName.isNotEmpty()) {
+                watchlistRepository.setUserName(newName)
+                loadUserName()
+                Toast.makeText(requireContext(), "Nombre actualizado", Toast.LENGTH_SHORT).show()
+            }
+        }
+        builder.setNegativeButton("Cancelar", null)
+        builder.show()
+    }
+
     private fun updateStats(view: View) {
         val stats = watchlistRepository.getStats()
         view.findViewById<TextView>(R.id.textMoviesCount).text = stats.totalMovies.toString()
@@ -129,7 +222,6 @@ class ProfileFragment : Fragment() {
             layoutDiary.visibility = View.VISIBLE
 
             diaryAdapter = DiaryAdapter(diaryEntries) { entry ->
-                // CORRECCIÓN: Usamos el objeto movie que ya está dentro del entry
                 val movieToOpen = entry.movie ?: watchlistRepository.getAllRatedMovies().find { it.id == entry.movieId }
                 
                 if (movieToOpen != null) {
@@ -177,11 +269,13 @@ class ProfileFragment : Fragment() {
             val imgView = imgSlots[index]
             if (movie != null) {
                 imgView.setPadding(0, 0, 0, 0)
-                Glide.with(this).load(movie.posterPath).centerCrop().into(imgView)
+                imgView.alpha = 1.0f
                 imgView.imageTintList = null
+                Glide.with(this).load(movie.posterPath).centerCrop().into(imgView)
             } else {
-                imgView.setImageResource(android.R.drawable.ic_input_add)
-                val padding = (40 * resources.displayMetrics.density).toInt()
+                imgView.setImageResource(R.drawable.ic_add)
+                imgView.alpha = 0.4f
+                val padding = (32 * resources.displayMetrics.density).toInt()
                 imgView.setPadding(padding, padding, padding, padding)
                 imgView.imageTintList = android.content.res.ColorStateList.valueOf(requireContext().getColor(R.color.primary))
             }
@@ -191,7 +285,7 @@ class ProfileFragment : Fragment() {
     private fun showMoviePickerDialog(slotIndex: Int) {
         val favorites = watchlistRepository.getUserLists().find { it.name == WatchlistRepository.FAVORITES_LIST_NAME }?.movies ?: emptyList()
         if (favorites.isEmpty()) {
-            Toast.makeText(requireContext(), "Añade primero alguna película a 'Mis Favoritos' para ponerla en tu vitrina", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "Añade películas a favoritos primero", Toast.LENGTH_SHORT).show()
             return
         }
         val options = favorites.map { it.title }.toTypedArray()

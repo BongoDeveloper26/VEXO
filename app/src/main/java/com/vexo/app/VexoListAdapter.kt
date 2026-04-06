@@ -25,7 +25,6 @@ class VexoListAdapter(
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val name: TextView = view.findViewById(R.id.textListName)
         val count: TextView = view.findViewById(R.id.textMovieCount)
-        val btnDelete: View = view.findViewById(R.id.btnDeleteList)
         val img1: ImageView = view.findViewById(R.id.imgPreview1)
         val img2: ImageView = view.findViewById(R.id.imgPreview2)
         val img3: ImageView = view.findViewById(R.id.imgPreview3)
@@ -42,14 +41,13 @@ class VexoListAdapter(
         val list = lists[position]
         holder.name.text = list.name
         holder.count.text = "COLECCIÓN OFICIAL • 250 ELEMENTOS"
-        holder.btnDelete.visibility = View.GONE
         
         val imgs = listOf(holder.img1, holder.img2, holder.img3, holder.img4)
         
         // Reset inicial para evitar huecos blancos
         imgs.forEach { 
             it.visibility = View.GONE
-            it.setPadding(0,0,0,0)
+            it.setPadding(0, 0, 0, 0)
             it.imageTintList = null 
         }
         holder.textMore.visibility = View.GONE

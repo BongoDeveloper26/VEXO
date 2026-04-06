@@ -2,7 +2,6 @@ package ui.explore
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
@@ -12,8 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.tabs.TabLayout
 import com.vexo.app.R
-import data.model.Category
 import data.repository.TMDBRepository
 import ui.detail.DetailActivity
 import ui.search.SearchActivity
@@ -22,15 +21,20 @@ class ExploreActivity : AppCompatActivity() {
 
     private val viewModel: ExploreViewModel by viewModels()
     private val repository = TMDBRepository.getInstance()
-    private lateinit var recyclerCategories: RecyclerView
-    private lateinit var categoryAdapter: CategoryAdapter
+    
+    private lateinit var recyclerMovies: RecyclerView
+    private lateinit var recyclerTVShows: RecyclerView
+    private lateinit var movieAdapter: CategoryAdapter
+    private lateinit var tvAdapter: CategoryAdapter
+    private lateinit var tabLayout: TabLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_explore)
 
         setupHeader()
-        setupRecyclerView()
+        setupTabs()
+        setupRecyclerViews()
         setupFab()
         observeViewModel()
 
@@ -47,43 +51,55 @@ class ExploreActivity : AppCompatActivity() {
         }
     }
 
-    private fun showSettingsMenu() {
-        val bottomSheet = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
-        val view = layoutInflater.inflate(R.layout.layout_explore_menu, null)
+    private fun setupTabs() {
+        tabLayout = findViewById(R.id.tabLayoutExplore)
         val isSpanish = repository.getLanguage() == "es-ES"
+        
+        tabLayout.getTabAt(0)?.text = if (isSpanish) "PELÍCULAS" else "MOVIES"
+        tabLayout.getTabAt(1)?.text = if (isSpanish) "SERIES" else "SERIES"
 
-        // Configurar textos según idioma en el menú
-        view.findViewById<TextView>(R.id.textOptionLanguage).text = if (isSpanish) "Cambiar Idioma" else "Change Language"
-        view.findViewById<TextView>(R.id.textOptionAbout).text = if (isSpanish) "Quiénes Somos" else "About Us"
-
-        // Opción Idioma
-        view.findViewById<View>(R.id.optionLanguage).setOnClickListener {
-            bottomSheet.dismiss()
-            showLanguageDialog()
-        }
-
-        // Opción Quiénes Somos
-        view.findViewById<View>(R.id.optionAbout).setOnClickListener {
-            bottomSheet.dismiss()
-            val intent = Intent(this, AboutActivity::class.java)
-            startActivity(intent)
-        }
-
-        bottomSheet.setContentView(view)
-        bottomSheet.show()
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                when (tab?.position) {
+                    0 -> {
+                        recyclerMovies.visibility = View.VISIBLE
+                        recyclerTVShows.visibility = View.GONE
+                    }
+                    1 -> {
+                        recyclerMovies.visibility = View.GONE
+                        recyclerTVShows.visibility = View.VISIBLE
+                    }
+                }
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
     }
 
-    private fun setupRecyclerView() {
-        recyclerCategories = findViewById(R.id.recyclerCategories)
-        categoryAdapter = CategoryAdapter(emptyList()) { movie ->
+    private fun setupRecyclerViews() {
+        recyclerMovies = findViewById(R.id.recyclerMovies)
+        recyclerTVShows = findViewById(R.id.recyclerTVShows)
+
+        movieAdapter = CategoryAdapter(emptyList()) { movie ->
             val intent = Intent(this, DetailActivity::class.java)
             intent.putExtra("movie", movie)
             startActivity(intent)
         }
-        
-        recyclerCategories.apply {
+
+        tvAdapter = CategoryAdapter(emptyList()) { movie ->
+            val intent = Intent(this, DetailActivity::class.java)
+            intent.putExtra("movie", movie)
+            startActivity(intent)
+        }
+
+        recyclerMovies.apply {
             layoutManager = LinearLayoutManager(this@ExploreActivity)
-            adapter = categoryAdapter
+            adapter = movieAdapter
+        }
+
+        recyclerTVShows.apply {
+            layoutManager = LinearLayoutManager(this@ExploreActivity)
+            adapter = tvAdapter
         }
     }
 
@@ -94,9 +110,39 @@ class ExploreActivity : AppCompatActivity() {
     }
 
     private fun observeViewModel() {
-        viewModel.categories.observe(this) { categories ->
-            categoryAdapter.updateCategories(categories)
+        viewModel.movieCategories.observe(this) { categories ->
+            movieAdapter.updateCategories(categories)
         }
+        viewModel.tvCategories.observe(this) { categories ->
+            tvAdapter.updateCategories(categories)
+        }
+    }
+
+    private fun showSettingsMenu() {
+        val bottomSheet = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+        val view = layoutInflater.inflate(R.layout.layout_explore_menu, null)
+        val isSpanish = repository.getLanguage() == "es-ES"
+
+        view.findViewById<TextView>(R.id.textOptionLanguage).text = if (isSpanish) "Cambiar Idioma" else "Change Language"
+        view.findViewById<TextView>(R.id.textOptionAbout).text = if (isSpanish) "Quiénes Somos" else "About Us"
+
+        view.findViewById<View>(R.id.optionLanguage).setOnClickListener {
+            bottomSheet.dismiss()
+            showLanguageDialog()
+        }
+
+        view.findViewById<View>(R.id.optionAbout).setOnClickListener {
+            bottomSheet.dismiss()
+            // Asumimos que AboutActivity existe en el paquete ui.explore o similar
+            try {
+                startActivity(Intent(this, AboutActivity::class.java))
+            } catch (e: Exception) {
+                // Si no existe, no hacemos nada para evitar crashes
+            }
+        }
+
+        bottomSheet.setContentView(view)
+        bottomSheet.show()
     }
 
     private fun showLanguageDialog() {

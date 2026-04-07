@@ -2,12 +2,12 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardCornerRadius="32dp"
     app:cardElevation="0dp"
-    app:cardBackgroundColor="@color/background_app"
-    app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.MediumComponent">
+    app:cardBackgroundColor="@color/background_app">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,19 +19,69 @@
             android:layout_width="40dp"
             android:layout_height="4dp"
             android:layout_gravity="center"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="20dp"
             android:background="#33FFFFFF" />
 
+        <!-- CABECERA DE VALORACIÓN COMPLETA -->
         <TextView
-            android:id="@+id/menuTitle"
+            android:id="@+id/menuMovieName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Opciones"
             android:textColor="@color/text_primary"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="24dp" />
+            android:textSize="20sp"
+            android:fontFamily="sans-serif-black"
+            android:textAlignment="center"
+            tools:text="Nombre de la Película" />
 
+        <TextView
+            android:id="@+id/menuRatingDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            android:alpha="0.7"
+            tools:text="15 de Mayo, 2024" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+                <ImageView android:id="@+id/menuStar1" android:layout_width="42dp" android:layout_height="42dp" android:src="@drawable/ic_star_border" android:layout_marginEnd="6dp" />
+                <ImageView android:id="@+id/menuStar2" android:layout_width="42dp" android:layout_height="42dp" android:src="@drawable/ic_star_border" android:layout_marginEnd="6dp" />
+                <ImageView android:id="@+id/menuStar3" android:layout_width="42dp" android:layout_height="42dp" android:src="@drawable/ic_star_border" android:layout_marginEnd="6dp" />
+                <ImageView android:id="@+id/menuStar4" android:layout_width="42dp" android:layout_height="42dp" android:src="@drawable/ic_star_border" android:layout_marginEnd="6dp" />
+                <ImageView android:id="@+id/menuStar5" android:layout_width="42dp" android:layout_height="42dp" android:src="@drawable/ic_star_border" />
+            </LinearLayout>
+
+            <View android:layout_width="2dp" android:layout_height="30dp" android:background="#15FFFFFF" android:layout_marginHorizontal="20dp" />
+
+            <ImageView
+                android:id="@+id/imgMenuHeartQuick"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:src="@drawable/ic_heart_outline"
+                app:tint="@color/text_secondary" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1.5dp"
+            android:background="@drawable/divider_elegant_gradient"
+            android:layout_marginBottom="12dp"
+            android:layout_marginHorizontal="-24dp" />
+
+        <!-- RESTO DE OPCIONES -->
         <LinearLayout
             android:id="@+id/optionAddList"
             android:layout_width="match_parent"
@@ -40,7 +90,7 @@
             android:clickable="true"
             android:focusable="true"
             android:gravity="center_vertical"
-            android:paddingVertical="16dp">
+            android:paddingVertical="14dp">
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
@@ -63,12 +113,12 @@
             android:clickable="true"
             android:focusable="true"
             android:gravity="center_vertical"
-            android:paddingVertical="16dp">
+            android:paddingVertical="14dp">
             <ImageView
                 android:id="@+id/imgMenuVitrina"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_slideshow"
+                android:src="@drawable/ic_vitrina"
                 app:tint="@color/primary" />
             <TextView
                 android:id="@+id/textMenuVitrina"
@@ -81,6 +131,31 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/optionMarkWatched"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:paddingVertical="14dp">
+            <ImageView
+                android:id="@+id/imgMenuWatched"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@android:drawable/ic_menu_view"
+                app:tint="@color/primary" />
+            <TextView
+                android:id="@+id/textMenuWatched"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="Marcar como vista"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/optionViewPoster"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -88,7 +163,7 @@
             android:clickable="true"
             android:focusable="true"
             android:gravity="center_vertical"
-            android:paddingVertical="16dp">
+            android:paddingVertical="14dp">
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
@@ -98,80 +173,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:text="Ver póster"
-                android:textColor="@color/text_primary"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/optionMarkWatched"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center_vertical"
-            android:paddingVertical="16dp">
-            <ImageView
-                android:id="@+id/imgMenuWatched"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_view"
-                app:tint="@color/primary" />
-            <TextView
-                android:text="Marcar como vista"
-                android:id="@+id/textMenuWatched"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:textColor="@color/text_primary"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/optionFavorite"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center_vertical"
-            android:paddingVertical="16dp">
-            <ImageView
-                android:id="@+id/imgMenuHeart"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_heart_outline"
-                app:tint="@color/primary" />
-            <TextView
-                android:id="@+id/textMenuFavorite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:text="Dar corazón"
-                android:textColor="@color/text_primary"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/optionRate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center_vertical"
-            android:paddingVertical="16dp">
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@android:drawable/btn_star_big_on"
-                app:tint="@color/primary" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:text="Valorar"
+                android:text="Ver póster completo"
                 android:textColor="@color/text_primary"
                 android:textSize="16sp" />
         </LinearLayout>

@@ -410,21 +410,112 @@ class DetailActivity : AppCompatActivity() {
 
     private fun setupTopMenu(movie: Movie) {
         val btnMenu: ImageButton = findViewById(R.id.btnMenuDetail)
-        val isSpanish = repository.getLanguage() == "es-ES"
 
         btnMenu.setOnClickListener {
             val bottomSheet = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
             val view = layoutInflater.inflate(R.layout.layout_movie_menu, null)
             
-            view.findViewById<TextView>(R.id.menuTitle).text = if (isSpanish) "Opciones" else "Options"
+            val textMovieName = view.findViewById<TextView>(R.id.menuMovieName)
+            val textRatingDate = view.findViewById<TextView>(R.id.menuRatingDate)
+            val stars = listOf<ImageView>(
+                view.findViewById(R.id.menuStar1), view.findViewById(R.id.menuStar2),
+                view.findViewById(R.id.menuStar3), view.findViewById(R.id.menuStar4),
+                view.findViewById(R.id.menuStar5)
+            )
+            val imgHeartQuick: ImageView = view.findViewById(R.id.imgMenuHeartQuick)
             
-            val isFav = watchlistRepository.isFavorite(movie.id)
+            // Traer el nombre y la fecha (En español)
+            textMovieName.text = movie.title
+            val currentDate = SimpleDateFormat("d 'de' MMMM, yyyy", Locale("es", "ES")).format(Date())
+            textRatingDate.text = currentDate
+
+            var currentRating = watchlistRepository.getMovieRating(movie.id)
+            var isFav = watchlistRepository.isFavorite(movie.id)
             val isWatched = watchlistRepository.isWatched(movie.id)
             val isInVitrina = watchlistRepository.isMovieInVitrina(movie.id)
 
+            // --- LÓGICA DE VALORACIÓN RÁPIDA CON ANIMACIONES ---
+            fun updateMenuStarsUI(rating: Float, animated: Boolean = false) {
+                stars.forEachIndexed { index, img ->
+                    val isActive = index < rating
+                    if (animated) {
+                        img.animate()
+                            .scaleX(if (isActive) 1.3f else 0.8f)
+                            .scaleY(if (isActive) 1.3f else 0.8f)
+                            .setDuration(120)
+                            .setStartDelay(index * 20L)
+                            .withEndAction {
+                                if (isActive) {
+                                    img.setImageResource(R.drawable.ic_star_active)
+                                    img.imageTintList = ColorStateList.valueOf(getColor(R.color.primary))
+                                } else {
+                                    img.setImageResource(R.drawable.ic_star_border)
+                                    img.imageTintList = ColorStateList.valueOf(getColor(R.color.text_secondary))
+                                }
+                                img.animate()
+                                    .scaleX(1.0f)
+                                    .scaleY(1.0f)
+                                    .setInterpolator(OvershootInterpolator(2f))
+                                    .setDuration(250)
+                                    .setStartDelay(0)
+                                    .start()
+                            }
+                            .start()
+                    } else {
+                        if (isActive) {
+                            img.setImageResource(R.drawable.ic_star_active)
+                            img.imageTintList = ColorStateList.valueOf(getColor(R.color.primary))
+                        } else {
+                            img.setImageResource(R.drawable.ic_star_border)
+                            img.imageTintList = ColorStateList.valueOf(getColor(R.color.text_secondary))
+                        }
+                    }
+                }
+            }
+
+            fun updateMenuHeartUI(animated: Boolean = false) {
+                if (isFav) {
+                    imgHeartQuick.setImageResource(R.drawable.ic_heart_filled)
+                    imgHeartQuick.imageTintList = ColorStateList.valueOf(getColor(R.color.primary))
+                    if (animated) {
+                        imgHeartQuick.scaleX = 0.7f
+                        imgHeartQuick.scaleY = 0.7f
+                        imgHeartQuick.animate().scaleX(1.2f).scaleY(1.2f).setDuration(150).withEndAction {
+                            imgHeartQuick.animate().scaleX(1.0f).scaleY(1.0f).setInterpolator(OvershootInterpolator()).setDuration(200).start()
+                        }.start()
+                    }
+                } else {
+                    imgHeartQuick.setImageResource(R.drawable.ic_heart_outline)
+                    imgHeartQuick.imageTintList = ColorStateList.valueOf(getColor(R.color.text_secondary))
+                }
+            }
+
+            updateMenuStarsUI(currentRating)
+            updateMenuHeartUI()
+
+            // Animación de entrada inicial de estrellas
+            view.postDelayed({ updateMenuStarsUI(currentRating, true) }, 150)
+
+            stars.forEachIndexed { index, img ->
+                img.setOnClickListener {
+                    val newRating = (index + 1).toFloat()
+                    watchlistRepository.setMovieRating(movie, newRating)
+                    updateMenuStarsUI(newRating, true)
+                    updateStatusIcons(movie.id)
+                    loadUserReview(movie.id)
+                }
+            }
+
+            imgHeartQuick.setOnClickListener {
+                isFav = !isFav
+                watchlistRepository.toggleFavorite(movie)
+                updateMenuHeartUI(true)
+                updateStatusIcons(movie.id)
+                setupWatchlistButton(movie)
+            }
+
+            // --- RESTO DE OPCIONES ---
             view.findViewById<TextView>(R.id.textMenuVitrina)?.text = if (isInVitrina) "Quitar de mi vitrina" else "Destacar en mi vitrina"
-            view.findViewById<ImageView>(R.id.imgMenuHeart)?.setImageResource(if (isFav) R.drawable.ic_heart_filled else R.drawable.ic_heart_outline)
-            view.findViewById<TextView>(R.id.textMenuFavorite)?.text = if (isFav) "Quitar de favoritos" else "Dar corazón"
             view.findViewById<TextView>(R.id.textMenuWatched)?.text = if (isWatched) "Quitar de vistas" else "Marcar como vista"
 
             view.findViewById<View>(R.id.optionVitrina).setOnClickListener {
@@ -452,18 +543,6 @@ class DetailActivity : AppCompatActivity() {
                 bottomSheet.dismiss()
                 watchlistRepository.toggleWatched(currentMovie ?: movie)
                 updateStatusIcons(movie.id)
-            }
-            
-            view.findViewById<View>(R.id.optionFavorite).setOnClickListener {
-                bottomSheet.dismiss()
-                watchlistRepository.toggleFavorite(currentMovie ?: movie)
-                updateStatusIcons(movie.id)
-                setupWatchlistButton(currentMovie ?: movie)
-            }
-            
-            view.findViewById<View>(R.id.optionRate).setOnClickListener {
-                bottomSheet.dismiss()
-                showRatingBottomSheet(currentMovie ?: movie)
             }
 
             view.findViewById<View>(R.id.optionViewPoster).setOnClickListener {
@@ -582,8 +661,8 @@ class DetailActivity : AppCompatActivity() {
         val existingEntry = watchlistRepository.getDiary().find { it.movieId == movie.id }
         editReview.setText(existingEntry?.review ?: "")
         
-        // Mostrar fecha actual
-        val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+        // Mostrar fecha actual (En español)
+        val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale("es", "ES")).format(Date())
         textDate.text = currentDate
         
         fun updateStarsUI(rating: Float, animated: Boolean = false) {

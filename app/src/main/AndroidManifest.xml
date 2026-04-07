@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.vexo.app">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -14,17 +13,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Vexo">
 
-        <activity android:name=".DiaryActivity" />
-
-        <!-- Activity principal -->
+        <!-- Login como Launcher -->
         <activity
-            android:name=".MainActivity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".RegisterActivity" android:exported="false" />
+        <activity android:name=".MainActivity" android:exported="false" />
+        <activity android:name=".DiaryActivity" android:exported="false" />
 
         <!-- Otras Activities -->
         <activity android:name="ui.explore.ExploreActivity" android:exported="false"/>

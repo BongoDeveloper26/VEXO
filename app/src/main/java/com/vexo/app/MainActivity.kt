@@ -22,9 +22,14 @@ class MainActivity : AppCompatActivity() {
     private fun setupBottomNavigation(savedInstanceState: Bundle?) {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
         
-        // Efecto visual moderno: indicador de selección suave (Morado Vexo con transparencia)
+        // Restauramos los colores originales de la barra de navegación
+        val vexPurple = Color.parseColor("#7C3AED")
+        val navBg = Color.parseColor("#FFFFFF") // Blanco original
+        
+        bottomNav.setBackgroundColor(navBg)
         bottomNav.itemActiveIndicatorColor = ColorStateList.valueOf(Color.parseColor("#267C3AED"))
-        bottomNav.itemIconTintList = ColorStateList.valueOf(Color.parseColor("#7C3AED"))
+        bottomNav.itemIconTintList = ColorStateList.valueOf(vexPurple)
+        bottomNav.itemTextColor = ColorStateList.valueOf(vexPurple)
         
         // Cargar el fragmento inicial
         if (savedInstanceState == null) {

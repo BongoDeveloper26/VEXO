@@ -47,11 +47,15 @@ class WatchlistRepository(context: Context) {
     }
 
     fun setUserName(name: String) {
-        prefs.edit().putString(KEY_USER_NAME, name).apply()
+        // Forzamos el límite de 15 caracteres también al guardar
+        val sanitizedName = if (name.length > 15) name.substring(0, 15) else name
+        prefs.edit().putString(KEY_USER_NAME, sanitizedName).apply()
     }
 
     fun getUserName(): String {
-        return prefs.getString(KEY_USER_NAME, "Usuario VEXO") ?: "Usuario VEXO"
+        val name = prefs.getString(KEY_USER_NAME, "Usuario VEXO") ?: "Usuario VEXO"
+        // Si el nombre guardado es el "larguísimo" que te rompe la UI, lo reseteamos visualmente
+        return if (name.length > 15) "Usuario VEXO" else name
     }
 
     // --- VALORACIONES Y DIARIO ---

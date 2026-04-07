@@ -1,6 +1,5 @@
 package com.vexo.app
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -17,7 +16,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,6 +23,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.FirebaseAuth
 import data.model.Movie
 import data.repository.WatchlistRepository
 import ui.detail.DetailActivity
@@ -32,6 +31,7 @@ import ui.detail.DetailActivity
 class ProfileFragment : Fragment() {
 
     private lateinit var watchlistRepository: WatchlistRepository
+    private lateinit var auth: FirebaseAuth
     private lateinit var imgSlots: List<ImageView>
     private lateinit var cardSlots: List<MaterialCardView>
     private lateinit var activityAdapter: RecentActivityAdapter
@@ -56,6 +56,7 @@ class ProfileFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
         
         watchlistRepository = WatchlistRepository(requireContext())
+        auth = FirebaseAuth.getInstance()
 
         setupUI(view)
         loadProfileImage()
@@ -96,7 +97,10 @@ class ProfileFragment : Fragment() {
 
         val btnLogout: Button = view.findViewById(R.id.btnLogout)
         btnLogout.setOnClickListener {
-            Toast.makeText(requireContext(), "Cerrando sesión...", Toast.LENGTH_SHORT).show()
+            auth.signOut()
+            val intent = Intent(requireContext(), LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
         }
 
         view.findViewById<TextView>(R.id.btnViewAllRated).setOnClickListener {
@@ -154,7 +158,12 @@ class ProfileFragment : Fragment() {
     }
 
     private fun loadUserName() {
-        textUserName.text = watchlistRepository.getUserName()
+        val firebaseUser = auth.currentUser
+        if (firebaseUser?.displayName != null && firebaseUser.displayName!!.isNotEmpty()) {
+            textUserName.text = firebaseUser.displayName
+        } else {
+            textUserName.text = watchlistRepository.getUserName()
+        }
     }
 
     private fun showEditNameDialog() {
@@ -163,7 +172,7 @@ class ProfileFragment : Fragment() {
         
         val input = EditText(requireContext())
         input.filters = arrayOf(InputFilter.LengthFilter(15))
-        input.setText(watchlistRepository.getUserName())
+        input.setText(textUserName.text.toString())
         input.setSelection(input.text.length)
         input.isSingleLine = true
         
@@ -183,7 +192,7 @@ class ProfileFragment : Fragment() {
             val newName = input.text.toString().trim()
             if (newName.isNotEmpty()) {
                 watchlistRepository.setUserName(newName)
-                loadUserName()
+                textUserName.text = newName
                 Toast.makeText(requireContext(), "Nombre actualizado", Toast.LENGTH_SHORT).show()
             }
         }
@@ -289,7 +298,7 @@ class ProfileFragment : Fragment() {
             return
         }
         val options = favorites.map { it.title }.toTypedArray()
-        AlertDialog.Builder(requireContext())
+        MaterialAlertDialogBuilder(requireContext())
             .setTitle("Selecciona para tu Vitrina")
             .setItems(options) { _, which ->
                 watchlistRepository.setVitrinaMovie(slotIndex, favorites[which])

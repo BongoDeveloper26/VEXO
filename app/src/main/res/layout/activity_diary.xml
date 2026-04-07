@@ -28,20 +28,18 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/background_elegant_light"
+                android:background="@color/surface_app"
                 app:layout_collapseMode="parallax">
 
-                <!-- Decoración sutil integrada -->
-                <ImageView
-                    android:layout_width="220dp"
-                    android:layout_height="220dp"
-                    android:src="@drawable/vexo_logo"
-                    android:alpha="0.05"
-                    app:tint="@color/primary"
+                <!-- Subtle background glow -->
+                <View
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="-150dp"
+                    android:layout_marginEnd="-100dp"
+                    android:background="@drawable/bg_glow_purple"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginTop="-40dp"
-                    android:layout_marginEnd="-40dp" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -73,7 +71,7 @@
                         android:textColor="@color/text_primary"
                         android:textSize="44sp" />
 
-                    <!-- Stats Row: Diseño Minimalista sin líneas divisorias pesadas -->
+                    <!-- Stats Row -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -166,7 +164,7 @@
                     android:layout_height="44dp"
                     android:layout_marginStart="16dp"
                     android:background="@drawable/bg_circle_button"
-                    android:backgroundTint="#10000000"
+                    android:backgroundTint="#20FFFFFF"
                     android:src="@drawable/ic_back_custom"
                     app:tint="@color/text_primary" />
 

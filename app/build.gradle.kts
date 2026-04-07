@@ -3,21 +3,22 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.parcelize)
-    id("com.google.gms.google-services")  // ← AÑADIDO para Firebase
+    alias(libs.plugins.google.services)
 }
 
 android {
     namespace = "com.vexo.app"
-    compileSdk = 36
+    compileSdk = 36 // Actualizado a 36 como requieren las librerías de AndroidX
 
     buildFeatures {
         buildConfig = true
+        viewBinding = true
     }
 
     defaultConfig {
         applicationId = "com.vexo.app"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 36 // Sincronizado con compileSdk
         versionCode = 1
         versionName = "1.0"
 
@@ -38,24 +39,26 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 
 dependencies {
+    // Firebase (Usando BoM para gestionar versiones automáticamente)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.analytics)
 
     // Android core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-
-    // Versión 1.12.0 para soportar itemActiveIndicatorColor y diseño moderno
-    implementation("com.google.android.material:material:1.12.0")
-
+    implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
@@ -63,7 +66,7 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.8.5")
 
     // Lifecycle / ViewModel
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
 
     // Retrofit + Gson
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

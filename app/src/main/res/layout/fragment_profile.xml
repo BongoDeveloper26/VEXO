@@ -19,7 +19,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="360dp"
                 android:background="@drawable/bg_profile_header" />
 
             <LinearLayout
@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center_horizontal"
-                android:paddingTop="60dp"
+                android:paddingTop="100dp"
                 android:paddingBottom="40dp">
 
                 <com.google.android.material.card.MaterialCardView
@@ -52,12 +52,16 @@
                         app:tint="@color/primary" />
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- MARCO ELEGANTE PARA EL NOMBRE -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="24dp"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:background="@drawable/bg_profile_name_tag"
+                    android:paddingHorizontal="24dp"
+                    android:paddingVertical="10dp">
 
                     <TextView
                         android:id="@+id/textUserNameProfile"
@@ -65,33 +69,33 @@
                         android:layout_height="wrap_content"
                         android:text="Usuario VEXO"
                         android:textColor="@color/white"
-                        android:textSize="28sp"
+                        android:textSize="22sp"
                         android:fontFamily="sans-serif-black"
-                        android:letterSpacing="-0.02" />
+                        android:letterSpacing="-0.01" />
 
                     <ImageButton
                         android:id="@+id/btnEditName"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:layout_marginStart="12dp"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_marginStart="14dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:src="@android:drawable/ic_menu_edit"
                         android:scaleType="fitCenter"
                         app:tint="@color/white"
-                        android:alpha="0.8" />
+                        android:alpha="0.9" />
                 </LinearLayout>
 
             </LinearLayout>
         </FrameLayout>
 
-        <!-- CONTENIDO PRINCIPAL: RECUPERAMOS EL FONDO QUE TE GUSTABA -->
+        <!-- CONTENIDO PRINCIPAL -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingHorizontal="24dp"
             android:paddingBottom="100dp"
-            android:layout_marginTop="-30dp"
+            android:layout_marginTop="12dp"
             android:background="@drawable/bg_profile_content_gradient">
 
             <!-- SECCIÓN VITRINA -->
@@ -99,7 +103,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="24dp">
+                android:layout_marginTop="48dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -109,7 +113,7 @@
                     android:textSize="11sp"
                     android:fontFamily="sans-serif-black"
                     android:letterSpacing="0.2"
-                    android:layout_marginBottom="12dp"
+                    android:layout_marginBottom="16dp"
                     android:layout_marginStart="4dp"
                     android:alpha="0.7"/>
 
@@ -194,7 +198,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- SEPARACIÓN ENTRE PÁGINAS/SECCIONES -->
+            <!-- SEPARACIÓN -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -317,7 +321,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- SEPARACIÓN SOLICITADA ENTRE ESTADÍSTICAS Y DIARIO -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"

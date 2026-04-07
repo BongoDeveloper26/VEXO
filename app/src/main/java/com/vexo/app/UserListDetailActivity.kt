@@ -3,7 +3,7 @@ package com.vexo.app
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.text.InputFilter
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
@@ -17,6 +17,7 @@ import data.model.UserList
 import data.repository.WatchlistRepository
 import ui.detail.DetailActivity
 import ui.explore.MovieAdapter
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class UserListDetailActivity : AppCompatActivity() {
 
@@ -69,7 +70,7 @@ class UserListDetailActivity : AppCompatActivity() {
         recycler.adapter = movieAdapter
         recycler.setPadding(12, 0, 12, 20)
 
-        findViewById<ImageButton>(R.id.btnEditListName).setOnClickListener { showEditNameDialog() }
+        findViewById<ImageButton>(R.id.btnEditListName).setOnClickListener { showEditListDialog() }
         findViewById<ImageButton>(R.id.btnDeleteUserList).setOnClickListener { showDeleteConfirmDialog() }
     }
 
@@ -92,23 +93,26 @@ class UserListDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun showEditNameDialog() {
+    private fun showEditListDialog() {
         val lists = watchlistRepository.getUserLists()
         val currentList = lists.find { it.id == userListId } ?: return
 
-        val input = EditText(this).apply {
-            setText(currentList.name)
-            filters = arrayOf(InputFilter.LengthFilter(15))
-            setSelection(text.length)
-        }
+        val view = LayoutInflater.from(this).inflate(R.layout.dialog_edit_list, null)
+        val editName = view.findViewById<EditText>(R.id.editListName)
+        val editDesc = view.findViewById<EditText>(R.id.editListDescription)
 
-        AlertDialog.Builder(this)
-            .setTitle("Editar nombre")
-            .setView(input)
+        editName.setText(currentList.name)
+        editDesc.setText(currentList.description ?: "")
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Editar Lista")
+            .setView(view)
             .setPositiveButton("Guardar") { _, _ ->
-                val newName = input.text.toString().trim()
+                val newName = editName.text.toString().trim()
+                val newDesc = editDesc.text.toString().trim()
+                
                 if (newName.isNotEmpty()) {
-                    watchlistRepository.updateUserList(currentList.id, newName, currentList.description)
+                    watchlistRepository.updateUserList(currentList.id, newName, if (newDesc.isEmpty()) null else newDesc)
                     refreshListData()
                 }
             }
@@ -120,7 +124,7 @@ class UserListDetailActivity : AppCompatActivity() {
         val lists = watchlistRepository.getUserLists()
         val currentList = lists.find { it.id == userListId } ?: return
 
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle("¿Borrar lista?")
             .setMessage("¿Estás seguro de que quieres eliminar la lista \"${currentList.name}\"?")
             .setPositiveButton("Eliminar") { _, _ ->

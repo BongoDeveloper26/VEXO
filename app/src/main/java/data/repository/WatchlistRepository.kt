@@ -2,6 +2,7 @@ package data.repository
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import data.model.Movie
@@ -12,8 +13,16 @@ import java.util.*
 
 class WatchlistRepository(context: Context) {
 
-    private val prefs: SharedPreferences = context.getSharedPreferences("vexo_prefs", Context.MODE_PRIVATE)
+    private val auth = FirebaseAuth.getInstance()
     private val gson = Gson()
+    
+    // Función para obtener el SharedPreferences específico del usuario actual
+    private fun getPrefs(): SharedPreferences {
+        val userId = auth.currentUser?.uid ?: "default_user"
+        return context.getSharedPreferences("vexo_prefs_$userId", Context.MODE_PRIVATE)
+    }
+
+    private val context = context
 
     companion object {
         const val FAVORITES_LIST_NAME = "Mis Favoritos"
@@ -39,22 +48,24 @@ class WatchlistRepository(context: Context) {
 
     // --- PERFIL ---
     fun setProfileImageUri(uri: String?) {
-        prefs.edit().putString(KEY_PROFILE_IMAGE, uri).apply()
+        getPrefs().edit().putString(KEY_PROFILE_IMAGE, uri).apply()
     }
 
     fun getProfileImageUri(): String? {
-        return prefs.getString(KEY_PROFILE_IMAGE, null)
+        return getPrefs().getString(KEY_PROFILE_IMAGE, null)
     }
 
     fun setUserName(name: String) {
-        // Forzamos el límite de 15 caracteres también al guardar
         val sanitizedName = if (name.length > 15) name.substring(0, 15) else name
-        prefs.edit().putString(KEY_USER_NAME, sanitizedName).apply()
+        getPrefs().edit().putString(KEY_USER_NAME, sanitizedName).apply()
     }
 
     fun getUserName(): String {
-        val name = prefs.getString(KEY_USER_NAME, "Usuario VEXO") ?: "Usuario VEXO"
-        // Si el nombre guardado es el "larguísimo" que te rompe la UI, lo reseteamos visualmente
+        val firebaseUser = auth.currentUser
+        if (firebaseUser?.displayName != null && firebaseUser.displayName!!.isNotEmpty()) {
+            return firebaseUser.displayName!!
+        }
+        val name = getPrefs().getString(KEY_USER_NAME, "Usuario VEXO") ?: "Usuario VEXO"
         return if (name.length > 15) "Usuario VEXO" else name
     }
 
@@ -86,9 +97,11 @@ class WatchlistRepository(context: Context) {
             ))
         }
 
-        prefs.edit().putString(KEY_RATINGS, gson.toJson(ratings)).apply()
-        prefs.edit().putString(KEY_RATED_MOVIES_DATA, gson.toJson(ratedMovies)).apply()
-        prefs.edit().putString(KEY_DIARY, gson.toJson(diary)).apply()
+        getPrefs().edit().apply {
+            putString(KEY_RATINGS, gson.toJson(ratings))
+            putString(KEY_RATED_MOVIES_DATA, gson.toJson(ratedMovies))
+            putString(KEY_DIARY, gson.toJson(diary))
+        }.apply()
     }
 
     fun getMovieRating(movieId: Int): Float = getRatingsMap()[movieId] ?: 0f
@@ -98,26 +111,26 @@ class WatchlistRepository(context: Context) {
     fun getAllRatedMovies(): List<Movie> = getRatedMoviesList()
 
     fun getDiary(): List<DiaryEntry> {
-        val json = prefs.getString(KEY_DIARY, null) ?: return emptyList()
+        val json = getPrefs().getString(KEY_DIARY, null) ?: return emptyList()
         val type = object : TypeToken<List<DiaryEntry>>() {}.type
         return gson.fromJson(json, type)
     }
 
     private fun getRatingsMap(): Map<Int, Float> {
-        val json = prefs.getString(KEY_RATINGS, null) ?: return emptyMap()
+        val json = getPrefs().getString(KEY_RATINGS, null) ?: return emptyMap()
         val type = object : TypeToken<Map<Int, Float>>() {}.type
         return gson.fromJson(json, type)
     }
 
     private fun getRatedMoviesList(): List<Movie> {
-        val json = prefs.getString(KEY_RATED_MOVIES_DATA, null) ?: return emptyList()
+        val json = getPrefs().getString(KEY_RATED_MOVIES_DATA, null) ?: return emptyList()
         val type = object : TypeToken<List<Movie>>() {}.type
         return gson.fromJson(json, type)
     }
 
     // --- VITRINA ---
     fun getVitrinaMovies(): List<Movie?> {
-        val json = prefs.getString(KEY_VITRINA, null) ?: return listOf(null, null, null, null)
+        val json = getPrefs().getString(KEY_VITRINA, null) ?: return listOf(null, null, null, null)
         val type = object : TypeToken<List<Movie?>>() {}.type
         val list: List<Movie?> = gson.fromJson(json, type)
         return if (list.size == 4) list else listOf(null, null, null, null)
@@ -127,7 +140,7 @@ class WatchlistRepository(context: Context) {
         val vitrina = getVitrinaMovies().toMutableList()
         if (index in 0..3) {
             vitrina[index] = movie
-            prefs.edit().putString(KEY_VITRINA, gson.toJson(vitrina)).apply()
+            getPrefs().edit().putString(KEY_VITRINA, gson.toJson(vitrina)).apply()
         }
     }
 
@@ -141,7 +154,7 @@ class WatchlistRepository(context: Context) {
         val emptyIndex = vitrina.indexOfFirst { it == null }
         if (emptyIndex != -1) {
             vitrina[emptyIndex] = movie
-            prefs.edit().putString(KEY_VITRINA, gson.toJson(vitrina)).apply()
+            getPrefs().edit().putString(KEY_VITRINA, gson.toJson(vitrina)).apply()
             return 0
         }
         return 2
@@ -152,19 +165,19 @@ class WatchlistRepository(context: Context) {
         val index = vitrina.indexOfFirst { it?.id == movieId }
         if (index != -1) {
             vitrina[index] = null
-            prefs.edit().putString(KEY_VITRINA, gson.toJson(vitrina)).apply()
+            getPrefs().edit().putString(KEY_VITRINA, gson.toJson(vitrina)).apply()
         }
     }
 
     // --- GESTIÓN DE LISTAS ---
     fun getUserLists(): List<UserList> {
-        val json = prefs.getString(KEY_CUSTOM_LISTS, null) ?: return emptyList()
+        val json = getPrefs().getString(KEY_CUSTOM_LISTS, null) ?: return emptyList()
         val type = object : TypeToken<List<UserList>>() {}.type
         return gson.fromJson(json, type)
     }
 
     private fun saveUserLists(lists: List<UserList>) {
-        prefs.edit().putString(KEY_CUSTOM_LISTS, gson.toJson(lists)).apply()
+        getPrefs().edit().putString(KEY_CUSTOM_LISTS, gson.toJson(lists)).apply()
     }
 
     fun createUserList(name: String, description: String? = null): String {

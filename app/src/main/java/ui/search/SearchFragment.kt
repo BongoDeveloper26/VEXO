@@ -23,6 +23,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.auth.FirebaseAuth
 import com.vexo.app.R
 import data.model.Movie
 import data.repository.TMDBRepository
@@ -37,12 +38,19 @@ import ui.explore.MovieHorizontalAdapter
 class SearchFragment : Fragment() {
 
     private val repository = TMDBRepository.getInstance()
+    private val auth = FirebaseAuth.getInstance()
     private lateinit var movieAdapter: MovieAdapter
     private lateinit var personAdapter: PersonSearchAdapter
     private lateinit var trendingAdapter: MovieHorizontalAdapter
     
     private var searchJob: Job? = null
-    private val PREFS_NAME = "search_prefs"
+    
+    // Función para obtener el nombre de las preferencias específico del usuario
+    private fun getPrefsName(): String {
+        val userId = auth.currentUser?.uid ?: "default_user"
+        return "search_prefs_$userId"
+    }
+    
     private val KEY_HISTORY = "search_history"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -177,7 +185,7 @@ class SearchFragment : Fragment() {
     private fun saveSearchQuery(query: String) {
         val trimmed = query.trim()
         if (trimmed.isEmpty()) return
-        val prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = requireContext().getSharedPreferences(getPrefsName(), Context.MODE_PRIVATE)
         val history = getSearchHistory().toMutableList()
         history.remove(trimmed)
         history.add(0, trimmed)
@@ -185,18 +193,18 @@ class SearchFragment : Fragment() {
     }
 
     private fun getSearchHistory(): List<String> = requireContext()
-        .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        .getSharedPreferences(getPrefsName(), Context.MODE_PRIVATE)
         .getString(KEY_HISTORY, "")?.split("|")?.filter { it.isNotEmpty() } ?: emptyList()
 
     private fun clearAllHistory(view: View) {
-        requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().clear().apply()
+        requireContext().getSharedPreferences(getPrefsName(), Context.MODE_PRIVATE).edit().clear().apply()
         updateHistoryList(view)
     }
 
     private fun deleteSingleHistoryItem(query: String, view: View) {
         val history = getSearchHistory().toMutableList()
         history.remove(query)
-        requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        requireContext().getSharedPreferences(getPrefsName(), Context.MODE_PRIVATE)
             .edit().putString(KEY_HISTORY, history.joinToString("|")).apply()
         updateHistoryList(view)
     }

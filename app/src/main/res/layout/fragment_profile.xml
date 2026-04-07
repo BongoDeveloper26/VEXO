@@ -94,7 +94,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingHorizontal="24dp"
-            android:paddingBottom="100dp"
+            android:paddingBottom="160dp"
             android:layout_marginTop="12dp"
             android:background="@drawable/bg_profile_content_gradient">
 
@@ -385,6 +385,8 @@
                 android:fontFamily="sans-serif-medium"
                 app:icon="@android:drawable/ic_lock_power_off"
                 app:iconTint="#FF5252"
+                app:iconPadding="8dp"
+                app:iconGravity="textStart"
                 android:gravity="center" />
 
         </LinearLayout>

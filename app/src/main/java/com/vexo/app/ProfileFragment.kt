@@ -24,6 +24,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 import data.model.Movie
 import data.repository.WatchlistRepository
 import ui.detail.DetailActivity
@@ -158,12 +159,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun loadUserName() {
-        val firebaseUser = auth.currentUser
-        if (firebaseUser?.displayName != null && firebaseUser.displayName!!.isNotEmpty()) {
-            textUserName.text = firebaseUser.displayName
-        } else {
-            textUserName.text = watchlistRepository.getUserName()
-        }
+        textUserName.text = watchlistRepository.getUserName()
     }
 
     private fun showEditNameDialog() {
@@ -191,9 +187,23 @@ class ProfileFragment : Fragment() {
         builder.setPositiveButton("Guardar") { _, _ ->
             val newName = input.text.toString().trim()
             if (newName.isNotEmpty()) {
+                // 1. Guardar localmente
                 watchlistRepository.setUserName(newName)
                 textUserName.text = newName
-                Toast.makeText(requireContext(), "Nombre actualizado", Toast.LENGTH_SHORT).show()
+                
+                // 2. Sincronizar con Firebase Auth para que persista al cambiar de pantalla
+                val user = auth.currentUser
+                val profileUpdates = UserProfileChangeRequest.Builder()
+                    .setDisplayName(newName)
+                    .build()
+                
+                user?.updateProfile(profileUpdates)?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(requireContext(), "Nombre actualizado en la nube", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(requireContext(), "Error al sincronizar con Firebase", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
         builder.setNegativeButton("Cancelar", null)
@@ -282,11 +292,9 @@ class ProfileFragment : Fragment() {
                 imgView.imageTintList = null
                 Glide.with(this).load(movie.posterPath).centerCrop().into(imgView)
             } else {
-                imgView.setImageResource(R.drawable.ic_add)
-                imgView.alpha = 0.4f
-                val padding = (32 * resources.displayMetrics.density).toInt()
-                imgView.setPadding(padding, padding, padding, padding)
-                imgView.imageTintList = android.content.res.ColorStateList.valueOf(requireContext().getColor(R.color.primary))
+                imgView.setImageDrawable(null)
+                imgView.alpha = 1.0f
+                imgView.setPadding(0, 0, 0, 0)
             }
         }
     }

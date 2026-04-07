@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.vexo.app" />
+                  <option name="mobileSdkAppId" value="1:182031845064:android:c5b3bd3b8e754e7f6907fd" />
+                  <option name="projectId" value="vexo-16f45" />
+                  <option name="projectNumber" value="182031845064" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

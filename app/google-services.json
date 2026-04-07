@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "182031845064",
+    "project_id": "vexo-16f45",
+    "storage_bucket": "vexo-16f45.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:182031845064:android:c5b3bd3b8e754e7f6907fd",
+        "android_client_info": {
+          "package_name": "com.vexo.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbKIOauk1wTgKK2-ibfp-GbCVrYgjZbTg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

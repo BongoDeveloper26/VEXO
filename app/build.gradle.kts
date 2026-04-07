@@ -3,8 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.parcelize)
+    id("com.google.gms.google-services")  // ← AÑADIDO para Firebase
 }
-
 
 android {
     namespace = "com.vexo.app"
@@ -52,13 +52,13 @@ dependencies {
     // Android core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    
+
     // Versión 1.12.0 para soportar itemActiveIndicatorColor y diseño moderno
     implementation("com.google.android.material:material:1.12.0")
-    
+
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    
+
     // KTX para Fragmentos
     implementation("androidx.fragment:fragment-ktx:1.8.5")
 
@@ -81,4 +81,3 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
-

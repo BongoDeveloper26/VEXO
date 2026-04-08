@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">vexo</string>
+    <string name="default_email">correo@ejemplo.com</string>
+    <string name="no_email_linked">Sin correo vinculado</string>
 </resources>

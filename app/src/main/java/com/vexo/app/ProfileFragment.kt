@@ -39,6 +39,7 @@ class ProfileFragment : Fragment() {
     private lateinit var diaryAdapter: DiaryAdapter
     private lateinit var imgProfile: ImageView
     private lateinit var textUserName: TextView
+    private lateinit var textUserEmail: TextView
 
     private val pickImageLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -62,6 +63,7 @@ class ProfileFragment : Fragment() {
         setupUI(view)
         loadProfileImage()
         loadUserName()
+        loadUserEmail()
         loadVitrina()
         loadRecentActivity(view)
         loadDiary(view)
@@ -74,6 +76,7 @@ class ProfileFragment : Fragment() {
         super.onResume()
         loadProfileImage()
         loadUserName()
+        loadUserEmail()
         loadVitrina()
         view?.let {
             loadRecentActivity(it)
@@ -85,6 +88,7 @@ class ProfileFragment : Fragment() {
     private fun setupUI(view: View) {
         imgProfile = view.findViewById(R.id.imgProfile)
         textUserName = view.findViewById(R.id.textUserNameProfile)
+        textUserEmail = view.findViewById(R.id.textUserEmailProfile)
         val cardProfileImage: MaterialCardView = view.findViewById(R.id.cardProfileImage)
         val btnEditName: ImageButton = view.findViewById(R.id.btnEditName)
         
@@ -160,6 +164,11 @@ class ProfileFragment : Fragment() {
 
     private fun loadUserName() {
         textUserName.text = watchlistRepository.getUserName()
+    }
+
+    private fun loadUserEmail() {
+        val user = auth.currentUser
+        textUserEmail.text = user?.email ?: getString(R.string.no_email_linked)
     }
 
     private fun showEditNameDialog() {

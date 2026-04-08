@@ -20,6 +20,14 @@
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
+    <!-- Nuevo estilo para sombras suaves y redondeadas -->
+    <style name="SoftShadowCard" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">24dp</item>
+        <item name="cardElevation">8dp</item>
+        <item name="cardMaxElevation">12dp</item>
+        <!-- En Material3, la sombra se controla mejor con la elevación y el color de superficie -->
+    </style>
+
     <!-- Estilo para el Menú Inferior (BottomSheet) -->
     <style name="BottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/BottomSheetStyleWrapper</item>

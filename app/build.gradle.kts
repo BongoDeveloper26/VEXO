@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.vexo.app"
-    compileSdk = 36 // Actualizado a 36 como requieren las librerías de AndroidX
+    compileSdk = 36
 
     buildFeatures {
         buildConfig = true
@@ -18,7 +18,7 @@ android {
     defaultConfig {
         applicationId = "com.vexo.app"
         minSdk = 26
-        targetSdk = 36 // Sincronizado con compileSdk
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -26,15 +26,27 @@ android {
         buildConfigField("String", "TMDB_API_KEY", "\"$tmdbApiKey\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Mantener solo los idiomas que usas para reducir el tamaño del APK
+        resConfigs("es", "en")
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // Habilitar R8 (ofuscación y eliminación de código no usado)
+            isMinifyEnabled = true
+            // Eliminar recursos no utilizados
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug") // Temporal para pruebas
+        }
+        debug {
+            // Deshabilitar optimizaciones pesadas en debug para acelerar la compilación
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 
@@ -45,11 +57,26 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+        // Optimización del compilador de Kotlin
+        freeCompilerArgs = freeCompilerArgs + listOf(
+            "-Xjvm-default=all",
+            "-Xopt-in=kotlin.RequiresOptIn"
+        )
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            // Eliminar archivos innecesarios de las librerías
+            excludes += "META-INF/DEPENDENCIES"
+            excludes += "META-INF/LICENSE*"
+            excludes += "META-INF/NOTICE*"
+        }
     }
 }
 
 dependencies {
-    // Firebase (Usando BoM para gestionar versiones automáticamente)
+    // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
@@ -75,7 +102,7 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
-    // Glide (imágenes)
+    // Glide (imágenes) - Considerar cambiar a Coil si se usa Compose en el futuro
     implementation("com.github.bumptech.glide:glide:4.16.0")
     kapt("com.github.bumptech.glide:compiler:4.16.0")
 

@@ -1,85 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:layout_marginBottom="16dp">
+    android:clipToPadding="false"
+    android:paddingHorizontal="16dp"
+    android:paddingBottom="12dp">
 
-    <!-- LÍNEA TIMELINE -->
+    <!-- LÍNEA TIMELINE - Más sutil y elegante -->
     <LinearLayout
-        android:layout_width="40dp"
+        android:layout_width="20dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:gravity="top|center_horizontal">
+        android:gravity="center_horizontal">
 
         <View
-            android:layout_width="2dp"
+            android:layout_width="1.5dp"
             android:layout_height="match_parent"
-            android:background="#22000000" />
+            android:alpha="0.1"
+            android:background="@color/text_primary" />
 
         <View
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:layout_marginTop="-100dp"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_marginTop="-110dp"
             android:background="@drawable/circle_primary" />
     </LinearLayout>
 
-    <!-- TARJETA -->
+    <!-- TARJETA CON DISEÑO MODERNO -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="6dp"
+        android:layout_marginStart="8dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
         app:cardBackgroundColor="@color/surface_app"
         app:strokeWidth="0dp">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="14dp"
-            android:orientation="horizontal">
+            android:padding="10dp">
 
-            <ImageView
+            <!-- POSTER: Más grande y con esquinas redondeadas -->
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imgDiaryPoster"
-                android:layout_width="60dp"
-                android:layout_height="90dp"
-                android:scaleType="centerCrop" />
+                android:layout_width="85dp"
+                android:layout_height="125dp"
+                android:scaleType="centerCrop"
+                android:background="#F0F0F0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:shapeAppearanceOverlay="@style/RoundedImageView12dp"
+                tools:src="@tools:sample/backgrounds/scenic" />
 
-            <LinearLayout
+            <!-- CONTENIDO DE TEXTO -->
+            <TextView
+                android:id="@+id/textDiaryMovieTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="14dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/textDiaryMovieTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:maxLines="1" />
-
-
-                <LinearLayout
-                    android:id="@+id/containerDiaryStars"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="8dp" />
-            </LinearLayout>
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:textColor="@color/text_primary"
+                android:textSize="17sp"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="2"
+                android:ellipsize="end"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/imgDiaryPoster"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Oppenheimer" />
 
             <TextView
                 android:id="@+id/textDiaryDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp"
-                android:alpha="0.7" />
-        </LinearLayout>
+                android:alpha="0.6"
+                app:layout_constraintStart_toStartOf="@id/textDiaryMovieTitle"
+                app:layout_constraintTop_toBottomOf="@id/textDiaryMovieTitle"
+                tools:text="15 de Marzo, 2024" />
+
+            <!-- ESTRELLAS DE VALORACIÓN -->
+            <LinearLayout
+                android:id="@+id/containerDiaryStars"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@id/textDiaryMovieTitle" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>
 

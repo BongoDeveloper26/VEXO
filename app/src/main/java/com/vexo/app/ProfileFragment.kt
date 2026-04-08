@@ -92,6 +92,9 @@ class ProfileFragment : Fragment() {
         val cardProfileImage: MaterialCardView = view.findViewById(R.id.cardProfileImage)
         val btnEditName: ImageButton = view.findViewById(R.id.btnEditName)
         
+        val containerShare: View = view.findViewById(R.id.btnShareProfile)
+        val btnShareIcon: View = view.findViewById(R.id.imgShareProfile)
+        
         cardProfileImage.setOnClickListener {
             pickImageLauncher.launch("image/*")
         }
@@ -99,6 +102,12 @@ class ProfileFragment : Fragment() {
         btnEditName.setOnClickListener {
             showEditNameDialog()
         }
+
+        val shareAction = View.OnClickListener {
+            shareProfile()
+        }
+        containerShare.setOnClickListener(shareAction)
+        btnShareIcon.setOnClickListener(shareAction)
 
         val btnLogout: Button = view.findViewById(R.id.btnLogout)
         btnLogout.setOnClickListener {
@@ -146,6 +155,35 @@ class ProfileFragment : Fragment() {
         val recyclerDiary = view.findViewById<RecyclerView>(R.id.recyclerDiary)
         recyclerDiary.layoutManager = LinearLayoutManager(requireContext())
         recyclerDiary.isNestedScrollingEnabled = false
+    }
+
+    private fun shareProfile() {
+        val name = watchlistRepository.getUserName()
+        val stats = watchlistRepository.getStats()
+        val uid = watchlistRepository.userId ?: return
+        
+        // Creamos el enlace profundo (Deep Link)
+        val profileLink = "vexo://profile/$uid"
+        
+        val shareText = """
+            🎬 ¡Echa un vistazo a mi vitrina en VEXO!
+            
+            👤 Usuario: $name
+            📊 Películas valoradas: ${stats.totalMovies}
+            ⭐ Nota media: ${String.format("%.1f", stats.averageRating)}
+            
+            🔗 Mira mi perfil aquí: $profileLink
+            
+            ¡Descarga VEXO para descubrir las mejores películas y series! 🍿
+        """.trimIndent()
+
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, "Perfil de VEXO de $name")
+            putExtra(Intent.EXTRA_TEXT, shareText)
+        }
+        
+        startActivity(Intent.createChooser(intent, "Compartir perfil con..."))
     }
 
     private fun loadProfileImage() {
@@ -196,11 +234,9 @@ class ProfileFragment : Fragment() {
         builder.setPositiveButton("Guardar") { _, _ ->
             val newName = input.text.toString().trim()
             if (newName.isNotEmpty()) {
-                // 1. Guardar localmente
                 watchlistRepository.setUserName(newName)
                 textUserName.text = newName
                 
-                // 2. Sincronizar con Firebase Auth para que persista al cambiar de pantalla
                 val user = auth.currentUser
                 val profileUpdates = UserProfileChangeRequest.Builder()
                     .setDisplayName(newName)

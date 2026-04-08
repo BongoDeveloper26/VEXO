@@ -24,7 +24,20 @@
         </activity>
 
         <activity android:name=".RegisterActivity" android:exported="false" />
-        <activity android:name=".MainActivity" android:exported="false" />
+        
+        <!-- MainActivity manejará los Deep Links -->
+        <activity 
+            android:name=".MainActivity" 
+            android:exported="true">
+            <intent-filter android:label="Abrir Perfil VEXO">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Esquema vexo://profile/{userId} -->
+                <data android:scheme="vexo" android:host="profile" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".DiaryActivity" android:exported="false" />
 
         <!-- Otras Activities -->
@@ -41,6 +54,9 @@
         <activity android:name=".VexoListDetailActivity" android:exported="false"/>
         <activity android:name="ui.detail.TVSeasonsActivity" android:exported="false"/>
         <activity android:name="ui.detail.WatchProvidersActivity" android:exported="false"/>
+        
+        <!-- Nueva Activity para ver perfiles de otros -->
+        <activity android:name=".PublicProfileActivity" android:exported="false" />
 
     </application>
 

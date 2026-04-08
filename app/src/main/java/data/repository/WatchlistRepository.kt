@@ -19,8 +19,8 @@ class WatchlistRepository(private val context: Context) {
     private val firestore = FirebaseFirestore.getInstance()
     private val gson = Gson()
     
-    // IMPORTANTE: El userId debe obtenerse dinámicamente cada vez
-    private val userId: String? get() = auth.currentUser?.uid
+    // El userId debe obtenerse dinámicamente cada vez
+    val userId: String? get() = auth.currentUser?.uid
 
     // Referencia al documento del usuario en Firestore
     private fun getUserDoc() = userId?.let { firestore.collection("users").document(it) }
@@ -64,7 +64,6 @@ class WatchlistRepository(private val context: Context) {
 
     private fun saveDataCloud(key: String, value: Any) {
         val userDoc = getUserDoc() ?: return
-        // Usamos set con merge para asegurar que el documento existe y solo actualiza ese campo
         userDoc.set(mapOf(key to value), SetOptions.merge())
             .addOnFailureListener { e -> Log.e(TAG, "Error guardando $key en nube", e) }
     }
@@ -85,9 +84,7 @@ class WatchlistRepository(private val context: Context) {
 
     fun getUserName(): String {
         val firebaseUser = auth.currentUser
-        // Prioridad 1: Nombre en el perfil de Firebase Auth
         if (!firebaseUser?.displayName.isNullOrEmpty()) return firebaseUser?.displayName!!
-        // Prioridad 2: Nombre guardado localmente/nube en Firestore
         return getPrefs().getString(KEY_USER_NAME, "Usuario VEXO") ?: "Usuario VEXO"
     }
 
@@ -106,7 +103,7 @@ class WatchlistRepository(private val context: Context) {
             ratedMovies.add(0, movie)
 
             val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
-            diary.removeAll { it.movieId == movie.id } // Evitar duplicados en el diario al actualizar
+            diary.removeAll { it.movieId == movie.id }
             diary.add(0, DiaryEntry(
                 movieId = movie.id,
                 movieTitle = movie.title,
@@ -130,9 +127,7 @@ class WatchlistRepository(private val context: Context) {
     }
 
     fun getMovieRating(movieId: Int): Float = getRatingsMap()[movieId.toString()] ?: 0f
-    
     fun getRecentActivity(): List<Movie> = getRatedMoviesList().take(5)
-    
     fun getAllRatedMovies(): List<Movie> = getRatedMoviesList()
 
     fun getDiary(): List<DiaryEntry> {
@@ -176,9 +171,7 @@ class WatchlistRepository(private val context: Context) {
         }
     }
 
-    fun isMovieInVitrina(movieId: Int): Boolean {
-        return getVitrinaMovies().any { it?.id == movieId }
-    }
+    fun isMovieInVitrina(movieId: Int): Boolean = getVitrinaMovies().any { it?.id == movieId }
 
     fun addMovieToVitrinaAuto(movie: Movie): Int {
         val vitrina = getVitrinaMovies().toMutableList()

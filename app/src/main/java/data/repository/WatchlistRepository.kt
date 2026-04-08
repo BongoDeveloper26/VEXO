@@ -210,19 +210,19 @@ class WatchlistRepository(private val context: Context) {
         saveDataCloud(KEY_CUSTOM_LISTS, lists)
     }
 
-    fun createUserList(name: String, description: String? = null): String {
+    fun createUserList(name: String, description: String? = null, isPublic: Boolean = false): String {
         val lists = getUserLists().toMutableList()
         val id = UUID.randomUUID().toString()
-        lists.add(UserList(id = id, name = name, description = description))
+        lists.add(UserList(id = id, name = name, description = description, isPublic = isPublic))
         saveUserLists(lists)
         return id
     }
 
-    fun updateUserList(listId: String, name: String, description: String?) {
+    fun updateUserList(listId: String, name: String, description: String?, isPublic: Boolean = false) {
         val lists = getUserLists().toMutableList()
         val index = lists.indexOfFirst { it.id == listId }
         if (index != -1) {
-            lists[index] = lists[index].copy(name = name, description = description)
+            lists[index] = lists[index].copy(name = name, description = description, isPublic = isPublic)
             saveUserLists(lists)
         }
     }

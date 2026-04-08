@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -54,5 +55,24 @@
         android:background="@drawable/bg_modern_input"
         android:textColor="@color/text_primary"
         android:textSize="15sp"/>
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switchPublic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Lista Privada"
+        android:textColor="@color/text_primary"
+        android:textSize="16sp"
+        app:thumbTint="@color/primary"
+        app:trackTint="@color/primary_variant" />
+
+    <TextView
+        android:id="@+id/textPublicHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Solo tú puedes ver esta lista."
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp" />
 
 </LinearLayout>

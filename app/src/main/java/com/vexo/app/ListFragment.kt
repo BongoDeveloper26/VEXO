@@ -6,11 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.tabs.TabLayout
 import data.model.UserList
 import data.repository.WatchlistRepository
@@ -121,14 +123,36 @@ class ListFragment : Fragment() {
         
         val editName = view.findViewById<EditText>(R.id.editListName)
         val editDescription = view.findViewById<EditText>(R.id.editListDescription)
+        val switchPublic = view.findViewById<SwitchMaterial>(R.id.switchPublic)
+        val textHint = view.findViewById<TextView>(R.id.textPublicHint)
         val btnCreate = view.findViewById<MaterialButton>(R.id.btnConfirmCreate)
         val btnCancel = view.findViewById<MaterialButton>(R.id.btnCancelCreate)
+
+        // Configuración inicial del Switch (Empieza en Privado)
+        switchPublic.isChecked = false
+        switchPublic.text = "Lista Privada"
+        textHint.text = "Solo tú puedes ver esta lista."
+
+        switchPublic.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                switchPublic.text = "Lista Pública"
+                textHint.text = "Otros usuarios podrán ver esta lista en tu perfil."
+            } else {
+                switchPublic.text = "Lista Privada"
+                textHint.text = "Solo tú puedes ver esta lista."
+            }
+        }
 
         btnCreate.setOnClickListener {
             val name = editName.text.toString().trim()
             val description = editDescription.text.toString().trim()
+            val isPublic = switchPublic.isChecked
             if (name.isNotEmpty()) {
-                watchlistRepository.createUserList(name, if (description.isEmpty()) null else description)
+                watchlistRepository.createUserList(
+                    name, 
+                    if (description.isEmpty()) null else description,
+                    isPublic
+                )
                 refreshLists()
                 bottomSheet.dismiss()
             } else {

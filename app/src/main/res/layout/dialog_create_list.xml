@@ -28,14 +28,6 @@
             android:textColor="@color/text_primary"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Organiza tus películas por géneros, estados o como tú quieras."
-            android:textColor="@color/text_secondary"
-            android:textSize="14sp"
             android:layout_marginBottom="24dp" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -88,6 +80,26 @@
                 android:maxLength="150"
                 android:textColor="@color/text_primary" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switchPublic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Lista Privada"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            app:thumbTint="@color/primary"
+            app:trackTint="@color/primary_variant" />
+
+        <TextView
+            android:id="@+id/textPublicHint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Solo tú puedes ver esta lista."
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            android:layout_marginBottom="8dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnConfirmCreate"

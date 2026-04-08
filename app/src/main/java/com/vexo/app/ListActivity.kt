@@ -151,6 +151,7 @@ class UserListAdapter(
     override fun onBindViewHolder(h: ViewHolder, p: Int) {
         val l = lists[p]
         h.name.text = l.name.uppercase()
+        
         h.count.text = "POR USUARIO VEXO • ${l.movies.size} ELEMENTOS"
         val imgs = listOf(h.img1, h.img2, h.img3, h.img4)
         imgs.forEach { it.visibility = View.GONE; it.setPadding(0, 0, 0, 0); it.imageTintList = null }

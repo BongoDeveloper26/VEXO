@@ -18,6 +18,7 @@ import data.repository.WatchlistRepository
 import ui.detail.DetailActivity
 import ui.explore.MovieAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class UserListDetailActivity : AppCompatActivity() {
 
@@ -85,6 +86,11 @@ class UserListDetailActivity : AppCompatActivity() {
                 visibility = if (currentList.description.isNullOrEmpty()) View.GONE else View.VISIBLE
             }
             
+            // Mostrar si es pública o privada
+            val infoText = if (currentList.isPublic) "Lista Pública • ${currentList.movies.size} películas" 
+                           else "Lista Privada • ${currentList.movies.size} películas"
+            findViewById<TextView>(R.id.textListInfo).text = infoText
+            
             val movies = currentList.movies
             findViewById<View>(R.id.layoutEmptyUserList).visibility = if (movies.isEmpty()) View.VISIBLE else View.GONE
             movieAdapter.updateMovies(movies)
@@ -100,9 +106,19 @@ class UserListDetailActivity : AppCompatActivity() {
         val view = LayoutInflater.from(this).inflate(R.layout.dialog_edit_list, null)
         val editName = view.findViewById<EditText>(R.id.editListName)
         val editDesc = view.findViewById<EditText>(R.id.editListDescription)
+        val switchPublic = view.findViewById<SwitchMaterial>(R.id.switchPublic)
+        val textHint = view.findViewById<TextView>(R.id.textPublicHint)
 
         editName.setText(currentList.name)
         editDesc.setText(currentList.description ?: "")
+        
+        // Configuración del Switch según el estado actual
+        switchPublic.isChecked = currentList.isPublic
+        updateSwitchUI(switchPublic, textHint, currentList.isPublic)
+
+        switchPublic.setOnCheckedChangeListener { _, isChecked ->
+            updateSwitchUI(switchPublic, textHint, isChecked)
+        }
 
         MaterialAlertDialogBuilder(this)
             .setTitle("Editar Lista")
@@ -110,14 +126,30 @@ class UserListDetailActivity : AppCompatActivity() {
             .setPositiveButton("Guardar") { _, _ ->
                 val newName = editName.text.toString().trim()
                 val newDesc = editDesc.text.toString().trim()
+                val isPublic = switchPublic.isChecked
                 
                 if (newName.isNotEmpty()) {
-                    watchlistRepository.updateUserList(currentList.id, newName, if (newDesc.isEmpty()) null else newDesc)
+                    watchlistRepository.updateUserList(
+                        currentList.id, 
+                        newName, 
+                        if (newDesc.isEmpty()) null else newDesc,
+                        isPublic
+                    )
                     refreshListData()
                 }
             }
             .setNegativeButton("Cancelar", null)
             .show()
+    }
+
+    private fun updateSwitchUI(switch: SwitchMaterial, hint: TextView, isPublic: Boolean) {
+        if (isPublic) {
+            switch.text = "Lista Pública"
+            hint.text = "Otros usuarios podrán ver esta lista en tu perfil."
+        } else {
+            switch.text = "Lista Privada"
+            hint.text = "Solo tú puedes ver esta lista."
+        }
     }
 
     private fun showDeleteConfirmDialog() {

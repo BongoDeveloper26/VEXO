@@ -10,6 +10,7 @@
 
     <color name="primary">#7C3AED</color> <!-- Morado vibrante Vexo -->
     <color name="primary_dark">#5B21B6</color>
+    <color name="primary_variant">#337C3AED</color>
 
     <color name="text_primary">#1E1B4B</color>
     <color name="text_secondary">#6B7280</color>

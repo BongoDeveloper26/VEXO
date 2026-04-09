@@ -5,12 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_app"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <!-- CABECERA DE PERFIL -->
         <FrameLayout
@@ -132,6 +136,8 @@
             android:paddingHorizontal="24dp"
             android:paddingBottom="180dp"
             android:layout_marginTop="12dp"
+            android:clipToPadding="false"
+            android:clipChildren="false"
             android:background="@drawable/bg_profile_content_gradient">
 
             <!-- SECCIÓN VITRINA -->
@@ -139,13 +145,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="48dp">
+                android:layout_marginTop="48dp"
+                android:clipToPadding="false"
+                android:clipChildren="false">
 
                 <!-- Header Vitrina -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
+                    android:layout_marginStart="-200dp"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="0dp"
                     app:cardBackgroundColor="#0A7C3AED"
@@ -156,7 +165,8 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp"
+                        android:paddingStart="216dp"
+                        android:paddingEnd="16dp"
                         android:paddingVertical="10dp">
                         <ImageView
                             android:layout_width="20dp"
@@ -181,8 +191,8 @@
                                 android:layout_height="wrap_content"
                                 android:text="Enseña tus obras favoritas"
                                 android:textColor="@color/text_secondary"
-                                android:textSize="10sp"
-                                android:alpha="0.7" />
+                                android:textSize="15sp"
+                                android:alpha="0.85" />
                         </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -281,17 +291,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="32dp">
+                android:layout_marginTop="32dp"
+                android:clipToPadding="false"
+                android:clipChildren="false">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp">
+                    android:layout_marginBottom="16dp"
+                    android:clipToPadding="false"
+                    android:clipChildren="false">
 
                     <!-- Header Actividad -->
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginStart="-200dp"
                         app:cardCornerRadius="16dp"
                         app:cardElevation="0dp"
                         app:cardBackgroundColor="#0A7C3AED"
@@ -302,7 +318,8 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
-                            android:paddingHorizontal="16dp"
+                            android:paddingStart="216dp"
+                            android:paddingEnd="16dp"
                             android:paddingVertical="10dp">
                             <ImageView
                                 android:layout_width="20dp"
@@ -327,8 +344,8 @@
                                     android:layout_height="wrap_content"
                                     android:text="Lo último que has visto"
                                     android:textColor="@color/text_secondary"
-                                    android:textSize="10sp"
-                                    android:alpha="0.7" />
+                                    android:textSize="15sp"
+                                    android:alpha="0.85" />
                             </LinearLayout>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -393,7 +410,7 @@
                             android:layout_height="wrap_content"
                             android:text="PELÍCULAS"
                             android:textColor="@color/text_secondary"
-                            android:textSize="9sp"
+                            android:textSize="13sp"
                             android:fontFamily="sans-serif-medium"
                             android:letterSpacing="0.1" />
                     </LinearLayout>
@@ -422,7 +439,7 @@
                             android:layout_height="wrap_content"
                             android:text="NOTA MEDIA"
                             android:textColor="@color/text_secondary"
-                            android:textSize="9sp"
+                            android:textSize="13sp"
                             android:fontFamily="sans-serif-medium"
                             android:letterSpacing="0.1" />
                     </LinearLayout>
@@ -443,17 +460,23 @@
                 android:orientation="vertical"
                 android:layout_marginTop="32dp"
                 android:visibility="gone"
-                tools:visibility="visible">
+                tools:visibility="visible"
+                android:clipToPadding="false"
+                android:clipChildren="false">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp">
+                    android:layout_marginBottom="16dp"
+                    android:clipToPadding="false"
+                    android:clipChildren="false">
 
                     <!-- Header Diario -->
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginStart="-200dp"
                         app:cardCornerRadius="16dp"
                         app:cardElevation="0dp"
                         app:cardBackgroundColor="#0A7C3AED"
@@ -464,7 +487,8 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
-                            android:paddingHorizontal="16dp"
+                            android:paddingStart="216dp"
+                            android:paddingEnd="16dp"
                             android:paddingVertical="10dp">
                             <ImageView
                                 android:layout_width="20dp"
@@ -489,8 +513,8 @@
                                     android:layout_height="wrap_content"
                                     android:text="Tus reflexiones personales"
                                     android:textColor="@color/text_secondary"
-                                    android:textSize="10sp"
-                                    android:alpha="0.7" />
+                                    android:textSize="15sp"
+                                    android:alpha="0.85" />
                             </LinearLayout>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>

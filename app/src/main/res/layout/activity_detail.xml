@@ -220,6 +220,7 @@
                         android:layout_height="wrap_content"
                         app:cardCornerRadius="8dp"
                         app:cardElevation="0dp"
+                        app:cardBackgroundColor="@color/white"
                         app:strokeWidth="1dp"
                         app:strokeColor="#15000000"
                         android:layout_marginEnd="12dp"
@@ -235,7 +236,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="IMDb"
                                 android:background="#F5C518"
-                                android:textColor="@color/black"
+                                android:textColor="#000000"
                                 android:textStyle="bold"
                                 android:textSize="11sp"
                                 android:paddingHorizontal="6dp"
@@ -244,7 +245,7 @@
                                 android:id="@+id/textImdbRating"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textColor="@color/text_primary"
+                                android:textColor="#1E1B4B"
                                 android:textSize="12sp"
                                 android:textStyle="bold"
                                 android:paddingHorizontal="8dp"
@@ -258,6 +259,7 @@
                         android:layout_height="wrap_content"
                         app:cardCornerRadius="8dp"
                         app:cardElevation="0dp"
+                        app:cardBackgroundColor="@color/white"
                         app:strokeWidth="1dp"
                         app:strokeColor="#15000000"
                         android:layout_marginEnd="12dp"
@@ -273,7 +275,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Rotten"
                                 android:background="#FA320A"
-                                android:textColor="@color/white"
+                                android:textColor="#FFFFFF"
                                 android:textStyle="bold"
                                 android:textSize="11sp"
                                 android:paddingHorizontal="6dp"
@@ -282,7 +284,7 @@
                                 android:id="@+id/textRottenRating"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textColor="@color/text_primary"
+                                android:textColor="#1E1B4B"
                                 android:textSize="12sp"
                                 android:textStyle="bold"
                                 android:paddingHorizontal="8dp"
@@ -296,6 +298,7 @@
                         android:layout_height="wrap_content"
                         app:cardCornerRadius="8dp"
                         app:cardElevation="0dp"
+                        app:cardBackgroundColor="@color/white"
                         app:strokeWidth="1dp"
                         app:strokeColor="#15000000"
                         android:visibility="gone"
@@ -310,7 +313,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Metascore"
                                 android:background="#66CC33"
-                                android:textColor="@color/white"
+                                android:textColor="#FFFFFF"
                                 android:textStyle="bold"
                                 android:textSize="11sp"
                                 android:paddingHorizontal="6dp"
@@ -319,7 +322,7 @@
                                 android:id="@+id/textMetacriticRating"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textColor="@color/text_primary"
+                                android:textColor="#1E1B4B"
                                 android:textSize="12sp"
                                 android:textStyle="bold"
                                 android:paddingHorizontal="8dp"
@@ -760,9 +763,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="MI RESEÑA"
                                 android:textColor="@color/primary"
-                                android:textSize="10sp"
-                                android:textStyle="bold"
-                                android:letterSpacing="0.2" />
+                                android:textSize="10sp" android:textStyle="bold" android:letterSpacing="0.2" />
 
                             <LinearLayout
                                 android:id="@+id/reviewStarsContainer"
@@ -843,13 +844,6 @@
                             android:clipToPadding="false" />
                     </LinearLayout>
                 </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1.5dp"
-                    android:background="@drawable/divider_elegant_gradient"
-                    android:layout_marginTop="40dp"
-                    android:layout_marginHorizontal="-24dp" />
 
                 <!-- RECOMENDACIONES -->
                 <TextView

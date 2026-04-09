@@ -1,5 +1,6 @@
 package data.repository
 
+import com.google.gson.annotations.SerializedName
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -21,16 +22,16 @@ interface OMDbApi {
 }
 
 data class OMDbMovieDTO(
-    val Ratings: List<OMDbRating>? = null,
-    val imdbRating: String? = null,
-    val Metascore: String? = null,
-    val Awards: String? = null,
-    val Plot: String? = null
+    @SerializedName("Ratings") val Ratings: List<OMDbRating>? = null,
+    @SerializedName("imdbRating") val imdbRating: String? = null,
+    @SerializedName("Metascore") val Metascore: String? = null,
+    @SerializedName("Awards") val Awards: String? = null,
+    @SerializedName("Plot") val Plot: String? = null
 )
 
 data class OMDbRating(
-    val Source: String,
-    val Value: String
+    @SerializedName("Source") val Source: String,
+    @SerializedName("Value") val Value: String
 )
 
 class OMDbRepository {

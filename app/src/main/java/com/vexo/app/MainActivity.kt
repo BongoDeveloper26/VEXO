@@ -1,11 +1,9 @@
 package com.vexo.app
 
 import android.content.Intent
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import data.repository.WatchlistRepository
@@ -16,20 +14,59 @@ import ui.news.NewsFragment
 class MainActivity : AppCompatActivity() {
 
     private lateinit var watchlistRepository: WatchlistRepository
+    
+    private val exploreFragment by lazy { ExploreFragment() }
+    private val searchFragment by lazy { SearchFragment() }
+    private val listFragment by lazy { ListFragment() }
+    private val newsFragment by lazy { NewsFragment() }
+    private val profileFragment by lazy { ProfileFragment() }
+    private var activeFragment: Fragment = exploreFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         watchlistRepository = WatchlistRepository(this)
         
-        // Sincronizar datos de la nube
-        syncCloudData()
-        
-        setupBottomNavigation(savedInstanceState)
-
-        // Manejar Deep Link si existe
+        setupFragments()
+        setupBottomNavigation()
         handleDeepLink(intent)
+    }
+
+    private fun setupFragments() {
+        supportFragmentManager.beginTransaction().apply {
+            add(R.id.fragmentContainer, profileFragment, "profile").hide(profileFragment)
+            add(R.id.fragmentContainer, newsFragment, "news").hide(newsFragment)
+            add(R.id.fragmentContainer, listFragment, "list").hide(listFragment)
+            add(R.id.fragmentContainer, searchFragment, "search").hide(searchFragment)
+            add(R.id.fragmentContainer, exploreFragment, "explore")
+        }.commit()
+    }
+
+    private fun setupBottomNavigation() {
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+        
+        bottomNav.setOnItemSelectedListener { item ->
+            val targetFragment = when (item.itemId) {
+                R.id.nav_explore -> exploreFragment
+                R.id.nav_search -> searchFragment
+                R.id.nav_list -> listFragment
+                R.id.nav_news -> newsFragment
+                R.id.nav_profile -> profileFragment
+                else -> exploreFragment
+            }
+            
+            if (activeFragment != targetFragment) {
+                supportFragmentManager.beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .hide(activeFragment)
+                    .show(targetFragment)
+                    .commit()
+                activeFragment = targetFragment
+            }
+            true
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -47,55 +84,5 @@ class MainActivity : AppCompatActivity() {
                 startActivity(publicIntent)
             }
         }
-    }
-
-    private fun syncCloudData() {
-        watchlistRepository.downloadCloudData { success ->
-            if (success) {
-                val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
-                if (currentFragment is ProfileFragment) {
-                    currentFragment.onResume()
-                }
-            }
-        }
-    }
-
-    private fun setupBottomNavigation(savedInstanceState: Bundle?) {
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
-        
-        val vexPurple = Color.parseColor("#7C3AED")
-        val navBg = Color.parseColor("#FFFFFF")
-        
-        bottomNav.setBackgroundColor(navBg)
-        bottomNav.itemActiveIndicatorColor = ColorStateList.valueOf(Color.parseColor("#267C3AED"))
-        bottomNav.itemIconTintList = ColorStateList.valueOf(vexPurple)
-        bottomNav.itemTextColor = ColorStateList.valueOf(vexPurple)
-        
-        if (savedInstanceState == null) {
-            loadFragment(ExploreFragment())
-        }
-
-        bottomNav.setOnItemSelectedListener { item ->
-            val fragment: Fragment? = when (item.itemId) {
-                R.id.nav_explore -> ExploreFragment()
-                R.id.nav_search -> SearchFragment()
-                R.id.nav_list -> ListFragment()
-                R.id.nav_news -> NewsFragment()
-                R.id.nav_profile -> ProfileFragment()
-                else -> null
-            }
-            
-            fragment?.let {
-                loadFragment(it)
-                true
-            } ?: false
-        }
-    }
-
-    private fun loadFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, fragment)
-            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-            .commit()
     }
 }

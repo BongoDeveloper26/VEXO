@@ -95,15 +95,23 @@ class WatchlistRepository(private val context: Context) {
         val diary = getDiary().toMutableList()
 
         if (rating <= 0) {
+            // Si el rating es 0, lo tratamos como "quitar valoración"
             ratings.remove(movie.id.toString())
             ratedMovies.removeAll { it.id == movie.id }
+            // En el diario podrías decidir si borrar la última o todas. 
+            // Por ahora, para no romper el historial, solo quitamos la película de la lista de "valoradas".
         } else {
+            // Actualizamos el rating actual de la película
             ratings[movie.id.toString()] = rating
+            
+            // Actualizamos la lista de películas valoradas (sin duplicados de la misma película en la lista general)
             ratedMovies.removeAll { it.id == movie.id }
             ratedMovies.add(0, movie)
 
+            // AÑADIR AL DIARIO SIN BORRAR LO ANTERIOR
             val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
-            diary.removeAll { it.movieId == movie.id }
+            
+            // Creamos una nueva entrada. No borramos las anteriores para permitir historial.
             diary.add(0, DiaryEntry(
                 movieId = movie.id,
                 movieTitle = movie.title,

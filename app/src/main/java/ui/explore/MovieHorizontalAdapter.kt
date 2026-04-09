@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.vexo.app.R
 import data.model.Movie
+import java.util.Locale
 
 class MovieHorizontalAdapter(private val movies: List<Movie>) :
     RecyclerView.Adapter<MovieHorizontalAdapter.MovieViewHolder>() {
@@ -31,7 +32,10 @@ class MovieHorizontalAdapter(private val movies: List<Movie>) :
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         val movie = movies[position]
         holder.textTitle.text = movie.title
-        holder.textRating.text = "★ ${movie.rating}"
+        
+        // Formatear el rating con un decimal
+        val formattedRating = String.format(Locale.US, "%.1f", movie.rating)
+        holder.textRating.text = "★ $formattedRating"
 
         Glide.with(holder.itemView.context)
             .load(movie.posterPath)

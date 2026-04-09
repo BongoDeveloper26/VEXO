@@ -775,28 +775,35 @@ class DetailActivity : AppCompatActivity() {
         dopamineView.findViewById<TextView>(R.id.textSuccessTitle).text = title
         dopamineView.findViewById<TextView>(R.id.textSuccessMsg).text = msg
         
+        // Ajustamos los parámetros para que no se pegue arriba (StatusBar)
         val params = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        params.gravity = Gravity.CENTER
+        params.gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
+        params.topMargin = 120 // Bajamos la notificación para que no tape la hora
         dopamineView.layoutParams = params
         
         rootLayout.addView(dopamineView)
         
         dopamineView.alpha = 0f
-        dopamineView.scaleX = 0.5f
-        dopamineView.scaleY = 0.5f
+        dopamineView.translationY = -40f // Animación desde un poco más arriba
+        dopamineView.scaleX = 0.8f
+        dopamineView.scaleY = 0.8f
+        
         dopamineView.animate()
             .alpha(1f)
-            .scaleX(1.1f)
-            .scaleY(1.1f)
-            .setDuration(300)
+            .translationY(0f)
+            .scaleX(1.05f)
+            .scaleY(1.05f)
+            .setDuration(400)
+            .setInterpolator(OvershootInterpolator())
             .withEndAction {
                 dopamineView.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start()
                 lifecycleScope.launch {
-                    delay(2000)
+                    delay(2200)
                     dopamineView.animate()
                         .alpha(0f)
-                        .scaleX(0.8f)
-                        .scaleY(0.8f)
+                        .translationY(-30f)
+                        .scaleX(0.9f)
+                        .scaleY(0.9f)
                         .setDuration(300)
                         .withEndAction { rootLayout.removeView(dopamineView) }
                         .start()

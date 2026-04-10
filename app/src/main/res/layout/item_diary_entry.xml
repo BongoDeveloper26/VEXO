@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/itemDiaryRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -9,8 +10,9 @@
     android:paddingHorizontal="16dp"
     android:paddingBottom="12dp">
 
-    <!-- LÍNEA TIMELINE - Más sutil y elegante -->
+    <!-- LÍNEA TIMELINE -->
     <LinearLayout
+        android:id="@+id/layoutTimeline"
         android:layout_width="20dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -29,8 +31,9 @@
             android:background="@drawable/circle_primary" />
     </LinearLayout>
 
-    <!-- TARJETA CON DISEÑO MODERNO -->
+    <!-- TARJETA -->
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardDiaryContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -45,7 +48,7 @@
             android:layout_height="wrap_content"
             android:padding="10dp">
 
-            <!-- POSTER: Más grande y con esquinas redondeadas -->
+            <!-- POSTER -->
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imgDiaryPoster"
                 android:layout_width="85dp"
@@ -64,12 +67,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="14dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="2dp"
                 android:layout_marginEnd="8dp"
                 android:textColor="@color/text_primary"
-                android:textSize="17sp"
-                android:fontFamily="sans-serif-medium"
-                android:maxLines="2"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-black"
+                android:maxLines="1"
                 android:ellipsize="end"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/imgDiaryPoster"
@@ -80,9 +83,8 @@
                 android:id="@+id/textDiaryDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
                 android:textColor="@color/text_secondary"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:alpha="0.6"
                 app:layout_constraintStart_toStartOf="@id/textDiaryMovieTitle"
                 app:layout_constraintTop_toBottomOf="@id/textDiaryMovieTitle"
@@ -94,9 +96,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="4dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@id/textDiaryMovieTitle" />
+                android:layout_marginTop="4dp"
+                app:layout_constraintStart_toStartOf="@id/textDiaryMovieTitle"
+                app:layout_constraintTop_toBottomOf="@id/textDiaryDate" />
+
+            <!-- LA RESEÑA DEL USUARIO -->
+            <TextView
+                android:id="@+id/textDiaryReview"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="4dp"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp"
+                android:fontFamily="sans-serif"
+                android:fontStyle="italic"
+                android:maxLines="6"
+                android:ellipsize="end"
+                android:visibility="gone"
+                app:layout_constraintStart_toEndOf="@id/imgDiaryPoster"
+                app:layout_constraintTop_toBottomOf="@id/containerDiaryStars"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:visibility="visible"
+                tools:text="Esta película es una obra maestra del cine contemporáneo, la dirección es impecable y las actuaciones son de otro nivel..." />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

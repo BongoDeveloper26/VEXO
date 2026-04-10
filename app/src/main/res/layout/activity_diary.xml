@@ -50,6 +50,7 @@
                     app:layout_constraintBottom_toBottomOf="parent">
 
                     <TextView
+                        android:id="@+id/textDiaryLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-medium"
@@ -73,6 +74,7 @@
 
                     <!-- Stats Row -->
                     <LinearLayout
+                        android:id="@+id/layoutDiaryStats"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"

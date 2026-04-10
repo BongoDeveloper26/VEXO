@@ -14,6 +14,7 @@ import data.model.DiaryEntry
 
 class DiaryGroupedAdapter(
     private val items: List<DiaryListItem>,
+    private val showTimeline: Boolean = true,
     private val onEntryClick: (DiaryEntry) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -27,10 +28,14 @@ class DiaryGroupedAdapter(
     }
 
     class EntryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val root: View = view.findViewById(R.id.itemDiaryRoot)
+        val card: View = view.findViewById(R.id.cardDiaryContainer)
         val imgPoster: ImageView = view.findViewById(R.id.imgDiaryPoster)
         val textTitle: TextView = view.findViewById(R.id.textDiaryMovieTitle)
         val textDate: TextView = view.findViewById(R.id.textDiaryDate)
         val starsContainer: LinearLayout = view.findViewById(R.id.containerDiaryStars)
+        val textReview: TextView = view.findViewById(R.id.textDiaryReview)
+        val layoutTimeline: View = view.findViewById(R.id.layoutTimeline)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -64,6 +69,17 @@ class DiaryGroupedAdapter(
 
                 vh.textTitle.text = entry.movieTitle
                 vh.textDate.text = entry.date
+                
+                // Control dinámico de visibilidad
+                vh.layoutTimeline.visibility = if (showTimeline) View.VISIBLE else View.GONE
+
+                // Mostrar u ocultar la reseña
+                if (!entry.review.isNullOrEmpty()) {
+                    vh.textReview.visibility = View.VISIBLE
+                    vh.textReview.text = entry.review
+                } else {
+                    vh.textReview.visibility = View.GONE
+                }
 
                 Glide.with(vh.itemView.context)
                     .load(entry.moviePosterPath)

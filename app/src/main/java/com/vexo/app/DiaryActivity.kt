@@ -21,25 +21,39 @@ import java.util.Locale
 class DiaryActivity : AppCompatActivity() {
 
     private lateinit var watchlistRepository: WatchlistRepository
+    private var onlyReviews: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_diary)
 
         watchlistRepository = WatchlistRepository(this)
+        onlyReviews = intent.getBooleanExtra("ONLY_REVIEWS", false)
 
         findViewById<ImageButton>(R.id.btnBackDiary).setOnClickListener {
             finish()
+        }
+        
+        if (onlyReviews) {
+            findViewById<TextView>(R.id.textDiaryTitle).text = "Mis Reseñas"
+            findViewById<TextView>(R.id.textDiaryLabel).text = "TUS CRÍTICAS"
+            findViewById<View>(R.id.layoutDiaryStats).visibility = View.GONE
         }
 
         loadDiary()
     }
 
     private fun loadDiary() {
-        val diaryEntries = watchlistRepository.getDiary()
+        var diaryEntries = watchlistRepository.getDiary()
         
-        // Calcular estadísticas
-        updateStats(diaryEntries)
+        if (onlyReviews) {
+            diaryEntries = diaryEntries.filter { !it.review.isNullOrEmpty() }
+        }
+        
+        // Calcular estadísticas si no es modo reseñas
+        if (!onlyReviews) {
+            updateStats(diaryEntries)
+        }
 
         val groupedItems = mutableListOf<DiaryListItem>()
         var lastMonth = ""
@@ -56,7 +70,8 @@ class DiaryActivity : AppCompatActivity() {
         val recycler = findViewById<RecyclerView>(R.id.recyclerDiaryFull)
         recycler.layoutManager = LinearLayoutManager(this)
         
-        recycler.adapter = DiaryGroupedAdapter(groupedItems) { entry ->
+        // Pasamos showTimeline = false si estamos viendo solo las reseñas
+        recycler.adapter = DiaryGroupedAdapter(groupedItems, showTimeline = !onlyReviews) { entry ->
             val movieToOpen = entry.movie ?: watchlistRepository.getAllRatedMovies().find { it.id == entry.movieId }
             
             if (movieToOpen != null) {

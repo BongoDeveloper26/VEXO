@@ -37,6 +37,7 @@ class ProfileFragment : Fragment() {
     private lateinit var cardSlots: List<MaterialCardView>
     private lateinit var activityAdapter: RecentActivityAdapter
     private lateinit var diaryAdapter: DiaryAdapter
+    private lateinit var reviewAdapter: DiaryAdapter
     private lateinit var imgProfile: ImageView
     private lateinit var textUserName: TextView
     private lateinit var textUserEmail: TextView
@@ -66,6 +67,7 @@ class ProfileFragment : Fragment() {
         loadUserEmail()
         loadVitrina()
         loadRecentActivity(view)
+        loadMyReviews(view)
         loadDiary(view)
         updateStats(view)
         
@@ -80,6 +82,7 @@ class ProfileFragment : Fragment() {
         loadVitrina()
         view?.let {
             loadRecentActivity(it)
+            loadMyReviews(it)
             loadDiary(it)
             updateStats(it)
         }
@@ -124,6 +127,12 @@ class ProfileFragment : Fragment() {
         view.findViewById<TextView>(R.id.btnViewAllDiary).setOnClickListener {
             startActivity(Intent(requireContext(), DiaryActivity::class.java))
         }
+        
+        view.findViewById<TextView>(R.id.btnViewAllReviews).setOnClickListener {
+            val intent = Intent(requireContext(), DiaryActivity::class.java)
+            intent.putExtra("ONLY_REVIEWS", true)
+            startActivity(intent)
+        }
 
         imgSlots = listOf(
             view.findViewById(R.id.imgSlot1),
@@ -152,6 +161,11 @@ class ProfileFragment : Fragment() {
 
         val recyclerActivity = view.findViewById<RecyclerView>(R.id.recyclerRecentActivity)
         recyclerActivity.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        
+        val recyclerReviews = view.findViewById<RecyclerView>(R.id.recyclerProfileReviews)
+        recyclerReviews.layoutManager = LinearLayoutManager(requireContext())
+        recyclerReviews.isNestedScrollingEnabled = false
+
         val recyclerDiary = view.findViewById<RecyclerView>(R.id.recyclerDiary)
         recyclerDiary.layoutManager = LinearLayoutManager(requireContext())
         recyclerDiary.isNestedScrollingEnabled = false
@@ -278,6 +292,28 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    private fun loadMyReviews(view: View) {
+        val allEntries = watchlistRepository.getDiary()
+        val reviewEntries = allEntries.filter { !it.review.isNullOrEmpty() }.take(3)
+        val layoutReviews = view.findViewById<View>(R.id.layoutMyReviews)
+
+        if (reviewEntries.isNotEmpty()) {
+            layoutReviews.visibility = View.VISIBLE
+            // AQUÍ: showTimeline = false para las reseñas en el perfil
+            reviewAdapter = DiaryAdapter(reviewEntries, showTimeline = false) { entry ->
+                val movieToOpen = entry.movie ?: watchlistRepository.getAllRatedMovies().find { it.id == entry.movieId }
+                if (movieToOpen != null) {
+                    val intent = Intent(requireContext(), DetailActivity::class.java)
+                    intent.putExtra("movie", movieToOpen)
+                    startActivity(intent)
+                }
+            }
+            view.findViewById<RecyclerView>(R.id.recyclerProfileReviews).adapter = reviewAdapter
+        } else {
+            layoutReviews.visibility = View.GONE
+        }
+    }
+
     private fun loadDiary(view: View) {
         val diaryEntries = watchlistRepository.getDiary().take(3)
         val layoutDiary = view.findViewById<View>(R.id.layoutDiary)
@@ -285,7 +321,8 @@ class ProfileFragment : Fragment() {
         if (diaryEntries.isNotEmpty()) {
             layoutDiary.visibility = View.VISIBLE
 
-            diaryAdapter = DiaryAdapter(diaryEntries) { entry ->
+            // AQUÍ: showTimeline = true (por defecto) para el diario en el perfil
+            diaryAdapter = DiaryAdapter(diaryEntries, showTimeline = true) { entry ->
                 val movieToOpen = entry.movie ?: watchlistRepository.getAllRatedMovies().find { it.id == entry.movieId }
                 
                 if (movieToOpen != null) {

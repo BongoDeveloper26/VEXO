@@ -2,4 +2,5 @@
     <string name="app_name">vexo</string>
     <string name="default_email">correo@ejemplo.com</string>
     <string name="no_email_linked">Sin correo vinculado</string>
+    <string name="default_web_client_id" translatable="false">182031845064-dj83loc2cp09lntlt5scq52o8f5c49m9.apps.googleusercontent.com</string>
 </resources>

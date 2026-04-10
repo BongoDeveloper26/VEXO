@@ -13,6 +13,7 @@ import data.model.DiaryEntry
 
 class DiaryAdapter(
     private val entries: List<DiaryEntry>,
+    private val showTimeline: Boolean = true,
     private val onEntryClick: (DiaryEntry) -> Unit
 ) : RecyclerView.Adapter<DiaryAdapter.ViewHolder>() {
 
@@ -21,6 +22,8 @@ class DiaryAdapter(
         val textTitle: TextView = view.findViewById(R.id.textDiaryMovieTitle)
         val textDate: TextView = view.findViewById(R.id.textDiaryDate)
         val starsContainer: LinearLayout = view.findViewById(R.id.containerDiaryStars)
+        val textReview: TextView = view.findViewById(R.id.textDiaryReview)
+        val layoutTimeline: View = view.findViewById(R.id.layoutTimeline)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -34,6 +37,17 @@ class DiaryAdapter(
 
         holder.textTitle.text = entry.movieTitle
         holder.textDate.text = entry.date
+        
+        // Control de la línea de tiempo (el "palo")
+        holder.layoutTimeline.visibility = if (showTimeline) View.VISIBLE else View.GONE
+
+        // Mostrar u ocultar la reseña según si existe
+        if (!entry.review.isNullOrEmpty()) {
+            holder.textReview.visibility = View.VISIBLE
+            holder.textReview.text = entry.review
+        } else {
+            holder.textReview.visibility = View.GONE
+        }
 
         Glide.with(holder.itemView.context)
             .load(entry.moviePosterPath)

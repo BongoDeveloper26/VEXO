@@ -26,20 +26,38 @@
             android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="Películas de Acción" />
 
         <TextView
+            android:id="@+id/textListDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textListName"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Esta es una descripción de la lista que puede ser un poco larga."
+            tools:visibility="visible" />
+
+        <TextView
             android:id="@+id/textMovieCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:textColor="@color/primary"
             android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textListName"
+            app:layout_constraintTop_toBottomOf="@id/textListDescription"
             tools:text="12 PELÍCULAS" />
 
         <LinearLayout

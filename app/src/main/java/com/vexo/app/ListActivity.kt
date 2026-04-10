@@ -28,7 +28,7 @@ class ListActivity : AppCompatActivity() {
         VexoList(
             "top_250_movies", 
             "LAS 250 MEJORES PELÍCULAS", 
-            "La selección oficial de cine.", 
+            "La selección oficial de cine con las películas mejor valoradas de todos los tiempos.", 
             R.drawable.vexo_logo,
             listOf(
                 "https://image.tmdb.org/t/p/w500/q6y0Go1tsYmUuAtfj6KyB30OXvN.jpg", // Cadena Perpetua
@@ -40,7 +40,7 @@ class ListActivity : AppCompatActivity() {
         VexoList(
             "top_250_tv", 
             "LAS 250 MEJORES SERIES", 
-            "El ranking oficial de televisión.", 
+            "El ranking oficial de televisión con las producciones más aclamadas por la crítica.", 
             R.drawable.vexo_logo,
             listOf(
                 "https://image.tmdb.org/t/p/w500/ztkUQvBZ77Z7iB1u66NuJvSTN7h.jpg", // Breaking Bad
@@ -138,6 +138,7 @@ class UserListAdapter(
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val name: TextView = v.findViewById(R.id.textListName)
+        val description: TextView = v.findViewById(R.id.textListDescription)
         val count: TextView = v.findViewById(R.id.textMovieCount)
         val img1: ImageView = v.findViewById(R.id.imgPreview1)
         val img2: ImageView = v.findViewById(R.id.imgPreview2)
@@ -150,9 +151,18 @@ class UserListAdapter(
 
     override fun onBindViewHolder(h: ViewHolder, p: Int) {
         val l = lists[p]
-        h.name.text = l.name.uppercase()
         
-        h.count.text = "POR USUARIO VEXO • ${l.movies.size} ELEMENTOS"
+        // Límite de 25 caracteres para el título
+        val title = if (l.name.length > 25) l.name.take(25) + "..." else l.name
+        h.name.text = title.uppercase()
+        
+        // Mostrar descripción
+        h.description.text = l.description
+        h.description.visibility = if (!l.description.isNullOrEmpty()) View.VISIBLE else View.GONE
+        
+        // Quitado "USUARIO VEXO"
+        h.count.text = "${l.movies.size} ELEMENTOS"
+
         val imgs = listOf(h.img1, h.img2, h.img3, h.img4)
         imgs.forEach { it.visibility = View.GONE; it.setPadding(0, 0, 0, 0); it.imageTintList = null }
         h.textMore.visibility = View.GONE

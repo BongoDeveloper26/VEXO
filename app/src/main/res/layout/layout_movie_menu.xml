@@ -22,7 +22,6 @@
             android:layout_marginBottom="20dp"
             android:background="#33FFFFFF" />
 
-        <!-- CABECERA DE VALORACIÓN COMPLETA -->
         <TextView
             android:id="@+id/menuMovieName"
             android:layout_width="match_parent"
@@ -81,7 +80,30 @@
             android:layout_marginBottom="12dp"
             android:layout_marginHorizontal="-24dp" />
 
-        <!-- RESTO DE OPCIONES -->
+        <!-- OPCIÓN: ESCRIBIR RESEÑA -->
+        <LinearLayout
+            android:id="@+id/optionWriteReview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:paddingVertical="14dp">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@android:drawable/ic_menu_edit"
+                app:tint="@color/primary" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="Escribir reseña"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp" />
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/optionAddList"
             android:layout_width="match_parent"

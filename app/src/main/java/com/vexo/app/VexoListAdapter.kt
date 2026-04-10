@@ -24,6 +24,7 @@ class VexoListAdapter(
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val name: TextView = view.findViewById(R.id.textListName)
+        val description: TextView = view.findViewById(R.id.textListDescription)
         val count: TextView = view.findViewById(R.id.textMovieCount)
         val img1: ImageView = view.findViewById(R.id.imgPreview1)
         val img2: ImageView = view.findViewById(R.id.imgPreview2)
@@ -39,7 +40,14 @@ class VexoListAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val list = lists[position]
-        holder.name.text = list.name
+        
+        // Aplicamos límite de 25 caracteres al nombre
+        holder.name.text = if (list.name.length > 25) list.name.take(25) + "..." else list.name
+        
+        // Mostramos la descripción
+        holder.description.text = list.description
+        holder.description.visibility = if (list.description.isNotEmpty()) View.VISIBLE else View.GONE
+
         holder.count.text = "COLECCIÓN OFICIAL • 250 ELEMENTOS"
         
         val imgs = listOf(holder.img1, holder.img2, holder.img3, holder.img4)

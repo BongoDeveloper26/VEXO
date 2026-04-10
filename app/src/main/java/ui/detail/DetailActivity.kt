@@ -515,6 +515,11 @@ class DetailActivity : AppCompatActivity() {
             }
 
             // --- RESTO DE OPCIONES ---
+            view.findViewById<View>(R.id.optionWriteReview).setOnClickListener {
+                bottomSheet.dismiss()
+                showRatingBottomSheet(movie)
+            }
+
             view.findViewById<TextView>(R.id.textMenuVitrina)?.text = if (isInVitrina) "Quitar de mi vitrina" else "Destacar en mi vitrina"
             view.findViewById<TextView>(R.id.textMenuWatched)?.text = if (isWatched) "Quitar de vistas" else "Marcar como vista"
 

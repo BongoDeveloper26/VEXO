@@ -19,6 +19,7 @@ import ui.detail.DetailActivity
 import ui.explore.MovieAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.bumptech.glide.Glide
 
 class UserListDetailActivity : AppCompatActivity() {
 
@@ -51,9 +52,19 @@ class UserListDetailActivity : AppCompatActivity() {
 
         // Personalización para "Mis Listas" (Cuenta del usuario)
         val imgProfile = findViewById<ImageView>(R.id.imgCreatorProfile)
-        imgProfile.setImageResource(R.drawable.ic_nav_profile)
-        imgProfile.setPadding(15, 15, 15, 15)
-        imgProfile.imageTintList = ColorStateList.valueOf(getColor(R.color.text_secondary))
+        val profileUri = watchlistRepository.getProfileImageUri()
+        
+        if (!profileUri.isNullOrEmpty()) {
+            imgProfile.setPadding(0, 0, 0, 0)
+            Glide.with(this)
+                .load(profileUri)
+                .circleCrop()
+                .into(imgProfile)
+        } else {
+            imgProfile.setImageResource(R.drawable.ic_nav_profile)
+            imgProfile.setPadding(15, 15, 15, 15)
+            imgProfile.imageTintList = ColorStateList.valueOf(getColor(R.color.text_secondary))
+        }
         
         findViewById<TextView>(R.id.textCreatorName).text = watchlistRepository.getUserName()
         findViewById<TextView>(R.id.textListInfo).text = "Tu colección personal"

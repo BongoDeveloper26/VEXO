@@ -70,8 +70,12 @@ class DiaryActivity : AppCompatActivity() {
         val recycler = findViewById<RecyclerView>(R.id.recyclerDiaryFull)
         recycler.layoutManager = LinearLayoutManager(this)
         
-        // Pasamos showTimeline = false si estamos viendo solo las reseñas
-        recycler.adapter = DiaryGroupedAdapter(groupedItems, showTimeline = !onlyReviews) { entry ->
+        // Pasamos showTimeline = false y la función isFavorite
+        recycler.adapter = DiaryGroupedAdapter(
+            groupedItems, 
+            showTimeline = !onlyReviews,
+            isFavorite = { movieId -> watchlistRepository.isFavorite(movieId) }
+        ) { entry ->
             val movieToOpen = entry.movie ?: watchlistRepository.getAllRatedMovies().find { it.id == entry.movieId }
             
             if (movieToOpen != null) {

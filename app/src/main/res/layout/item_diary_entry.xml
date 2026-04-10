@@ -90,15 +90,36 @@
                 app:layout_constraintTop_toBottomOf="@id/textDiaryMovieTitle"
                 tools:text="15 de Marzo, 2024" />
 
-            <!-- ESTRELLAS DE VALORACIÓN -->
+            <!-- CONTENEDOR DE VALORACIÓN Y CORAZÓN -->
             <LinearLayout
-                android:id="@+id/containerDiaryStars"
-                android:layout_width="wrap_content"
+                android:id="@+id/layoutRatingRow"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="4dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
                 app:layout_constraintStart_toStartOf="@id/textDiaryMovieTitle"
-                app:layout_constraintTop_toBottomOf="@id/textDiaryDate" />
+                app:layout_constraintTop_toBottomOf="@id/textDiaryDate"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <!-- ESTRELLAS DE VALORACIÓN -->
+                <LinearLayout
+                    android:id="@+id/containerDiaryStars"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+
+                <ImageView
+                    android:id="@+id/imgDiaryHeart"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_heart_filled"
+                    app:tint="@color/primary"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+            </LinearLayout>
 
             <!-- LA RESEÑA DEL USUARIO -->
             <TextView
@@ -116,7 +137,7 @@
                 android:ellipsize="end"
                 android:visibility="gone"
                 app:layout_constraintStart_toEndOf="@id/imgDiaryPoster"
-                app:layout_constraintTop_toBottomOf="@id/containerDiaryStars"
+                app:layout_constraintTop_toBottomOf="@id/layoutRatingRow"
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:visibility="visible"
                 tools:text="Esta película es una obra maestra del cine contemporáneo, la dirección es impecable y las actuaciones son de otro nivel..." />

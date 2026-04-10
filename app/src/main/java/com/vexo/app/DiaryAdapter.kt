@@ -14,6 +14,7 @@ import data.model.DiaryEntry
 class DiaryAdapter(
     private val entries: List<DiaryEntry>,
     private val showTimeline: Boolean = true,
+    private val isFavorite: ((Int) -> Boolean)? = null,
     private val onEntryClick: (DiaryEntry) -> Unit
 ) : RecyclerView.Adapter<DiaryAdapter.ViewHolder>() {
 
@@ -24,6 +25,7 @@ class DiaryAdapter(
         val starsContainer: LinearLayout = view.findViewById(R.id.containerDiaryStars)
         val textReview: TextView = view.findViewById(R.id.textDiaryReview)
         val layoutTimeline: View = view.findViewById(R.id.layoutTimeline)
+        val imgHeart: ImageView = view.findViewById(R.id.imgDiaryHeart)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -40,6 +42,13 @@ class DiaryAdapter(
         
         // Control de la línea de tiempo (el "palo")
         holder.layoutTimeline.visibility = if (showTimeline) View.VISIBLE else View.GONE
+
+        // Mostrar u ocultar el corazón si es favorito
+        if (isFavorite != null && isFavorite.invoke(entry.movieId)) {
+            holder.imgHeart.visibility = View.VISIBLE
+        } else {
+            holder.imgHeart.visibility = View.GONE
+        }
 
         // Mostrar u ocultar la reseña según si existe
         if (!entry.review.isNullOrEmpty()) {

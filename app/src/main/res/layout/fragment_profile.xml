@@ -446,6 +446,13 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- SEPARACIÓN ANTES DE RESEÑAS -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#12000000"
+                android:layout_marginTop="32dp" />
+
             <!-- SECCIÓN: MIS RESEÑAS -->
             <LinearLayout
                 android:id="@+id/layoutMyReviews"
@@ -534,7 +541,7 @@
                     android:overScrollMode="never" />
             </LinearLayout>
 
-            <!-- SEPARACIÓN -->
+            <!-- SEPARACIÓN ANTES DE DIARIO -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"

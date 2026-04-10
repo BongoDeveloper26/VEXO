@@ -299,8 +299,10 @@ class ProfileFragment : Fragment() {
 
         if (reviewEntries.isNotEmpty()) {
             layoutReviews.visibility = View.VISIBLE
-            // AQUÍ: showTimeline = false para las reseñas en el perfil
-            reviewAdapter = DiaryAdapter(reviewEntries, showTimeline = false) { entry ->
+            // AQUÍ: showTimeline = false y añadimos isFavorite
+            reviewAdapter = DiaryAdapter(reviewEntries, showTimeline = false, isFavorite = { movieId ->
+                watchlistRepository.isFavorite(movieId)
+            }) { entry ->
                 val movieToOpen = entry.movie ?: watchlistRepository.getAllRatedMovies().find { it.id == entry.movieId }
                 if (movieToOpen != null) {
                     val intent = Intent(requireContext(), DetailActivity::class.java)
@@ -321,8 +323,10 @@ class ProfileFragment : Fragment() {
         if (diaryEntries.isNotEmpty()) {
             layoutDiary.visibility = View.VISIBLE
 
-            // AQUÍ: showTimeline = true (por defecto) para el diario en el perfil
-            diaryAdapter = DiaryAdapter(diaryEntries, showTimeline = true) { entry ->
+            // AQUÍ: showTimeline = true y añadimos isFavorite
+            diaryAdapter = DiaryAdapter(diaryEntries, showTimeline = true, isFavorite = { movieId ->
+                watchlistRepository.isFavorite(movieId)
+            }) { entry ->
                 val movieToOpen = entry.movie ?: watchlistRepository.getAllRatedMovies().find { it.id == entry.movieId }
                 
                 if (movieToOpen != null) {

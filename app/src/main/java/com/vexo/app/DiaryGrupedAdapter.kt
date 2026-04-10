@@ -15,6 +15,7 @@ import data.model.DiaryEntry
 class DiaryGroupedAdapter(
     private val items: List<DiaryListItem>,
     private val showTimeline: Boolean = true,
+    private val isFavorite: ((Int) -> Boolean)? = null,
     private val onEntryClick: (DiaryEntry) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -36,6 +37,7 @@ class DiaryGroupedAdapter(
         val starsContainer: LinearLayout = view.findViewById(R.id.containerDiaryStars)
         val textReview: TextView = view.findViewById(R.id.textDiaryReview)
         val layoutTimeline: View = view.findViewById(R.id.layoutTimeline)
+        val imgHeart: ImageView = view.findViewById(R.id.imgDiaryHeart)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -72,6 +74,13 @@ class DiaryGroupedAdapter(
                 
                 // Control dinámico de visibilidad
                 vh.layoutTimeline.visibility = if (showTimeline) View.VISIBLE else View.GONE
+
+                // Mostrar u ocultar el corazón si es favorito
+                if (isFavorite != null && isFavorite.invoke(entry.movieId)) {
+                    vh.imgHeart.visibility = View.VISIBLE
+                } else {
+                    vh.imgHeart.visibility = View.GONE
+                }
 
                 // Mostrar u ocultar la reseña
                 if (!entry.review.isNullOrEmpty()) {

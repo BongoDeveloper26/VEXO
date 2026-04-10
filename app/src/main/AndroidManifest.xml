@@ -54,7 +54,8 @@
         <activity android:name=".VexoListDetailActivity" android:exported="false"/>
         <activity android:name="ui.detail.TVSeasonsActivity" android:exported="false"/>
         <activity android:name="ui.detail.WatchProvidersActivity" android:exported="false"/>
-        
+        <activity android:name=".AchievementsActivity" android:exported="false" />
+
         <!-- Nueva Activity para ver perfiles de otros -->
         <activity android:name=".PublicProfileActivity" android:exported="false" />
 

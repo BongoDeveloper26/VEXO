@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_app">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="24dp">
+
+                <!-- Fondo con gradiente y efecto de profundidad -->
+                <View
+                    android:id="@+id/bgHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="340dp"
+                    android:background="@drawable/bg_profile_header"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Icono de Trofeo Gigante Decorativo (Marca de agua) -->
+                <ImageView
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:src="@drawable/ic_trophy"
+                    android:alpha="0.08"
+                    android:rotation="-15"
+                    app:tint="@color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="-40dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/btnBackAchievements"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginStart="24dp"
+                    app:cardCornerRadius="22dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="#20FFFFFF"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="#40FFFFFF"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_back_custom"
+                        android:padding="12dp"
+                        app:tint="@color/white" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:id="@+id/titleHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="HALL OF FAME"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="0.2"
+                    android:layout_marginTop="32dp"
+                    app:layout_constraintTop_toBottomOf="@id/btnBackAchievements"
+                    app:layout_constraintStart_toStartOf="@+id/btnBackAchievements" />
+
+                <TextView
+                    android:id="@+id/mainTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mis Logros"
+                    android:textColor="@color/white"
+                    android:textSize="36sp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.02"
+                    app:layout_constraintTop_toBottomOf="@id/titleHeader"
+                    app:layout_constraintStart_toStartOf="@+id/titleHeader" />
+
+                <!-- Tarjeta de Rango "Glassmorphism" -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="28dp"
+                    android:layout_marginHorizontal="24dp"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="12dp"
+                    app:cardBackgroundColor="@color/surface_app"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="#15FFFFFF"
+                    app:layout_constraintTop_toBottomOf="@id/mainTitle">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="24dp">
+
+                        <TextView
+                            android:id="@+id/textGlobalStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cinéfilo de Bronce"
+                            android:textColor="@color/text_primary"
+                            android:textSize="22sp"
+                            android:fontFamily="sans-serif-black"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/textGlobalStats"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Te faltan 9 logros para el nivel Plata"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="13sp"
+                            android:layout_marginTop="4dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/textGlobalStatus" />
+
+                        <ProgressBar
+                            android:id="@+id/progressBarGlobal"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="8dp"
+                            android:layout_marginTop="20dp"
+                            android:progressDrawable="@drawable/custom_progress_bar"
+                            tools:progress="45"
+                            app:layout_constraintTop_toBottomOf="@id/textGlobalStats" />
+
+                        <TextView
+                            android:id="@+id/textPercent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:text="45% completado"
+                            android:textColor="@color/primary"
+                            android:textSize="12sp"
+                            android:fontFamily="sans-serif-black"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/progressBarGlobal" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerAchievements"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="16dp"
+        android:clipToPadding="false"
+        android:paddingBottom="40dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

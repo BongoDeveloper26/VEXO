@@ -97,6 +97,7 @@ class ProfileFragment : Fragment() {
         
         val containerShare: View = view.findViewById(R.id.btnShareProfile)
         val btnShareIcon: View = view.findViewById(R.id.imgShareProfile)
+        val btnAchievements: View = view.findViewById(R.id.btnAchievements)
         
         cardProfileImage.setOnClickListener {
             pickImageLauncher.launch("image/*")
@@ -111,6 +112,10 @@ class ProfileFragment : Fragment() {
         }
         containerShare.setOnClickListener(shareAction)
         btnShareIcon.setOnClickListener(shareAction)
+
+        btnAchievements.setOnClickListener {
+            startActivity(Intent(requireContext(), AchievementsActivity::class.java))
+        }
 
         val btnLogout: Button = view.findViewById(R.id.btnLogout)
         btnLogout.setOnClickListener {

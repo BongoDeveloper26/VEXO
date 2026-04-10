@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,6 +24,33 @@ class ListFragment : Fragment() {
     private lateinit var listAdapter: UserListAdapter
     private lateinit var vexoListAdapter: VexoListAdapter
 
+    private val officialLists = listOf(
+        VexoList(
+            id = "top_250_movies",
+            name = "LAS 250 MEJORES PELÍCULAS",
+            description = "La selección oficial de Vexo con las obras maestras del cine.",
+            imageRes = R.drawable.vexo_logo,
+            previewPosters = listOf(
+                "https://image.tmdb.org/t/p/w500/q6y0Go1tsYmUuAtfj6KyB30OXvN.jpg",
+                "https://image.tmdb.org/t/p/w500/3bhkrjSTWv4ayisdqAs6arW0Lja.jpg",
+                "https://image.tmdb.org/t/p/w500/8S9NoP10n5S5G87G9vGf56zP167.jpg",
+                "https://image.tmdb.org/t/p/w500/v9970pP2XF8X8Z6n1P2pS5X8X8Z.jpg"
+            )
+        ),
+        VexoList(
+            id = "top_250_tv",
+            name = "LAS 250 MEJORES SERIES",
+            description = "El ranking definitivo de Vexo con las mejores producciones de TV.",
+            imageRes = R.drawable.vexo_logo,
+            previewPosters = listOf(
+                "https://image.tmdb.org/t/p/w500/ggm8bbv9v0f15c10v9f9f15c10v.jpg",
+                "https://image.tmdb.org/t/p/w500/7WsyChvLEz79BMo33owrR7Z9XnS.jpg",
+                "https://image.tmdb.org/t/p/w500/reksS7S7S7S7S7S7S7S7S7S7S7S.jpg",
+                "https://image.tmdb.org/t/p/w500/y6y6y6y6y6y6y6y6y6y6y6y6y6y.jpg"
+            )
+        )
+    )
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.activity_list, container, false)
     }
@@ -32,6 +60,7 @@ class ListFragment : Fragment() {
         watchlistRepository = WatchlistRepository(requireContext())
         setupUI(view)
         setupVexoLists(view)
+        setupSearchLogic(view)
     }
 
     override fun onResume() {
@@ -53,6 +82,8 @@ class ListFragment : Fragment() {
         val containerMisColecciones = view.findViewById<View>(R.id.containerMisColecciones)
         val containerOtrasListas = view.findViewById<View>(R.id.containerOtrasListas)
         val btnCreate = view.findViewById<View>(R.id.btnCreateList)
+        val btnSearch = view.findViewById<View>(R.id.btnSearchOtherLists)
+        val cardSearch = view.findViewById<View>(R.id.cardSearchLists)
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -61,11 +92,14 @@ class ListFragment : Fragment() {
                         containerMisColecciones.visibility = View.VISIBLE
                         containerOtrasListas.visibility = View.GONE
                         btnCreate.visibility = View.VISIBLE
+                        btnSearch.visibility = View.GONE
+                        cardSearch.visibility = View.GONE
                     }
                     1 -> {
                         containerMisColecciones.visibility = View.GONE
                         containerOtrasListas.visibility = View.VISIBLE
                         btnCreate.visibility = View.GONE
+                        btnSearch.visibility = View.VISIBLE
                     }
                 }
             }
@@ -79,33 +113,6 @@ class ListFragment : Fragment() {
     private fun setupVexoLists(view: View) {
         val recyclerVexo = view.findViewById<RecyclerView>(R.id.recyclerVexoLists)
         
-        val officialLists = listOf(
-            VexoList(
-                id = "top_250_movies",
-                name = "LAS 250 MEJORES PELÍCULAS",
-                description = "La selección oficial de Vexo con las obras maestras del cine.",
-                imageRes = R.drawable.vexo_logo,
-                previewPosters = listOf(
-                    "https://image.tmdb.org/t/p/w500/q6y0Go1tsYmUuAtfj6KyB30OXvN.jpg",
-                    "https://image.tmdb.org/t/p/w500/3bhkrjSTWv4ayisdqAs6arW0Lja.jpg",
-                    "https://image.tmdb.org/t/p/w500/8S9NoP10n5S5G87G9vGf56zP167.jpg",
-                    "https://image.tmdb.org/t/p/w500/v9970pP2XF8X8Z6n1P2pS5X8X8Z.jpg"
-                )
-            ),
-            VexoList(
-                id = "top_250_tv",
-                name = "LAS 250 MEJORES SERIES",
-                description = "El ranking definitivo de Vexo con las mejores producciones de TV.",
-                imageRes = R.drawable.vexo_logo,
-                previewPosters = listOf(
-                    "https://image.tmdb.org/t/p/w500/ggm8bbv9v0f15c10v9f9f15c10v.jpg",
-                    "https://image.tmdb.org/t/p/w500/7WsyChvLEz79BMo33owrR7Z9XnS.jpg",
-                    "https://image.tmdb.org/t/p/w500/reksS7S7S7S7S7S7S7S7S7S7S7S.jpg",
-                    "https://image.tmdb.org/t/p/w500/y6y6y6y6y6y6y6y6y6y6y6y6y6y.jpg"
-                )
-            )
-        )
-
         vexoListAdapter = VexoListAdapter(officialLists) { vexolist ->
             val intent = Intent(requireContext(), VexoListDetailActivity::class.java)
             intent.putExtra("listId", vexolist.id)
@@ -115,6 +122,39 @@ class ListFragment : Fragment() {
 
         recyclerVexo.layoutManager = LinearLayoutManager(requireContext())
         recyclerVexo.adapter = vexoListAdapter
+    }
+
+    private fun setupSearchLogic(view: View) {
+        val btnSearch = view.findViewById<View>(R.id.btnSearchOtherLists)
+        val cardSearch = view.findViewById<View>(R.id.cardSearchLists)
+        val editSearch = view.findViewById<EditText>(R.id.editSearchLists)
+        val btnClear = view.findViewById<View>(R.id.btnClearSearch)
+
+        btnSearch.setOnClickListener {
+            if (cardSearch.visibility == View.VISIBLE) {
+                cardSearch.visibility = View.GONE
+                editSearch.setText("")
+                vexoListAdapter.updateLists(officialLists)
+            } else {
+                cardSearch.visibility = View.VISIBLE
+                editSearch.requestFocus()
+            }
+        }
+
+        editSearch.addTextChangedListener { text ->
+            val query = text.toString().lowercase().trim()
+            val filtered = if (query.isEmpty()) {
+                officialLists
+            } else {
+                officialLists.filter { 
+                    it.name.lowercase().contains(query) || it.description.lowercase().contains(query) 
+                }
+            }
+            vexoListAdapter.updateLists(filtered)
+            btnClear.visibility = if (query.isEmpty()) View.GONE else View.VISIBLE
+        }
+
+        btnClear.setOnClickListener { editSearch.setText("") }
     }
 
     private fun showCreateListDialog() {
@@ -128,7 +168,6 @@ class ListFragment : Fragment() {
         val btnCreate = view.findViewById<MaterialButton>(R.id.btnConfirmCreate)
         val btnCancel = view.findViewById<MaterialButton>(R.id.btnCancelCreate)
 
-        // Configuración inicial del Switch (Empieza en Privado)
         switchPublic.isChecked = false
         switchPublic.text = "Lista Privada"
         textHint.text = "Solo tú puedes ver esta lista."

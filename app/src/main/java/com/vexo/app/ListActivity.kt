@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -31,10 +32,10 @@ class ListActivity : AppCompatActivity() {
             "La selección oficial de cine con las películas mejor valoradas de todos los tiempos.", 
             R.drawable.vexo_logo,
             listOf(
-                "https://image.tmdb.org/t/p/w500/q6y0Go1tsYmUuAtfj6KyB30OXvN.jpg", // Cadena Perpetua
-                "https://image.tmdb.org/t/p/w500/3bhkrjSTWv4ayisdqAs6arW0Lja.jpg", // El Padrino
-                "https://image.tmdb.org/t/p/w500/8S9NoP10n5S5G87G9vGf56zP167.jpg", // La lista de Schindler
-                "https://image.tmdb.org/t/p/w500/v9970pP2XF8X8Z6n1P2pS5X8X8Z.jpg"  // Batman
+                "https://image.tmdb.org/t/p/w500/q6y0Go1tsYmUuAtfj6KyB30OXvN.jpg",
+                "https://image.tmdb.org/t/p/w500/3bhkrjSTWv4ayisdqAs6arW0Lja.jpg",
+                "https://image.tmdb.org/t/p/w500/8S9NoP10n5S5G87G9vGf56zP167.jpg",
+                "https://image.tmdb.org/t/p/w500/v9970pP2XF8X8Z6n1P2pS5X8X8Z.jpg"
             )
         ),
         VexoList(
@@ -43,10 +44,10 @@ class ListActivity : AppCompatActivity() {
             "El ranking oficial de televisión con las producciones más aclamadas por la crítica.", 
             R.drawable.vexo_logo,
             listOf(
-                "https://image.tmdb.org/t/p/w500/ztkUQvBZ77Z7iB1u66NuJvSTN7h.jpg", // Breaking Bad
-                "https://image.tmdb.org/t/p/w500/7WsyChvLEz79BMo33owrR7Z9XnS.jpg", // Juego de Tronos
-                "https://image.tmdb.org/t/p/w500/reksS7S7S7S7S7S7S7S7S7S7S7S.jpg", // Los Soprano
-                "https://image.tmdb.org/t/p/w500/69Uqt7vSbeFwb1L3rsLbt64H64o.jpg"  // Better Call Saul
+                "https://image.tmdb.org/t/p/w500/ztkUQvBZ77Z7iB1u66NuJvSTN7h.jpg",
+                "https://image.tmdb.org/t/p/w500/7WsyChvLEz79BMo33owrR7Z9XnS.jpg",
+                "https://image.tmdb.org/t/p/w500/reksS7S7S7S7S7S7S7S7S7S7S7S.jpg",
+                "https://image.tmdb.org/t/p/w500/69Uqt7vSbeFwb1L3rsLbt64H64o.jpg"
             )
         )
     )
@@ -55,8 +56,10 @@ class ListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
         watchlistRepository = WatchlistRepository(this)
+        
         setupUserListsView()
         setupVexoListsView()
+        setupSearchLogic()
         setupTabs()
     }
 
@@ -85,11 +88,47 @@ class ListActivity : AppCompatActivity() {
         recyclerVexo.adapter = vexoAdapter
     }
 
+    private fun setupSearchLogic() {
+        val btnSearch = findViewById<View>(R.id.btnSearchOtherLists)
+        val cardSearch = findViewById<View>(R.id.cardSearchLists)
+        val editSearch = findViewById<EditText>(R.id.editSearchLists)
+        val btnClear = findViewById<View>(R.id.btnClearSearch)
+
+        btnSearch.setOnClickListener {
+            if (cardSearch.visibility == View.VISIBLE) {
+                cardSearch.visibility = View.GONE
+                editSearch.setText("")
+                // Al cerrar, restauramos la lista completa
+                vexoAdapter.updateLists(officialVexoLists)
+            } else {
+                cardSearch.visibility = View.VISIBLE
+                editSearch.requestFocus()
+            }
+        }
+
+        editSearch.addTextChangedListener { text ->
+            val query = text.toString().lowercase().trim()
+            val filtered = if (query.isEmpty()) {
+                officialVexoLists
+            } else {
+                officialVexoLists.filter { 
+                    it.name.lowercase().contains(query) || it.description.lowercase().contains(query) 
+                }
+            }
+            vexoAdapter.updateLists(filtered)
+            btnClear.visibility = if (query.isEmpty()) View.GONE else View.VISIBLE
+        }
+
+        btnClear.setOnClickListener { editSearch.setText("") }
+    }
+
     private fun setupTabs() {
         val tabLayout = findViewById<TabLayout>(R.id.tabLayoutLists)
         val containerUser = findViewById<View>(R.id.containerMisColecciones)
         val containerVexo = findViewById<View>(R.id.containerOtrasListas)
         val btnCreate = findViewById<View>(R.id.btnCreateList)
+        val btnSearch = findViewById<View>(R.id.btnSearchOtherLists)
+        val cardSearch = findViewById<View>(R.id.cardSearchLists)
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -97,10 +136,13 @@ class ListActivity : AppCompatActivity() {
                     containerUser.visibility = View.VISIBLE
                     containerVexo.visibility = View.GONE
                     btnCreate.visibility = View.VISIBLE
+                    btnSearch.visibility = View.GONE
+                    cardSearch.visibility = View.GONE
                 } else {
                     containerUser.visibility = View.GONE
                     containerVexo.visibility = View.VISIBLE
                     btnCreate.visibility = View.GONE
+                    btnSearch.visibility = View.VISIBLE
                 }
             }
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
@@ -126,7 +168,10 @@ class ListActivity : AppCompatActivity() {
         AlertDialog.Builder(this).setTitle("Nueva Lista").setView(input)
             .setPositiveButton("Crear") { _, _ ->
                 val name = input.text.toString().trim()
-                if (name.isNotEmpty()) { watchlistRepository.createUserList(name); refreshUserListsData() }
+                if (name.isNotEmpty()) { 
+                    watchlistRepository.createUserList(name)
+                    refreshUserListsData() 
+                }
             }.setNegativeButton("Cancelar", null).show()
     }
 }
@@ -151,16 +196,10 @@ class UserListAdapter(
 
     override fun onBindViewHolder(h: ViewHolder, p: Int) {
         val l = lists[p]
-        
-        // Límite de 25 caracteres para el título
         val title = if (l.name.length > 25) l.name.take(25) + "..." else l.name
         h.name.text = title.uppercase()
-        
-        // Mostrar descripción
         h.description.text = l.description
         h.description.visibility = if (!l.description.isNullOrEmpty()) View.VISIBLE else View.GONE
-        
-        // Quitado "USUARIO VEXO"
         h.count.text = "${l.movies.size} ELEMENTOS"
 
         val imgs = listOf(h.img1, h.img2, h.img3, h.img4)

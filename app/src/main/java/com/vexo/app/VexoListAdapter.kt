@@ -18,7 +18,7 @@ data class VexoList(
 )
 
 class VexoListAdapter(
-    private val lists: List<VexoList>,
+    private var lists: List<VexoList>,
     private val onListClick: (VexoList) -> Unit
 ) : RecyclerView.Adapter<VexoListAdapter.ViewHolder>() {
 
@@ -85,4 +85,9 @@ class VexoListAdapter(
     }
 
     override fun getItemCount() = lists.size
+
+    fun updateLists(newList: List<VexoList>) {
+        lists = newList
+        notifyDataSetChanged()
+    }
 }

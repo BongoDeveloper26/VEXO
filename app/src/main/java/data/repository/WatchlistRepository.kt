@@ -38,6 +38,7 @@ class WatchlistRepository(private val context: Context) {
         private const val KEY_DIARY = "user_diary"
         private const val KEY_PROFILE_IMAGE = "user_profile_image"
         private const val KEY_HEADER_BACKGROUND = "user_header_background"
+        private const val KEY_HEADER_TRANSPARENT = "user_header_transparent"
         private const val KEY_USER_NAME = "user_name"
         private const val TAG = "WatchlistRepository"
     }
@@ -83,6 +84,13 @@ class WatchlistRepository(private val context: Context) {
     }
 
     fun getHeaderBackground(): String? = getPrefs().getString(KEY_HEADER_BACKGROUND, null)
+
+    fun isHeaderTransparent(): Boolean = getPrefs().getBoolean(KEY_HEADER_TRANSPARENT, false)
+
+    fun setHeaderTransparent(transparent: Boolean) {
+        getPrefs().edit().putBoolean(KEY_HEADER_TRANSPARENT, transparent).apply()
+        saveDataCloud(KEY_HEADER_TRANSPARENT, transparent)
+    }
 
     fun setUserName(name: String) {
         val sanitizedName = if (name.length > 15) name.substring(0, 15) else name

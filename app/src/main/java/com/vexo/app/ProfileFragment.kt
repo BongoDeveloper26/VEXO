@@ -27,6 +27,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import data.model.Movie
@@ -178,7 +179,7 @@ class ProfileFragment : Fragment() {
 
         cardProfileImage.setOnClickListener { pickImageLauncher.launch("image/*") }
         btnEditName.setOnClickListener { showEditNameDialog() }
-        btnChangeBackground.setOnClickListener { showBackgroundOptions() }
+        btnChangeBackground.setOnClickListener { showEnhancedBackgroundOptions() }
         
         val shareAction = View.OnClickListener { shareProfile() }
         containerShare.setOnClickListener(shareAction)
@@ -242,41 +243,54 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    private fun showBackgroundOptions() {
-        val options = arrayOf(
-            "Predeterminado", 
-            "Fondo Futurista", 
-            "Fondo Espacio", 
-            "Fondo Sala Cine", 
-            "Fondo Cine Clásico", 
-            "Fondo Vaporwave", 
-            "Fondo Playa"
+    private fun showEnhancedBackgroundOptions() {
+        val dialog = BottomSheetDialog(requireContext())
+        val bottomSheetView = layoutInflater.inflate(R.layout.layout_background_selection, null)
+        
+        // Configurar Switch de Transparencia de Cabecera
+        val switchTransparent = bottomSheetView.findViewById<SwitchMaterial>(R.id.switchHeaderTransparent)
+        switchTransparent.isChecked = watchlistRepository.isHeaderTransparent()
+        switchTransparent.setOnCheckedChangeListener { _, isChecked ->
+            watchlistRepository.setHeaderTransparent(isChecked)
+            loadBackgrounds()
+        }
+
+        val recycler = bottomSheetView.findViewById<RecyclerView>(R.id.recyclerBackgroundOptions)
+        recycler.layoutManager = LinearLayoutManager(requireContext())
+        
+        val options = listOf(
+            BackgroundOption(null, "Predeterminado", 0),
+            BackgroundOption("fondo_futurista", "Futurista", R.drawable.fondo_futurista),
+            BackgroundOption("fondo_espacio", "Espacio", R.drawable.fondo_espacio),
+            BackgroundOption("fondo_salacine", "Sala Cine", R.drawable.fondo_salacine),
+            BackgroundOption("fondo_cineclasico", "Cine Clásico", R.drawable.fondo_cineclasico),
+            BackgroundOption("fondo_vaporwave", "Vaporwave", R.drawable.fondo_vaporwave),
+            BackgroundOption("fondo_playa", "Playa", R.drawable.fondo_playa)
         )
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Cambiar fondo de perfil")
-            .setItems(options) { _, which ->
-                val bgKey = when (which) {
-                    0 -> null
-                    1 -> "fondo_futurista"
-                    2 -> "fondo_espacio"
-                    3 -> "fondo_salacine"
-                    4 -> "fondo_cineclasico"
-                    5 -> "fondo_vaporwave"
-                    6 -> "fondo_playa"
-                    else -> null
-                }
-                watchlistRepository.setHeaderBackground(bgKey)
-                loadBackgrounds()
-            }
-            .show()
+        
+        val currentBg = watchlistRepository.getHeaderBackground()
+        
+        recycler.adapter = BackgroundAdapter(options, currentBg) { selected ->
+            watchlistRepository.setHeaderBackground(selected.id)
+            loadBackgrounds()
+            dialog.dismiss()
+        }
+        
+        dialog.setContentView(bottomSheetView)
+        dialog.show()
     }
 
     private fun loadBackgrounds() {
         val bgName = watchlistRepository.getHeaderBackground()
+        val isTransparent = watchlistRepository.isHeaderTransparent()
         
-        // Reset default header
+        // Configurar Cabecera base
         imgHeaderBackground.setImageResource(R.drawable.bg_profile_header)
-        imgHeaderBackground.alpha = 1.0f
+        
+        // Ajustamos el nivel de transparencia: 
+        // Si el usuario activa "Transparente", usamos 0.5f (el efecto playa que te gustaba)
+        // Si no, usamos 1.0f (opaco total)
+        imgHeaderBackground.alpha = if (isTransparent) 0.5f else 1.0f
 
         when (bgName) {
             "fondo_futurista" -> setThemeConfig(R.drawable.fondo_futurista, "#00E5FF", "#CC1A1A1A", "#3300E5FF")
@@ -284,11 +298,7 @@ class ProfileFragment : Fragment() {
             "fondo_salacine" -> setThemeConfig(R.drawable.fondo_salacine, "#FFD700", "#CC2B0000", "#40FFD700")
             "fondo_cineclasico" -> setThemeConfig(R.drawable.fondo_cineclasico, "#D2B48C", "#CC1A110D", "#40D2B48C")
             "fondo_vaporwave" -> setThemeConfig(R.drawable.fondo_vaporwave, "#FF71CE", "#CC2D1B4B", "#40FF71CE")
-            "fondo_playa" -> {
-                // Hacer la cabecera un poco más transparente para que el fondo playa se vea mejor arriba
-                imgHeaderBackground.alpha = 0.5f
-                setThemeConfig(R.drawable.fondo_playa, "#00BCD4", "#CC002F2F", "#4000BCD4")
-            }
+            "fondo_playa" -> setThemeConfig(R.drawable.fondo_playa, "#00BCD4", "#CC002F2F", "#4000BCD4")
             else -> {
                 imgContentBackground.visibility = View.GONE
                 viewBackgroundOverlay.visibility = View.GONE

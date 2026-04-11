@@ -1,6 +1,8 @@
 package com.vexo.app
 
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.text.InputFilter
@@ -12,10 +14,12 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,12 +39,24 @@ class ProfileFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var imgSlots: List<ImageView>
     private lateinit var cardSlots: List<MaterialCardView>
-    private lateinit var activityAdapter: RecentActivityAdapter
-    private lateinit var diaryAdapter: DiaryAdapter
-    private lateinit var reviewAdapter: DiaryAdapter
+    private var activityAdapter: RecentActivityAdapter? = null
+    private var diaryAdapter: DiaryAdapter? = null
+    private var reviewAdapter: DiaryAdapter? = null
     private lateinit var imgProfile: ImageView
+    private lateinit var imgHeaderBackground: ImageView
+    private lateinit var imgContentBackground: ImageView
+    private lateinit var viewBackgroundOverlay: View
+    private lateinit var layoutContentProfile: LinearLayout
+    private lateinit var scrollViewProfile: ScrollView
     private lateinit var textUserName: TextView
     private lateinit var textUserEmail: TextView
+    
+    private lateinit var dynamicTexts: List<TextView>
+    private lateinit var dynamicSecondaryTexts: List<TextView>
+    private lateinit var dynamicIcons: List<ImageView>
+    private lateinit var dynamicCards: List<MaterialCardView>
+    private lateinit var dynamicSeparators: List<View>
+    private lateinit var btnViewAllList: List<TextView>
 
     private val pickImageLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -57,12 +73,12 @@ class ProfileFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
-        
         watchlistRepository = WatchlistRepository(requireContext())
         auth = FirebaseAuth.getInstance()
 
         setupUI(view)
         loadProfileImage()
+        loadBackgrounds()
         loadUserName()
         loadUserEmail()
         loadVitrina()
@@ -77,6 +93,7 @@ class ProfileFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         loadProfileImage()
+        loadBackgrounds()
         loadUserName()
         loadUserEmail()
         loadVitrina()
@@ -90,35 +107,85 @@ class ProfileFragment : Fragment() {
 
     private fun setupUI(view: View) {
         imgProfile = view.findViewById(R.id.imgProfile)
+        imgHeaderBackground = view.findViewById(R.id.imgProfileHeaderBackground)
+        imgContentBackground = view.findViewById(R.id.imgProfileContentBackground)
+        viewBackgroundOverlay = view.findViewById(R.id.viewBackgroundOverlay)
+        layoutContentProfile = view.findViewById(R.id.layoutContentProfile)
+        scrollViewProfile = view.findViewById(R.id.scrollViewProfile)
+        
         textUserName = view.findViewById(R.id.textUserNameProfile)
         textUserEmail = view.findViewById(R.id.textUserEmailProfile)
         val cardProfileImage: MaterialCardView = view.findViewById(R.id.cardProfileImage)
         val btnEditName: ImageButton = view.findViewById(R.id.btnEditName)
         
+        val btnChangeBackground: View = view.findViewById(R.id.btnChangeBackground)
         val containerShare: View = view.findViewById(R.id.btnShareProfile)
         val btnShareIcon: View = view.findViewById(R.id.imgShareProfile)
         val btnAchievements: View = view.findViewById(R.id.btnAchievements)
         
-        cardProfileImage.setOnClickListener {
-            pickImageLauncher.launch("image/*")
+        scrollViewProfile.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            if (imgContentBackground.visibility == View.VISIBLE) {
+                imgContentBackground.translationY = -scrollY * 0.15f
+            }
         }
 
-        btnEditName.setOnClickListener {
-            showEditNameDialog()
-        }
+        dynamicTexts = listOf(
+            view.findViewById(R.id.textVitrinaTitle),
+            view.findViewById(R.id.textActivityTitle),
+            view.findViewById(R.id.textReviewsTitle),
+            view.findViewById(R.id.textDiaryTitle),
+            view.findViewById(R.id.textMoviesCount),
+            view.findViewById(R.id.textAverageRating)
+        )
+        
+        dynamicSecondaryTexts = listOf(
+            view.findViewById(R.id.textVitrinaSub),
+            view.findViewById(R.id.textActivitySub),
+            view.findViewById(R.id.textReviewsSub),
+            view.findViewById(R.id.textDiarySub),
+            view.findViewById(R.id.textMoviesLabel),
+            view.findViewById(R.id.textRatingLabel)
+        )
+        
+        dynamicIcons = listOf(
+            view.findViewById(R.id.iconVitrina),
+            view.findViewById(R.id.iconActivity),
+            view.findViewById(R.id.iconReviews),
+            view.findViewById(R.id.iconDiary)
+        )
+        
+        dynamicCards = listOf(
+            view.findViewById(R.id.cardHeaderVitrina),
+            view.findViewById(R.id.cardHeaderActivity),
+            view.findViewById(R.id.cardHeaderReviews),
+            view.findViewById(R.id.cardHeaderDiary),
+            view.findViewById(R.id.cardStats)
+        )
+        
+        dynamicSeparators = listOf(
+            view.findViewById(R.id.sep1),
+            view.findViewById(R.id.sep2),
+            view.findViewById(R.id.sep3),
+            view.findViewById(R.id.sepStats),
+            view.findViewById(R.id.sepFinal)
+        )
+        
+        btnViewAllList = listOf(
+            view.findViewById(R.id.btnViewAllRated),
+            view.findViewById(R.id.btnViewAllReviews),
+            view.findViewById(R.id.btnViewAllDiary)
+        )
 
-        val shareAction = View.OnClickListener {
-            shareProfile()
-        }
+        cardProfileImage.setOnClickListener { pickImageLauncher.launch("image/*") }
+        btnEditName.setOnClickListener { showEditNameDialog() }
+        btnChangeBackground.setOnClickListener { showBackgroundOptions() }
+        
+        val shareAction = View.OnClickListener { shareProfile() }
         containerShare.setOnClickListener(shareAction)
         btnShareIcon.setOnClickListener(shareAction)
+        btnAchievements.setOnClickListener { startActivity(Intent(requireContext(), AchievementsActivity::class.java)) }
 
-        btnAchievements.setOnClickListener {
-            startActivity(Intent(requireContext(), AchievementsActivity::class.java))
-        }
-
-        val btnLogout: Button = view.findViewById(R.id.btnLogout)
-        btnLogout.setOnClickListener {
+        view.findViewById<Button>(R.id.btnLogout).setOnClickListener {
             auth.signOut()
             val intent = Intent(requireContext(), LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -156,134 +223,146 @@ class ProfileFragment : Fragment() {
         cardSlots.forEachIndexed { index, card ->
             card.setOnClickListener {
                 val movie = watchlistRepository.getVitrinaMovies()[index]
-                if (movie != null) {
-                    showMovieOptionsBottomSheet(index, movie)
-                } else {
-                    showMoviePickerDialog(index)
-                }
+                if (movie != null) showMovieOptionsBottomSheet(index, movie)
+                else showMoviePickerDialog(index)
             }
         }
 
-        val recyclerActivity = view.findViewById<RecyclerView>(R.id.recyclerRecentActivity)
-        recyclerActivity.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        view.findViewById<RecyclerView>(R.id.recyclerRecentActivity).layoutManager = 
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         
-        val recyclerReviews = view.findViewById<RecyclerView>(R.id.recyclerProfileReviews)
-        recyclerReviews.layoutManager = LinearLayoutManager(requireContext())
-        recyclerReviews.isNestedScrollingEnabled = false
-
-        val recyclerDiary = view.findViewById<RecyclerView>(R.id.recyclerDiary)
-        recyclerDiary.layoutManager = LinearLayoutManager(requireContext())
-        recyclerDiary.isNestedScrollingEnabled = false
-    }
-
-    private fun shareProfile() {
-        val name = watchlistRepository.getUserName()
-        val stats = watchlistRepository.getStats()
-        val uid = watchlistRepository.userId ?: return
-        
-        // Creamos el enlace profundo (Deep Link)
-        val profileLink = "vexo://profile/$uid"
-        
-        val shareText = """
-            🎬 ¡Echa un vistazo a mi vitrina en VEXO!
-            
-            👤 Usuario: $name
-            📊 Películas valoradas: ${stats.totalMovies}
-            ⭐ Nota media: ${String.format("%.1f", stats.averageRating)}
-            
-            🔗 Mira mi perfil aquí: $profileLink
-            
-            ¡Descarga VEXO para descubrir las mejores películas y series! 🍿
-        """.trimIndent()
-
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, "Perfil de VEXO de $name")
-            putExtra(Intent.EXTRA_TEXT, shareText)
+        view.findViewById<RecyclerView>(R.id.recyclerProfileReviews).apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            isNestedScrollingEnabled = false
         }
-        
-        startActivity(Intent.createChooser(intent, "Compartir perfil con..."))
-    }
 
-    private fun loadProfileImage() {
-        val uriString = watchlistRepository.getProfileImageUri()
-        if (uriString != null) {
-            imgProfile.setPadding(0, 0, 0, 0)
-            imgProfile.imageTintList = null
-            imgProfile.alpha = 1.0f
-            Glide.with(this)
-                .load(Uri.parse(uriString))
-                .centerCrop()
-                .placeholder(R.drawable.ic_nav_profile)
-                .into(imgProfile)
+        view.findViewById<RecyclerView>(R.id.recyclerDiary).apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            isNestedScrollingEnabled = false
         }
     }
 
-    private fun loadUserName() {
-        textUserName.text = watchlistRepository.getUserName()
-    }
-
-    private fun loadUserEmail() {
-        val user = auth.currentUser
-        textUserEmail.text = user?.email ?: getString(R.string.no_email_linked)
-    }
-
-    private fun showEditNameDialog() {
-        val builder = MaterialAlertDialogBuilder(requireContext())
-        builder.setTitle("Cambiar nombre")
-        
-        val input = EditText(requireContext())
-        input.filters = arrayOf(InputFilter.LengthFilter(15))
-        input.setText(textUserName.text.toString())
-        input.setSelection(input.text.length)
-        input.isSingleLine = true
-        
-        val lp = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
+    private fun showBackgroundOptions() {
+        val options = arrayOf(
+            "Predeterminado", 
+            "Fondo Futurista", 
+            "Fondo Espacio", 
+            "Fondo Sala Cine", 
+            "Fondo Cine Clásico", 
+            "Fondo Vaporwave", 
+            "Fondo Playa"
         )
-        val container = LinearLayout(requireContext())
-        val margin = (24 * resources.displayMetrics.density).toInt()
-        lp.setMargins(margin, 0, margin, 0)
-        input.layoutParams = lp
-        container.addView(input)
-        
-        builder.setView(container)
-        
-        builder.setPositiveButton("Guardar") { _, _ ->
-            val newName = input.text.toString().trim()
-            if (newName.isNotEmpty()) {
-                watchlistRepository.setUserName(newName)
-                textUserName.text = newName
-                
-                val user = auth.currentUser
-                val profileUpdates = UserProfileChangeRequest.Builder()
-                    .setDisplayName(newName)
-                    .build()
-                
-                user?.updateProfile(profileUpdates)?.addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Toast.makeText(requireContext(), "Nombre actualizado en la nube", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(requireContext(), "Error al sincronizar con Firebase", Toast.LENGTH_SHORT).show()
-                    }
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Cambiar fondo de perfil")
+            .setItems(options) { _, which ->
+                val bgKey = when (which) {
+                    0 -> null
+                    1 -> "fondo_futurista"
+                    2 -> "fondo_espacio"
+                    3 -> "fondo_salacine"
+                    4 -> "fondo_cineclasico"
+                    5 -> "fondo_vaporwave"
+                    6 -> "fondo_playa"
+                    else -> null
                 }
+                watchlistRepository.setHeaderBackground(bgKey)
+                loadBackgrounds()
             }
-        }
-        builder.setNegativeButton("Cancelar", null)
-        builder.show()
+            .show()
     }
 
-    private fun updateStats(view: View) {
-        val stats = watchlistRepository.getStats()
-        view.findViewById<TextView>(R.id.textMoviesCount).text = stats.totalMovies.toString()
-        view.findViewById<TextView>(R.id.textAverageRating).text = String.format("%.1f", stats.averageRating)
+    private fun loadBackgrounds() {
+        val bgName = watchlistRepository.getHeaderBackground()
+        
+        // Reset default header
+        imgHeaderBackground.setImageResource(R.drawable.bg_profile_header)
+        imgHeaderBackground.alpha = 1.0f
+
+        when (bgName) {
+            "fondo_futurista" -> setThemeConfig(R.drawable.fondo_futurista, "#00E5FF", "#CC1A1A1A", "#3300E5FF")
+            "fondo_espacio" -> setThemeConfig(R.drawable.fondo_espacio, "#B0E0E6", "#CC0B1026", "#40B0E0E6")
+            "fondo_salacine" -> setThemeConfig(R.drawable.fondo_salacine, "#FFD700", "#CC2B0000", "#40FFD700")
+            "fondo_cineclasico" -> setThemeConfig(R.drawable.fondo_cineclasico, "#D2B48C", "#CC1A110D", "#40D2B48C")
+            "fondo_vaporwave" -> setThemeConfig(R.drawable.fondo_vaporwave, "#FF71CE", "#CC2D1B4B", "#40FF71CE")
+            "fondo_playa" -> {
+                // Hacer la cabecera un poco más transparente para que el fondo playa se vea mejor arriba
+                imgHeaderBackground.alpha = 0.5f
+                setThemeConfig(R.drawable.fondo_playa, "#00BCD4", "#CC002F2F", "#4000BCD4")
+            }
+            else -> {
+                imgContentBackground.visibility = View.GONE
+                viewBackgroundOverlay.visibility = View.GONE
+                layoutContentProfile.setBackgroundResource(R.drawable.bg_profile_content_gradient)
+                scrollViewProfile.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.background_app))
+                applyDefaultColors()
+            }
+        }
+    }
+
+    private fun setThemeConfig(resId: Int, accent: String, cardBg: String, stroke: String) {
+        imgContentBackground.visibility = View.VISIBLE
+        imgContentBackground.setImageResource(resId)
+        viewBackgroundOverlay.visibility = View.VISIBLE
+        layoutContentProfile.setBackgroundResource(0)
+        scrollViewProfile.setBackgroundColor(Color.TRANSPARENT)
+        applyThemedColors(Color.parseColor(accent), Color.parseColor(cardBg), Color.parseColor(stroke))
+    }
+
+    private fun applyThemedColors(accentColor: Int, cardBgColor: Int, strokeColor: Int) {
+        val pureWhite = Color.WHITE
+        val separatorColor = Color.parseColor("#40FFFFFF")
+
+        dynamicTexts.forEach { it.setTextColor(accentColor) }
+        dynamicSecondaryTexts.forEach { 
+            it.setTextColor(pureWhite)
+            it.alpha = 0.9f
+        }
+        dynamicIcons.forEach { it.imageTintList = ColorStateList.valueOf(accentColor) }
+        dynamicCards.forEach { card ->
+            card.setCardBackgroundColor(cardBgColor)
+            card.strokeColor = strokeColor
+            card.strokeWidth = 2
+        }
+        dynamicSeparators.forEach { it.setBackgroundColor(separatorColor) }
+        btnViewAllList.forEach { it.setTextColor(accentColor) }
+        
+        activityAdapter?.updateTheme(true, accentColor)
+        diaryAdapter?.updateTheme(true, accentColor, cardBgColor, strokeColor)
+        reviewAdapter?.updateTheme(true, accentColor, cardBgColor, strokeColor)
+    }
+
+    private fun applyDefaultColors() {
+        val primary = ContextCompat.getColor(requireContext(), R.color.primary)
+        val textSecondary = ContextCompat.getColor(requireContext(), R.color.text_secondary)
+        val separator = Color.parseColor("#12000000")
+
+        dynamicTexts.forEach { it.setTextColor(primary) }
+        dynamicSecondaryTexts.forEach { 
+            it.setTextColor(textSecondary)
+            it.alpha = 0.85f
+        }
+        dynamicIcons.forEach { it.imageTintList = ColorStateList.valueOf(primary) }
+        dynamicCards.forEach { card ->
+            if (card.id == R.id.cardStats) {
+                card.setCardBackgroundColor(Color.WHITE)
+                card.strokeColor = Color.parseColor("#08000000")
+            } else {
+                card.setCardBackgroundColor(Color.parseColor("#0A7C3AED"))
+                card.strokeColor = Color.parseColor("#157C3AED")
+            }
+            card.strokeWidth = 1
+        }
+        dynamicSeparators.forEach { it.setBackgroundColor(separator) }
+        btnViewAllList.forEach { it.setTextColor(primary) }
+
+        activityAdapter?.updateTheme(false)
+        diaryAdapter?.updateTheme(false)
+        reviewAdapter?.updateTheme(false)
     }
 
     private fun loadRecentActivity(view: View) {
         val recentMovies = watchlistRepository.getAllRatedMovies().take(5)
         val layoutActivity = view.findViewById<View>(R.id.layoutActivity)
-        
         if (recentMovies.isNotEmpty()) {
             layoutActivity.visibility = View.VISIBLE
             activityAdapter = RecentActivityAdapter(recentMovies, watchlistRepository) { movie ->
@@ -291,6 +370,7 @@ class ProfileFragment : Fragment() {
                 intent.putExtra("movie", movie)
                 startActivity(intent)
             }
+            updateAdapterThemes()
             view.findViewById<RecyclerView>(R.id.recyclerRecentActivity).adapter = activityAdapter
         } else {
             layoutActivity.visibility = View.GONE
@@ -301,10 +381,8 @@ class ProfileFragment : Fragment() {
         val allEntries = watchlistRepository.getDiary()
         val reviewEntries = allEntries.filter { !it.review.isNullOrEmpty() }.take(3)
         val layoutReviews = view.findViewById<View>(R.id.layoutMyReviews)
-
         if (reviewEntries.isNotEmpty()) {
             layoutReviews.visibility = View.VISIBLE
-            // AQUÍ: showTimeline = false y añadimos isFavorite
             reviewAdapter = DiaryAdapter(reviewEntries, showTimeline = false, isFavorite = { movieId ->
                 watchlistRepository.isFavorite(movieId)
             }) { entry ->
@@ -315,6 +393,7 @@ class ProfileFragment : Fragment() {
                     startActivity(intent)
                 }
             }
+            updateAdapterThemes()
             view.findViewById<RecyclerView>(R.id.recyclerProfileReviews).adapter = reviewAdapter
         } else {
             layoutReviews.visibility = View.GONE
@@ -324,53 +403,36 @@ class ProfileFragment : Fragment() {
     private fun loadDiary(view: View) {
         val diaryEntries = watchlistRepository.getDiary().take(3)
         val layoutDiary = view.findViewById<View>(R.id.layoutDiary)
-
         if (diaryEntries.isNotEmpty()) {
             layoutDiary.visibility = View.VISIBLE
-
-            // AQUÍ: showTimeline = true y añadimos isFavorite
             diaryAdapter = DiaryAdapter(diaryEntries, showTimeline = true, isFavorite = { movieId ->
                 watchlistRepository.isFavorite(movieId)
             }) { entry ->
                 val movieToOpen = entry.movie ?: watchlistRepository.getAllRatedMovies().find { it.id == entry.movieId }
-                
                 if (movieToOpen != null) {
                     val intent = Intent(requireContext(), DetailActivity::class.java)
                     intent.putExtra("movie", movieToOpen)
                     startActivity(intent)
-                } else {
-                    Toast.makeText(requireContext(), "No se pudo abrir la ficha", Toast.LENGTH_SHORT).show()
                 }
             }
-
+            updateAdapterThemes()
             view.findViewById<RecyclerView>(R.id.recyclerDiary).adapter = diaryAdapter
         } else {
             layoutDiary.visibility = View.GONE
         }
     }
 
-    private fun showMovieOptionsBottomSheet(slotIndex: Int, movie: Movie) {
-        val dialog = BottomSheetDialog(requireContext())
-        val menuView = layoutInflater.inflate(R.layout.layout_vitrina_menu, null)
-        
-        menuView.findViewById<TextView>(R.id.vitrinaMenuTitle).text = movie.title
-
-        menuView.findViewById<View>(R.id.btnVitrinaDetails).setOnClickListener {
-            dialog.dismiss()
-            val intent = Intent(requireContext(), DetailActivity::class.java)
-            intent.putExtra("movie", movie)
-            startActivity(intent)
+    private fun updateAdapterThemes() {
+        val bgName = watchlistRepository.getHeaderBackground()
+        when (bgName) {
+            "fondo_futurista" -> applyThemedColors(Color.parseColor("#00E5FF"), Color.parseColor("#CC1A1A1A"), Color.parseColor("#3300E5FF"))
+            "fondo_espacio" -> applyThemedColors(Color.parseColor("#B0E0E6"), Color.parseColor("#CC0B1026"), Color.parseColor("#40B0E0E6"))
+            "fondo_salacine" -> applyThemedColors(Color.parseColor("#FFD700"), Color.parseColor("#CC2B0000"), Color.parseColor("#40FFD700"))
+            "fondo_cineclasico" -> applyThemedColors(Color.parseColor("#D2B48C"), Color.parseColor("#CC1A110D"), Color.parseColor("#40D2B48C"))
+            "fondo_vaporwave" -> applyThemedColors(Color.parseColor("#FF71CE"), Color.parseColor("#CC2D1B4B"), Color.parseColor("#40FF71CE"))
+            "fondo_playa" -> applyThemedColors(Color.parseColor("#00BCD4"), Color.parseColor("#CC002F2F"), Color.parseColor("#4000BCD4"))
+            else -> applyDefaultColors()
         }
-
-        menuView.findViewById<View>(R.id.btnVitrinaRemove).setOnClickListener {
-            dialog.dismiss()
-            watchlistRepository.setVitrinaMovie(slotIndex, null)
-            loadVitrina()
-            Toast.makeText(requireContext(), "Eliminada de la vitrina", Toast.LENGTH_SHORT).show()
-        }
-
-        dialog.setContentView(menuView)
-        dialog.show()
     }
 
     private fun loadVitrina() {
@@ -384,10 +446,45 @@ class ProfileFragment : Fragment() {
                 Glide.with(this).load(movie.posterPath).centerCrop().into(imgView)
             } else {
                 imgView.setImageDrawable(null)
-                imgView.alpha = 1.0f
-                imgView.setPadding(0, 0, 0, 0)
             }
         }
+    }
+
+    private fun loadProfileImage() {
+        val uriString = watchlistRepository.getProfileImageUri()
+        if (uriString != null) {
+            imgProfile.setPadding(0, 0, 0, 0)
+            imgProfile.imageTintList = null
+            imgProfile.alpha = 1.0f
+            Glide.with(this).load(Uri.parse(uriString)).centerCrop().placeholder(R.drawable.ic_nav_profile).into(imgProfile)
+        }
+    }
+
+    private fun loadUserName() { textUserName.text = watchlistRepository.getUserName() }
+    private fun loadUserEmail() { textUserEmail.text = auth.currentUser?.email ?: getString(R.string.no_email_linked) }
+    private fun updateStats(view: View) {
+        val stats = watchlistRepository.getStats()
+        view.findViewById<TextView>(R.id.textMoviesCount).text = stats.totalMovies.toString()
+        view.findViewById<TextView>(R.id.textAverageRating).text = String.format("%.1f", stats.averageRating)
+    }
+
+    private fun showMovieOptionsBottomSheet(slotIndex: Int, movie: Movie) {
+        val dialog = BottomSheetDialog(requireContext())
+        val menuView = layoutInflater.inflate(R.layout.layout_vitrina_menu, null)
+        menuView.findViewById<TextView>(R.id.vitrinaMenuTitle).text = movie.title
+        menuView.findViewById<View>(R.id.btnVitrinaDetails).setOnClickListener {
+            dialog.dismiss()
+            val intent = Intent(requireContext(), DetailActivity::class.java)
+            intent.putExtra("movie", movie)
+            startActivity(intent)
+        }
+        menuView.findViewById<View>(R.id.btnVitrinaRemove).setOnClickListener {
+            dialog.dismiss()
+            watchlistRepository.setVitrinaMovie(slotIndex, null)
+            loadVitrina()
+        }
+        dialog.setContentView(menuView)
+        dialog.show()
     }
 
     private fun showMoviePickerDialog(slotIndex: Int) {
@@ -403,5 +500,45 @@ class ProfileFragment : Fragment() {
                 watchlistRepository.setVitrinaMovie(slotIndex, favorites[which])
                 loadVitrina()
             }.show()
+    }
+
+    private fun showEditNameDialog() {
+        val builder = MaterialAlertDialogBuilder(requireContext())
+        builder.setTitle("Cambiar nombre")
+        val input = EditText(requireContext())
+        input.filters = arrayOf(InputFilter.LengthFilter(15))
+        input.setText(textUserName.text.toString())
+        input.isSingleLine = true
+        val container = LinearLayout(requireContext())
+        val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        val margin = (24 * resources.displayMetrics.density).toInt()
+        lp.setMargins(margin, 0, margin, 0)
+        input.layoutParams = lp
+        container.addView(input)
+        builder.setView(container)
+        builder.setPositiveButton("Guardar") { _, _ ->
+            val newName = input.text.toString().trim()
+            if (newName.isNotEmpty()) {
+                watchlistRepository.setUserName(newName)
+                textUserName.text = newName
+                val user = auth.currentUser
+                val profileUpdates = UserProfileChangeRequest.Builder().setDisplayName(newName).build()
+                user?.updateProfile(profileUpdates)
+            }
+        }
+        builder.setNegativeButton("Cancelar", null)
+        builder.show()
+    }
+
+    private fun shareProfile() {
+        val name = watchlistRepository.getUserName()
+        val stats = watchlistRepository.getStats()
+        val profileLink = "vexo://profile/${watchlistRepository.userId}"
+        val shareText = "🎬 Perfil de $name en VEXO\n📊 Películas: ${stats.totalMovies}\n⭐ Nota: ${String.format("%.1f", stats.averageRating)}\n🔗 $profileLink"
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, shareText)
+        }
+        startActivity(Intent.createChooser(intent, "Compartir perfil"))
     }
 }

@@ -37,6 +37,7 @@ class WatchlistRepository(private val context: Context) {
         private const val KEY_CUSTOM_LISTS = "user_custom_lists"
         private const val KEY_DIARY = "user_diary"
         private const val KEY_PROFILE_IMAGE = "user_profile_image"
+        private const val KEY_HEADER_BACKGROUND = "user_header_background"
         private const val KEY_USER_NAME = "user_name"
         private const val TAG = "WatchlistRepository"
     }
@@ -75,6 +76,13 @@ class WatchlistRepository(private val context: Context) {
     }
 
     fun getProfileImageUri(): String? = getPrefs().getString(KEY_PROFILE_IMAGE, null)
+
+    fun setHeaderBackground(resName: String?) {
+        getPrefs().edit().putString(KEY_HEADER_BACKGROUND, resName).apply()
+        resName?.let { saveDataCloud(KEY_HEADER_BACKGROUND, it) }
+    }
+
+    fun getHeaderBackground(): String? = getPrefs().getString(KEY_HEADER_BACKGROUND, null)
 
     fun setUserName(name: String) {
         val sanitizedName = if (name.length > 15) name.substring(0, 15) else name

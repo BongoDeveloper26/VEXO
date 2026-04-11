@@ -1,704 +1,777 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background_app"
-    android:fillViewport="true"
-    android:clipChildren="false"
-    android:clipToPadding="false">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <!-- FONDO FIJO AJUSTADO (MENOS ZOOM) -->
+    <ImageView
+        android:id="@+id/imgProfileContentBackground"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_height="1100dp"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        android:layout_gravity="top"
+        tools:visibility="visible"
+        tools:src="@drawable/fondo_futurista" />
+
+    <View
+        android:id="@+id/viewBackgroundOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#CC000000"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <ScrollView
+        android:id="@+id/scrollViewProfile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_app"
+        android:fillViewport="true"
         android:clipChildren="false"
         android:clipToPadding="false">
 
-        <!-- CABECERA DE PERFIL -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="360dp"
-                android:background="@drawable/bg_profile_header" />
-
-            <!-- Botón Logros -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/btnAchievements"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_gravity="end|top"
-                android:layout_marginTop="32dp"
-                android:layout_marginEnd="72dp"
-                app:cardCornerRadius="22dp"
-                app:cardElevation="6dp"
-                app:cardBackgroundColor="#CC000000"
-                app:strokeWidth="1dp"
-                app:strokeColor="#33FFFFFF">
-
-                <ImageButton
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_trophy"
-                    android:padding="11dp"
-                    app:tint="@color/white"
-                    android:clickable="false" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Botón Compartir Moderno -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/btnShareProfile"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_gravity="end|top"
-                android:layout_marginTop="32dp"
-                android:layout_marginEnd="16dp"
-                app:cardCornerRadius="22dp"
-                app:cardElevation="6dp"
-                app:cardBackgroundColor="#CC000000"
-                app:strokeWidth="1dp"
-                app:strokeColor="#33FFFFFF">
-
-                <ImageButton
-                    android:id="@+id/imgShareProfile"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_share_modern"
-                    android:padding="11dp"
-                    app:tint="@color/white" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:paddingTop="100dp"
-                android:paddingBottom="40dp">
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardProfileImage"
-                    android:layout_width="130dp"
-                    android:layout_height="130dp"
-                    app:cardCornerRadius="65dp"
-                    app:cardElevation="8dp"
-                    app:cardBackgroundColor="@color/surface_app"
-                    app:strokeWidth="4dp"
-                    app:strokeColor="#40FFFFFF"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <ImageView
-                        android:id="@+id/imgProfile"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_nav_profile"
-                        android:padding="24dp"
-                        app:tint="@color/primary" />
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- MARCO ELEGANTE PARA EL NOMBRE -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:background="@drawable/bg_profile_name_tag"
-                    android:paddingHorizontal="24dp"
-                    android:paddingVertical="10dp">
-
-                    <TextView
-                        android:id="@+id/textUserNameProfile"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Usuario VEXO"
-                        android:textColor="@color/white"
-                        android:textSize="22sp"
-                        android:fontFamily="sans-serif-black"
-                        android:letterSpacing="-0.01" />
-
-                    <ImageButton
-                        android:id="@+id/btnEditName"
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:layout_marginStart="14dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@android:drawable/ic_menu_edit"
-                        android:scaleType="fitCenter"
-                        app:tint="@color/white"
-                        android:alpha="0.9" />
-                </LinearLayout>
-
-                <!-- CORREO ELECTRÓNICO -->
-                <TextView
-                    android:id="@+id/textUserEmailProfile"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="correo@ejemplo.com"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:alpha="0.7"
-                    android:fontFamily="sans-serif-medium" />
-
-            </LinearLayout>
-        </FrameLayout>
-
-        <!-- CONTENIDO PRINCIPAL -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="24dp"
-            android:paddingBottom="180dp"
-            android:layout_marginTop="12dp"
-            android:clipToPadding="false"
             android:clipChildren="false"
-            android:background="@drawable/bg_profile_content_gradient">
+            android:clipToPadding="false">
 
-            <!-- SECCIÓN VITRINA -->
-            <LinearLayout
+            <!-- CABECERA DE PERFIL -->
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="48dp"
-                android:clipToPadding="false"
-                android:clipChildren="false">
+                android:elevation="8dp">
 
-                <!-- Header Vitrina -->
-                <com.google.android.material.card.MaterialCardView
+                <ImageView
+                    android:id="@+id/imgProfileHeaderBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="360dp"
+                    android:background="@drawable/bg_profile_header"
+                    android:scaleType="centerCrop" />
+
+                <!-- Botones de Acción Superiores -->
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    android:layout_marginStart="-200dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="#0A7C3AED"
-                    app:strokeWidth="1.5dp"
-                    app:strokeColor="#157C3AED">
+                    android:layout_gravity="end|top"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="16dp"
+                    android:orientation="horizontal">
+
+                    <!-- Botón Cambiar Fondo -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/btnChangeBackground"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="22dp"
+                        app:cardElevation="6dp"
+                        app:cardBackgroundColor="#CC000000"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="#33FFFFFF">
+
+                        <ImageButton
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:src="@android:drawable/ic_menu_gallery"
+                            android:padding="11dp"
+                            app:tint="@color/white"
+                            android:clickable="false" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Botón Logros -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/btnAchievements"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="22dp"
+                        app:cardElevation="6dp"
+                        app:cardBackgroundColor="#CC000000"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="#33FFFFFF">
+
+                        <ImageButton
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:src="@drawable/ic_trophy"
+                            android:padding="11dp"
+                            app:tint="@color/white"
+                            android:clickable="false" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Botón Compartir Moderno -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/btnShareProfile"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        app:cardCornerRadius="22dp"
+                        app:cardElevation="6dp"
+                        app:cardBackgroundColor="#CC000000"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="#33FFFFFF">
+
+                        <ImageButton
+                            android:id="@+id/imgShareProfile"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:src="@drawable/ic_share_modern"
+                            android:padding="11dp"
+                            app:tint="@color/white" />
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:paddingTop="100dp"
+                    android:paddingBottom="40dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardProfileImage"
+                        android:layout_width="130dp"
+                        android:layout_height="130dp"
+                        app:cardCornerRadius="65dp"
+                        app:cardElevation="8dp"
+                        app:cardBackgroundColor="@color/surface_app"
+                        app:strokeWidth="4dp"
+                        app:strokeColor="#40FFFFFF"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:id="@+id/imgProfile"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/ic_nav_profile"
+                            android:padding="24dp"
+                            app:tint="@color/primary" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- MARCO ELEGANTE PARA EL NOMBRE -->
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:layout_marginTop="24dp"
                         android:gravity="center_vertical"
-                        android:paddingStart="216dp"
-                        android:paddingEnd="16dp"
+                        android:orientation="horizontal"
+                        android:background="@drawable/bg_profile_name_tag"
+                        android:paddingHorizontal="24dp"
                         android:paddingVertical="10dp">
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_vitrina_gem"
-                            app:tint="@color/primary" />
+
+                        <TextView
+                            android:id="@+id/textUserNameProfile"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Usuario VEXO"
+                            android:textColor="@color/white"
+                            android:textSize="22sp"
+                            android:fontFamily="sans-serif-black"
+                            android:letterSpacing="-0.01" />
+
+                        <ImageButton
+                            android:id="@+id/btnEditName"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_marginStart="14dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:src="@android:drawable/ic_menu_edit"
+                            android:scaleType="fitCenter"
+                            app:tint="@color/white"
+                            android:alpha="0.9" />
+                    </LinearLayout>
+
+                    <!-- CORREO ELECTRÓNICO -->
+                    <TextView
+                        android:id="@+id/textUserEmailProfile"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="correo@ejemplo.com"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:alpha="0.7"
+                        android:fontFamily="sans-serif-medium" />
+
+                </LinearLayout>
+            </FrameLayout>
+
+            <!-- CONTENIDO PRINCIPAL SCROLLABLE -->
+            <LinearLayout
+                android:id="@+id/layoutContentProfile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-120dp"
+                android:orientation="vertical"
+                android:paddingHorizontal="24dp"
+                android:paddingTop="110dp"
+                android:paddingBottom="180dp"
+                android:clipToPadding="false"
+                android:clipChildren="false"
+                android:background="@drawable/bg_profile_content_gradient">
+
+                <!-- VITRINA -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="20dp"
+                    android:clipToPadding="false"
+                    android:clipChildren="false">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardHeaderVitrina"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:layout_marginStart="-200dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="#0A7C3AED"
+                        app:strokeWidth="1.5dp"
+                        app:strokeColor="#157C3AED">
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingStart="216dp"
+                            android:paddingEnd="16dp"
+                            android:paddingVertical="10dp">
+                            <ImageView
+                                android:id="@+id/iconVitrina"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_vitrina_gem"
+                                app:tint="@color/primary" />
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:layout_marginStart="12dp">
+                                <TextView
+                                    android:id="@+id/textVitrinaTitle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="VITRINA DESTACADA"
+                                    android:textColor="@color/primary"
+                                    android:textSize="14sp"
+                                    android:fontFamily="sans-serif-black"
+                                    android:letterSpacing="0.05" />
+                                <TextView
+                                    android:id="@+id/textVitrinaSub"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Enseña tus obras favoritas"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="15sp"
+                                    android:alpha="0.85" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/slot1"
+                            android:layout_width="0dp"
+                            android:layout_height="175dp"
+                            android:layout_weight="1"
+                            android:layout_margin="4dp"
+                            app:cardCornerRadius="18dp"
+                            app:cardElevation="2dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#10000000">
+                            <ImageView
+                                android:id="@+id/imgSlot1"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/slot2"
+                            android:layout_width="0dp"
+                            android:layout_height="175dp"
+                            android:layout_weight="1"
+                            android:layout_margin="4dp"
+                            app:cardCornerRadius="18dp"
+                            app:cardElevation="2dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#10000000">
+                            <ImageView
+                                android:id="@+id/imgSlot2"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/slot3"
+                            android:layout_width="0dp"
+                            android:layout_height="175dp"
+                            android:layout_weight="1"
+                            android:layout_margin="4dp"
+                            app:cardCornerRadius="18dp"
+                            app:cardElevation="2dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#10000000">
+                            <ImageView
+                                android:id="@+id/imgSlot3"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/slot4"
+                            android:layout_width="0dp"
+                            android:layout_height="175dp"
+                            android:layout_weight="1"
+                            android:layout_margin="4dp"
+                            app:cardCornerRadius="18dp"
+                            app:cardElevation="2dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#10000000">
+                            <ImageView
+                                android:id="@+id/imgSlot4"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop" />
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/sep1"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#12000000"
+                    android:layout_marginTop="32dp" />
+
+                <!-- ACTIVIDAD RECIENTE -->
+                <LinearLayout
+                    android:id="@+id/layoutActivity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="32dp"
+                    android:clipToPadding="false"
+                    android:clipChildren="false">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:clipToPadding="false"
+                        android:clipChildren="false">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardHeaderActivity"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_marginStart="-200dp"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0dp"
+                            app:cardBackgroundColor="#0A7C3AED"
+                            app:strokeWidth="1.5dp"
+                            app:strokeColor="#157C3AED">
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:paddingStart="216dp"
+                                android:paddingEnd="16dp"
+                                android:paddingVertical="10dp">
+                                <ImageView
+                                    android:id="@+id/iconActivity"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@android:drawable/ic_menu_recent_history"
+                                    app:tint="@color/primary" />
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:layout_marginStart="12dp">
+                                    <TextView
+                                        android:id="@+id/textActivityTitle"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="ACTIVIDAD RECIENTE"
+                                        android:textColor="@color/primary"
+                                        android:textSize="14sp"
+                                        android:fontFamily="sans-serif-black"
+                                        android:letterSpacing="0.05" />
+                                    <TextView
+                                        android:id="@+id/textActivitySub"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Lo último que has visto"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="15sp"
+                                        android:alpha="0.85" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <TextView
+                            android:id="@+id/btnViewAllRated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:text="Ver todas"
+                            android:textColor="@color/primary"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="6dp"
+                            android:background="?attr/selectableItemBackgroundBorderless" />
+                    </RelativeLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerRecentActivity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:overScrollMode="never" />
+                </LinearLayout>
+
+                <!-- ESTADÍSTICAS -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardStats"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="#08000000">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:paddingVertical="20dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:orientation="vertical"
-                            android:layout_marginStart="12dp">
+                            android:gravity="center">
                             <TextView
+                                android:id="@+id/textMoviesCount"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="VITRINA DESTACADA"
+                                android:text="0"
                                 android:textColor="@color/primary"
-                                android:textSize="14sp"
-                                android:fontFamily="sans-serif-black"
-                                android:letterSpacing="0.05" />
+                                android:textSize="22sp"
+                                android:fontFamily="sans-serif-black" />
                             <TextView
+                                android:id="@+id/textMoviesLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Enseña tus obras favoritas"
+                                android:text="PELÍCULAS"
                                 android:textColor="@color/text_secondary"
-                                android:textSize="15sp"
-                                android:alpha="0.85" />
+                                android:textSize="13sp"
+                                android:fontFamily="sans-serif-medium"
+                                android:letterSpacing="0.1" />
+                        </LinearLayout>
+
+                        <View
+                            android:id="@+id/sepStats"
+                            android:layout_width="1dp"
+                            android:layout_height="35dp"
+                            android:background="#08000000" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+                            <TextView
+                                android:id="@+id/textAverageRating"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0.0"
+                                android:textColor="@color/primary"
+                                android:textSize="22sp"
+                                android:fontFamily="sans-serif-black" />
+                            <TextView
+                                android:id="@+id/textRatingLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="NOTA MEDIA"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="13sp"
+                                android:fontFamily="sans-serif-medium"
+                                android:letterSpacing="0.1" />
                         </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <View
+                    android:id="@+id/sep2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#12000000"
+                    android:layout_marginTop="32dp" />
+
+                <!-- RESEÑAS -->
                 <LinearLayout
+                    android:id="@+id/layoutMyReviews"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center">
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/slot1"
-                        android:layout_width="0dp"
-                        android:layout_height="175dp"
-                        android:layout_weight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="18dp"
-                        app:cardElevation="2dp"
-                        app:cardBackgroundColor="@color/white"
-                        app:strokeWidth="1dp"
-                        app:strokeColor="#10000000">
-                        <ImageView
-                            android:id="@+id/imgSlot1"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/slot2"
-                        android:layout_width="0dp"
-                        android:layout_height="175dp"
-                        android:layout_weight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="18dp"
-                        app:cardElevation="2dp"
-                        app:cardBackgroundColor="@color/white"
-                        app:strokeWidth="1dp"
-                        app:strokeColor="#10000000">
-                        <ImageView
-                            android:id="@+id/imgSlot2"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/slot3"
-                        android:layout_width="0dp"
-                        android:layout_height="175dp"
-                        android:layout_weight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="18dp"
-                        app:cardElevation="2dp"
-                        app:cardBackgroundColor="@color/white"
-                        app:strokeWidth="1dp"
-                        app:strokeColor="#10000000">
-                        <ImageView
-                            android:id="@+id/imgSlot3"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/slot4"
-                        android:layout_width="0dp"
-                        android:layout_height="175dp"
-                        android:layout_weight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="18dp"
-                        app:cardElevation="2dp"
-                        app:cardBackgroundColor="@color/white"
-                        app:strokeWidth="1dp"
-                        app:strokeColor="#10000000">
-                        <ImageView
-                            android:id="@+id/imgSlot4"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- SEPARACIÓN -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#12000000"
-                android:layout_marginTop="32dp" />
-
-            <!-- ACTIVIDAD RECIENTE -->
-            <LinearLayout
-                android:id="@+id/layoutActivity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="32dp"
-                android:clipToPadding="false"
-                android:clipChildren="false">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
+                    android:orientation="vertical"
+                    android:layout_marginTop="32dp"
                     android:clipToPadding="false"
                     android:clipChildren="false">
 
-                    <!-- Header Actividad -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="wrap_content"
+                    <RelativeLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_marginStart="-200dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="#0A7C3AED"
-                        app:strokeWidth="1.5dp"
-                        app:strokeColor="#157C3AED">
-                        <LinearLayout
+                        android:layout_marginBottom="16dp"
+                        android:clipToPadding="false"
+                        android:clipChildren="false">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardHeaderReviews"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:paddingStart="216dp"
-                            android:paddingEnd="16dp"
-                            android:paddingVertical="10dp">
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@android:drawable/ic_menu_recent_history"
-                                app:tint="@color/primary" />
+                            android:layout_alignParentStart="true"
+                            android:layout_marginStart="-200dp"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0dp"
+                            app:cardBackgroundColor="#0A7C3AED"
+                            app:strokeWidth="1.5dp"
+                            app:strokeColor="#157C3AED">
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:layout_marginStart="12dp">
-                                <TextView
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:paddingStart="216dp"
+                                android:paddingEnd="16dp"
+                                android:paddingVertical="10dp">
+                                <ImageView
+                                    android:id="@+id/iconReviews"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@android:drawable/ic_menu_edit"
+                                    app:tint="@color/primary" />
+                                <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="ACTIVIDAD RECIENTE"
-                                    android:textColor="@color/primary"
-                                    android:textSize="14sp"
-                                    android:fontFamily="sans-serif-black"
-                                    android:letterSpacing="0.05" />
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Lo último que has visto"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="15sp"
-                                    android:alpha="0.85" />
+                                    android:orientation="vertical"
+                                    android:layout_marginStart="12dp">
+                                    <TextView
+                                        android:id="@+id/textReviewsTitle"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="MIS RESEÑAS"
+                                        android:textColor="@color/primary"
+                                        android:textSize="14sp"
+                                        android:fontFamily="sans-serif-black"
+                                        android:letterSpacing="0.05" />
+                                    <TextView
+                                        android:id="@+id/textReviewsSub"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Lo que opinas del cine"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="15sp"
+                                        android:alpha="0.85" />
+                                </LinearLayout>
                             </LinearLayout>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
+                        </com.google.android.material.card.MaterialCardView>
 
-                    <TextView
-                        android:id="@+id/btnViewAllRated"
-                        android:layout_width="wrap_content"
+                        <TextView
+                            android:id="@+id/btnViewAllReviews"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:text="Ver todas"
+                            android:textColor="@color/primary"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="6dp"
+                            android:background="?attr/selectableItemBackgroundBorderless" />
+                    </RelativeLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerProfileReviews"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:text="Ver todas"
-                        android:textColor="@color/primary"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="6dp"
-                        android:background="?attr/selectableItemBackgroundBorderless" />
-                </RelativeLayout>
+                        android:nestedScrollingEnabled="false"
+                        android:clipToPadding="false"
+                        android:overScrollMode="never" />
+                </LinearLayout>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerRecentActivity"
+                <View
+                    android:id="@+id/sep3"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:overScrollMode="never" />
-            </LinearLayout>
+                    android:layout_height="1dp"
+                    android:background="#12000000"
+                    android:layout_marginTop="32dp" />
 
-            <!-- ESTADÍSTICAS -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="@color/white"
-                app:strokeWidth="1dp"
-                app:strokeColor="#08000000">
-
+                <!-- DIARIO -->
                 <LinearLayout
+                    android:id="@+id/layoutDiary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:paddingVertical="20dp">
+                    android:orientation="vertical"
+                    android:layout_marginTop="32dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:clipToPadding="false"
+                    android:clipChildren="false">
 
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <RelativeLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
-                        <TextView
-                            android:id="@+id/textMoviesCount"
+                        android:layout_marginBottom="16dp"
+                        android:clipToPadding="false"
+                        android:clipChildren="false">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardHeaderDiary"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0"
+                            android:layout_alignParentStart="true"
+                            android:layout_marginStart="-200dp"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0dp"
+                            app:cardBackgroundColor="#0A7C3AED"
+                            app:strokeWidth="1.5dp"
+                            app:strokeColor="#157C3AED">
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:paddingStart="216dp"
+                                android:paddingEnd="16dp"
+                                android:paddingVertical="10dp">
+                                <ImageView
+                                    android:id="@+id/iconDiary"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/ic_diary_premium"
+                                    app:tint="@color/primary" />
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:layout_marginStart="12dp">
+                                    <TextView
+                                        android:id="@+id/textDiaryTitle"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="MI DIARIO"
+                                        android:textColor="@color/primary"
+                                        android:textSize="14sp"
+                                        android:fontFamily="sans-serif-black"
+                                        android:letterSpacing="0.05" />
+                                    <TextView
+                                        android:id="@+id/textDiarySub"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Tus reflexiones personales"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="15sp"
+                                        android:alpha="0.85" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <TextView
+                            android:id="@+id/btnViewAllDiary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:text="Ver todas"
                             android:textColor="@color/primary"
-                            android:textSize="22sp"
-                            android:fontFamily="sans-serif-black" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="PELÍCULAS"
-                            android:textColor="@color/text_secondary"
                             android:textSize="13sp"
-                            android:fontFamily="sans-serif-medium"
-                            android:letterSpacing="0.1" />
-                    </LinearLayout>
+                            android:textStyle="bold"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="6dp"
+                            android:background="?attr/selectableItemBackgroundBorderless" />
+                    </RelativeLayout>
 
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="35dp"
-                        android:background="#08000000" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerDiary"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
-                        <TextView
-                            android:id="@+id/textAverageRating"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0.0"
-                            android:textColor="@color/primary"
-                            android:textSize="22sp"
-                            android:fontFamily="sans-serif-black" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="NOTA MEDIA"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="13sp"
-                            android:fontFamily="sans-serif-medium"
-                            android:letterSpacing="0.1" />
-                    </LinearLayout>
+                        android:nestedScrollingEnabled="false"
+                        android:clipToPadding="false"
+                        android:overScrollMode="never" />
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
 
-            <!-- SEPARACIÓN ANTES DE RESEÑAS -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#12000000"
-                android:layout_marginTop="32dp" />
-
-            <!-- SECCIÓN: MIS RESEÑAS -->
-            <LinearLayout
-                android:id="@+id/layoutMyReviews"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="32dp"
-                android:clipToPadding="false"
-                android:clipChildren="false">
-
-                <RelativeLayout
+                <View
+                    android:id="@+id/sepFinal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:clipToPadding="false"
-                    android:clipChildren="false">
+                    android:layout_height="1.2dp"
+                    android:background="#15000000"
+                    android:layout_marginTop="60dp"
+                    android:layout_marginBottom="24dp"/>
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_marginStart="-200dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="#0A7C3AED"
-                        app:strokeWidth="1.5dp"
-                        app:strokeColor="#157C3AED">
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:paddingStart="216dp"
-                            android:paddingEnd="16dp"
-                            android:paddingVertical="10dp">
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@android:drawable/ic_menu_edit"
-                                app:tint="@color/primary" />
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:layout_marginStart="12dp">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="MIS RESEÑAS"
-                                    android:textColor="@color/primary"
-                                    android:textSize="14sp"
-                                    android:fontFamily="sans-serif-black"
-                                    android:letterSpacing="0.05" />
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Lo que opinas del cine"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="15sp"
-                                    android:alpha="0.85" />
-                            </LinearLayout>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <TextView
-                        android:id="@+id/btnViewAllReviews"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:text="Ver todas"
-                        android:textColor="@color/primary"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="6dp"
-                        android:background="?attr/selectableItemBackgroundBorderless" />
-                </RelativeLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerProfileReviews"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false"
-                    android:clipToPadding="false"
-                    android:overScrollMode="never" />
-            </LinearLayout>
-
-            <!-- SEPARACIÓN ANTES DE DIARIO -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#12000000"
-                android:layout_marginTop="32dp" />
-
-            <!-- DIARIO -->
-            <LinearLayout
-                android:id="@+id/layoutDiary"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="32dp"
-                android:visibility="gone"
-                tools:visibility="visible"
-                android:clipToPadding="false"
-                android:clipChildren="false">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:clipToPadding="false"
-                    android:clipChildren="false">
-
-                    <!-- Header Diario -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_marginStart="-200dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="#0A7C3AED"
-                        app:strokeWidth="1.5dp"
-                        app:strokeColor="#157C3AED">
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:paddingStart="216dp"
-                            android:paddingEnd="16dp"
-                            android:paddingVertical="10dp">
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@drawable/ic_diary_premium"
-                                app:tint="@color/primary" />
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:layout_marginStart="12dp">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="MI DIARIO"
-                                    android:textColor="@color/primary"
-                                    android:textSize="14sp"
-                                    android:fontFamily="sans-serif-black"
-                                    android:letterSpacing="0.05" />
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Tus reflexiones personales"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="15sp"
-                                    android:alpha="0.85" />
-                            </LinearLayout>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <TextView
-                        android:id="@+id/btnViewAllDiary"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:text="Ver todas"
-                        android:textColor="@color/primary"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="6dp"
-                        android:background="?attr/selectableItemBackgroundBorderless" />
-                </RelativeLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerDiary"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false"
-                    android:clipToPadding="false"
-                    android:overScrollMode="never" />
-            </LinearLayout>
-
-            <!-- SEPARACIÓN ANTES DE CERRAR SESIÓN -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1.2dp"
-                android:background="#15000000"
-                android:layout_marginTop="60dp"
-                android:layout_marginBottom="24dp"/>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/btnLogoutContainer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                app:cardCornerRadius="30dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="#FF5252"
-                app:strokeWidth="2dp"
-                app:strokeColor="#20FFFFFF">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnLogout"
-                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/btnLogoutContainer"
                     android:layout_width="wrap_content"
-                    android:layout_height="56dp"
-                    android:text="Cerrar Sesión"
-                    android:textColor="@color/white"
-                    android:textSize="15sp"
-                    android:fontFamily="sans-serif-black"
-                    app:icon="@android:drawable/ic_lock_power_off"
-                    app:iconTint="@color/white"
-                    app:iconPadding="12dp"
-                    app:backgroundTint="#FF5252"
-                    android:textAllCaps="false"
-                    android:paddingHorizontal="32dp" />
-            </com.google.android.material.card.MaterialCardView>
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    app:cardCornerRadius="30dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="#FF5252"
+                    app:strokeWidth="2dp"
+                    app:strokeColor="#20FFFFFF">
 
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnLogout"
+                        style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="56dp"
+                        android:text="Cerrar Sesión"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:fontFamily="sans-serif-black"
+                        app:icon="@android:drawable/ic_lock_power_off"
+                        app:iconTint="@color/white"
+                        app:iconPadding="12dp"
+                        app:backgroundTint="#FF5252"
+                        android:textAllCaps="false"
+                        android:paddingHorizontal="32dp" />
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</FrameLayout>

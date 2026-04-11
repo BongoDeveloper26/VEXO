@@ -1,5 +1,7 @@
 package com.vexo.app
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +18,20 @@ class RecentActivityAdapter(
     private val watchlistRepository: WatchlistRepository,
     private val onMovieClick: (Movie) -> Unit
 ) : RecyclerView.Adapter<RecentActivityAdapter.ViewHolder>() {
+
+    private var isThemedMode: Boolean = false
+    private var accentColor: Int = Color.parseColor("#00E5FF")
+
+    fun updateTheme(isThemed: Boolean, accent: Int = Color.parseColor("#00E5FF")) {
+        this.isThemedMode = isThemed
+        this.accentColor = accent
+        notifyDataSetChanged()
+    }
+
+    // Por compatibilidad
+    fun setFuturisticMode(enabled: Boolean) {
+        updateTheme(enabled)
+    }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imgPoster: ImageView = view.findViewById(R.id.imgActivityPoster)
@@ -50,12 +66,20 @@ class RecentActivityAdapter(
             .centerCrop()
             .into(holder.imgPoster)
 
+        val primary = holder.itemView.context.getColor(R.color.primary)
+
         holder.stars.forEachIndexed { index, imageView ->
             if (index < userRating) {
                 imageView.setImageResource(android.R.drawable.star_big_on)
+                imageView.imageTintList = ColorStateList.valueOf(
+                    if (isThemedMode) accentColor else primary
+                )
                 imageView.alpha = 1.0f
             } else {
                 imageView.setImageResource(android.R.drawable.star_big_off)
+                imageView.imageTintList = ColorStateList.valueOf(
+                    if (isThemedMode) Color.GRAY else holder.itemView.context.getColor(R.color.text_secondary)
+                )
                 imageView.alpha = 0.3f
             }
         }

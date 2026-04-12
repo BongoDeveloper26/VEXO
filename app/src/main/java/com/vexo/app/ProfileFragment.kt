@@ -3,6 +3,7 @@ package com.vexo.app
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.text.InputFilter
@@ -11,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -255,6 +257,69 @@ class ProfileFragment : Fragment() {
             loadBackgrounds()
         }
 
+        // Configurar Colores de Cabecera
+        val layoutColors = bottomSheetView.findViewById<LinearLayout>(R.id.layoutHeaderColors)
+        val colors = listOf(
+            null, // Predeterminado
+            "#7C3AED", // Violeta VEXO
+            "#FF71CE", // Vaporwave Pink
+            "#01CDFE", // Vaporwave Blue
+            "#05FFA1", // Neon Green
+            "#B967FF", // Matte Purple
+            "#FFFB96", // Pastel Yellow
+            "#FF4500", // Sunset Orange
+            "#FF1493", // Deep Pink
+            "#00FA9A", // Spring Green
+            "#2196F3", // Blue Material
+            "#000000", // Negro Elegante
+            "#FFFFFF"  // Blanco Puro
+        )
+
+        val currentColor = watchlistRepository.getHeaderColor()
+        val density = resources.displayMetrics.density
+
+        colors.forEach { colorHex ->
+            val colorView = FrameLayout(requireContext())
+            val params = LinearLayout.LayoutParams((46 * density).toInt(), (46 * density).toInt())
+            params.setMargins((8 * density).toInt(), 0, (8 * density).toInt(), 0)
+            colorView.layoutParams = params
+
+            val circle = View(requireContext())
+            val circleParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
+            circle.layoutParams = circleParams
+            
+            val shape = GradientDrawable()
+            shape.shape = GradientDrawable.OVAL
+            if (colorHex == null) {
+                val gradient = GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf(
+                    Color.parseColor("#1E1B4B"),
+                    Color.parseColor("#4C1D95"),
+                    Color.parseColor("#7C3AED")
+                ))
+                gradient.shape = GradientDrawable.OVAL
+                circle.background = gradient
+            } else {
+                shape.setColor(Color.parseColor(colorHex))
+                circle.background = shape
+            }
+            
+            if (colorHex == currentColor) {
+                val stroke = GradientDrawable()
+                stroke.shape = GradientDrawable.OVAL
+                stroke.setStroke((3 * density).toInt(), ContextCompat.getColor(requireContext(), R.color.primary))
+                colorView.background = stroke
+                colorView.setPadding((4 * density).toInt(), (4 * density).toInt(), (4 * density).toInt(), (4 * density).toInt())
+            }
+
+            colorView.addView(circle)
+            colorView.setOnClickListener {
+                watchlistRepository.setHeaderColor(colorHex)
+                loadBackgrounds()
+                dialog.dismiss()
+            }
+            layoutColors.addView(colorView)
+        }
+
         val recycler = bottomSheetView.findViewById<RecyclerView>(R.id.recyclerBackgroundOptions)
         recycler.layoutManager = LinearLayoutManager(requireContext())
         
@@ -265,7 +330,8 @@ class ProfileFragment : Fragment() {
             BackgroundOption("fondo_salacine", "Sala Cine", R.drawable.fondo_salacine),
             BackgroundOption("fondo_cineclasico", "Cine Clásico", R.drawable.fondo_cineclasico),
             BackgroundOption("fondo_vaporwave", "Vaporwave", R.drawable.fondo_vaporwave),
-            BackgroundOption("fondo_playa", "Playa", R.drawable.fondo_playa)
+            BackgroundOption("fondo_playa", "Playa", R.drawable.fondo_playa),
+            BackgroundOption("fondo_callejerocine", "Callejero Cine", R.drawable.fondo_callejerocine)
         )
         
         val currentBg = watchlistRepository.getHeaderBackground()
@@ -283,13 +349,21 @@ class ProfileFragment : Fragment() {
     private fun loadBackgrounds() {
         val bgName = watchlistRepository.getHeaderBackground()
         val isTransparent = watchlistRepository.isHeaderTransparent()
+        val customColor = watchlistRepository.getHeaderColor()
         
-        // Configurar Cabecera base
-        imgHeaderBackground.setImageResource(R.drawable.bg_profile_header)
+        val headerShape = GradientDrawable()
+        val cornerRadius = 100f * resources.displayMetrics.density
+        headerShape.cornerRadii = floatArrayOf(0f, 0f, 0f, 0f, cornerRadius, cornerRadius, cornerRadius, cornerRadius)
+
+        if (customColor != null) {
+            imgHeaderBackground.setImageResource(0)
+            headerShape.setColor(Color.parseColor(customColor))
+            imgHeaderBackground.background = headerShape
+        } else {
+            imgHeaderBackground.setImageResource(R.drawable.bg_profile_header)
+            imgHeaderBackground.background = null 
+        }
         
-        // Ajustamos el nivel de transparencia: 
-        // Si el usuario activa "Transparente", usamos 0.5f (el efecto playa que te gustaba)
-        // Si no, usamos 1.0f (opaco total)
         imgHeaderBackground.alpha = if (isTransparent) 0.5f else 1.0f
 
         when (bgName) {
@@ -299,6 +373,7 @@ class ProfileFragment : Fragment() {
             "fondo_cineclasico" -> setThemeConfig(R.drawable.fondo_cineclasico, "#D2B48C", "#CC1A110D", "#40D2B48C")
             "fondo_vaporwave" -> setThemeConfig(R.drawable.fondo_vaporwave, "#FF71CE", "#CC2D1B4B", "#40FF71CE")
             "fondo_playa" -> setThemeConfig(R.drawable.fondo_playa, "#00BCD4", "#CC002F2F", "#4000BCD4")
+            "fondo_callejerocine" -> setThemeConfig(R.drawable.fondo_callejerocine, "#FF9800", "#CC1A1A1A", "#40FF9800")
             else -> {
                 imgContentBackground.visibility = View.GONE
                 viewBackgroundOverlay.visibility = View.GONE
@@ -441,6 +516,7 @@ class ProfileFragment : Fragment() {
             "fondo_cineclasico" -> applyThemedColors(Color.parseColor("#D2B48C"), Color.parseColor("#CC1A110D"), Color.parseColor("#40D2B48C"))
             "fondo_vaporwave" -> applyThemedColors(Color.parseColor("#FF71CE"), Color.parseColor("#CC2D1B4B"), Color.parseColor("#40FF71CE"))
             "fondo_playa" -> applyThemedColors(Color.parseColor("#00BCD4"), Color.parseColor("#CC002F2F"), Color.parseColor("#4000BCD4"))
+            "fondo_callejerocine" -> applyThemedColors(Color.parseColor("#FF9800"), Color.parseColor("#CC1A1A1A"), Color.parseColor("#40FF9800"))
             else -> applyDefaultColors()
         }
     }

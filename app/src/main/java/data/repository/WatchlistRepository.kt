@@ -39,6 +39,7 @@ class WatchlistRepository(private val context: Context) {
         private const val KEY_PROFILE_IMAGE = "user_profile_image"
         private const val KEY_HEADER_BACKGROUND = "user_header_background"
         private const val KEY_HEADER_TRANSPARENT = "user_header_transparent"
+        private const val KEY_HEADER_COLOR = "user_header_color"
         private const val KEY_USER_NAME = "user_name"
         private const val TAG = "WatchlistRepository"
     }
@@ -90,6 +91,13 @@ class WatchlistRepository(private val context: Context) {
     fun setHeaderTransparent(transparent: Boolean) {
         getPrefs().edit().putBoolean(KEY_HEADER_TRANSPARENT, transparent).apply()
         saveDataCloud(KEY_HEADER_TRANSPARENT, transparent)
+    }
+
+    fun getHeaderColor(): String? = getPrefs().getString(KEY_HEADER_COLOR, null)
+
+    fun setHeaderColor(colorHex: String?) {
+        getPrefs().edit().putString(KEY_HEADER_COLOR, colorHex).apply()
+        colorHex?.let { saveDataCloud(KEY_HEADER_COLOR, it) }
     }
 
     fun setUserName(name: String) {

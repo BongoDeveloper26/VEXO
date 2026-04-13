@@ -10,6 +10,8 @@ import android.view.animation.AnimationUtils
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.vexo.app.R
 import data.model.Category
 import data.model.Movie
@@ -38,7 +40,6 @@ class CategoryAdapter(
         val title = category.title
         val titleLower = title.lowercase()
 
-        // Definimos si es una categoría "Destacada" (Trending, Top Rated o Now Playing)
         val isFeatured = titleLower.contains("tendencia") || titleLower.contains("trending") || 
                          titleLower.contains("valoradas") || titleLower.contains("top rated") || 
                          titleLower.contains("cines") || titleLower.contains("now playing")
@@ -90,7 +91,6 @@ class CategoryAdapter(
         holder.indicator.visibility = View.VISIBLE
 
         val horizontalAdapter = if (isFeatured) {
-            // Pasamos 3 para ocultar el badge "TOP" en "En Cines"
             val mockPos = if (titleLower.contains("cines") || titleLower.contains("now playing")) 3 else 0
             MovieFeaturedAdapter(category.movies, mockPos).apply { onItemClick = onMovieClick }
         } else {
@@ -101,6 +101,7 @@ class CategoryAdapter(
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = horizontalAdapter as? RecyclerView.Adapter<*>
             setHasFixedSize(true)
+            setItemViewCacheSize(10) // Cache de vistas para scroll horizontal suave
         }
     }
 
@@ -140,8 +141,12 @@ class MovieFeaturedAdapter(
         holder.badgeTop.visibility = if (categoryPos == 3) View.GONE else View.VISIBLE
 
         val imageToLoad = movie.backdropPath ?: movie.posterPath
-        com.bumptech.glide.Glide.with(holder.itemView.context)
+        
+        // Optimización de Glide para contenido destacado
+        Glide.with(holder.itemView.context)
             .load(imageToLoad)
+            .thumbnail(0.1f)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
             .centerCrop()
             .into(holder.imgPoster)
 

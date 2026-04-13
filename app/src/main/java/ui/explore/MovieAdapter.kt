@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.vexo.app.R
@@ -42,7 +43,6 @@ class MovieAdapter(private var movies: List<Movie>, private val isGridView: Bool
     class GridViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imgPoster: ImageView = itemView.findViewById(R.id.imgPosterGrid)
         val textRating: TextView = itemView.findViewById(R.id.textRatingGrid)
-        // Podríamos añadir badges aquí también si se desea
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -65,18 +65,26 @@ class MovieAdapter(private var movies: List<Movie>, private val isGridView: Bool
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val movie = movies[position]
+        val context = holder.itemView.context
         val isWatched = watchlistRepository?.isWatched(movie.id) ?: false
         val isFav = watchlistRepository?.isFavorite(movie.id) ?: false
 
         if (holder is GridViewHolder) {
             holder.textRating.text = "★ ${String.format("%.1f", movie.rating)}"
-            Glide.with(holder.itemView.context).load(movie.posterPath).centerCrop().into(holder.imgPoster)
+            
+            // Optimización de Glide: Usamos thumbnail y caché de disco inteligente
+            Glide.with(context)
+                .load(movie.posterPath)
+                .thumbnail(0.1f) // Carga una versión muy pequeña primero
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .centerCrop()
+                .into(holder.imgPoster)
+                
         } else if (holder is ListViewHolder) {
             holder.textTitle.text = movie.title
             holder.textRating.text = "★ ${String.format("%.1f", movie.rating)}"
             holder.textDescription?.text = movie.overview
             
-            // Mostrar/Ocultar badges visuales
             holder.watchedOverlay?.visibility = if (isWatched) View.VISIBLE else View.GONE
             holder.watchedBadge?.visibility = if (isWatched) View.VISIBLE else View.GONE
             holder.favBadge?.visibility = if (isFav) View.VISIBLE else View.GONE
@@ -84,17 +92,23 @@ class MovieAdapter(private var movies: List<Movie>, private val isGridView: Bool
             holder.chipGroup.removeAllViews()
             movie.genreIds.take(2).forEach { id ->
                 allGenresMap[id]?.let { name ->
-                    val chip = Chip(holder.itemView.context).apply {
+                    val chip = Chip(context).apply {
                         text = name
                         textSize = 9f
                         setChipBackgroundColorResource(R.color.background_app)
-                        setTextColor(holder.itemView.context.getColor(R.color.text_secondary))
+                        setTextColor(context.getColor(R.color.text_secondary))
                         chipStrokeWidth = 0f
                     }
                     holder.chipGroup.addView(chip)
                 }
             }
-            Glide.with(holder.itemView.context).load(movie.posterPath).into(holder.imgPoster)
+            
+            // Optimización de Glide para lista
+            Glide.with(context)
+                .load(movie.posterPath)
+                .thumbnail(0.2f)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE) // Caché de la imagen ya procesada
+                .into(holder.imgPoster)
         }
 
         holder.itemView.setOnClickListener { onItemClick?.invoke(movie) }

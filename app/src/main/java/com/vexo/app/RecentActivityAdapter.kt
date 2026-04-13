@@ -7,9 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
-import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import data.model.Movie
 import data.repository.WatchlistRepository
 
@@ -23,6 +23,7 @@ class RecentActivityAdapter(
     private var accentColor: Int = Color.parseColor("#00E5FF")
 
     fun updateTheme(isThemed: Boolean, accent: Int = Color.parseColor("#00E5FF")) {
+        if (this.isThemedMode == isThemed && this.accentColor == accent) return
         this.isThemedMode = isThemed
         this.accentColor = accent
         notifyDataSetChanged()
@@ -51,22 +52,24 @@ class RecentActivityAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val movie = movies[position]
+        val context = holder.itemView.context
         val userRating = watchlistRepository.getMovieRating(movie.id)
 
         val fullPosterPath = if (!movie.posterPath.isNullOrEmpty() && !movie.posterPath.startsWith("http")) {
-            "https://image.tmdb.org/t/p/w500${movie.posterPath}"
+            "https://image.tmdb.org/t/p/w342${movie.posterPath}" // Usamos un tamaño menor (w342) para optimizar
         } else {
             movie.posterPath
         }
 
-        Glide.with(holder.itemView.context)
+        Glide.with(context)
             .load(fullPosterPath)
             .placeholder(android.R.drawable.progress_horizontal)
-            .error(android.R.drawable.ic_menu_report_image)
+            .thumbnail(0.15f)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
             .centerCrop()
             .into(holder.imgPoster)
 
-        val primary = holder.itemView.context.getColor(R.color.primary)
+        val primary = context.getColor(R.color.primary)
 
         holder.stars.forEachIndexed { index, imageView ->
             if (index < userRating) {
@@ -78,14 +81,14 @@ class RecentActivityAdapter(
             } else {
                 imageView.setImageResource(android.R.drawable.star_big_off)
                 imageView.imageTintList = ColorStateList.valueOf(
-                    if (isThemedMode) Color.GRAY else holder.itemView.context.getColor(R.color.text_secondary)
+                    if (isThemedMode) Color.GRAY else context.getColor(R.color.text_secondary)
                 )
                 imageView.alpha = 0.3f
             }
         }
 
         holder.itemView.setOnClickListener {
-            val animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.click_scale)
+            val animation = AnimationUtils.loadAnimation(context, R.anim.click_scale)
             holder.itemView.startAnimation(animation)
             
             holder.itemView.postDelayed({

@@ -1,6 +1,7 @@
 package com.vexo.app
 
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,15 +10,29 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.card.MaterialCardView
 import com.vexo.app.R
 import data.model.DiaryEntry
 
 class DiaryGroupedAdapter(
     private val items: List<DiaryListItem>,
-    private val showTimeline: Boolean = true,
+    private var showTimeline: Boolean = true,
     private val isFavorite: ((Int) -> Boolean)? = null,
     private val onEntryClick: (DiaryEntry) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private var isThemedMode: Boolean = false
+    private var accentColor: Int = Color.WHITE
+    private var cardBgColor: Int = Color.parseColor("#CC1A1A1A")
+    private var strokeColor: Int = Color.parseColor("#3300E5FF")
+
+    fun updateTheme(isThemed: Boolean, accent: Int = Color.WHITE, cardBg: Int = Color.BLACK, stroke: Int = Color.TRANSPARENT) {
+        this.isThemedMode = isThemed
+        this.accentColor = accent
+        this.cardBgColor = cardBg
+        this.strokeColor = stroke
+        notifyDataSetChanged()
+    }
 
     companion object {
         private const val TYPE_HEADER = 0
@@ -30,7 +45,7 @@ class DiaryGroupedAdapter(
 
     class EntryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val root: View = view.findViewById(R.id.itemDiaryRoot)
-        val card: View = view.findViewById(R.id.cardDiaryContainer)
+        val card: MaterialCardView = view.findViewById(R.id.cardDiaryContainer)
         val imgPoster: ImageView = view.findViewById(R.id.imgDiaryPoster)
         val textTitle: TextView = view.findViewById(R.id.textDiaryMovieTitle)
         val textDate: TextView = view.findViewById(R.id.textDiaryDate)
@@ -62,7 +77,13 @@ class DiaryGroupedAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = items[position]) {
             is DiaryListItem.Header -> {
-                (holder as HeaderViewHolder).textHeader.text = item.title
+                val vh = holder as HeaderViewHolder
+                vh.textHeader.text = item.title
+                if (isThemedMode) {
+                    vh.textHeader.setTextColor(accentColor)
+                } else {
+                    vh.textHeader.setTextColor(vh.itemView.context.getColor(R.color.text_primary))
+                }
             }
 
             is DiaryListItem.Entry -> {
@@ -75,9 +96,30 @@ class DiaryGroupedAdapter(
                 // Control dinámico de visibilidad
                 vh.layoutTimeline.visibility = if (showTimeline) View.VISIBLE else View.GONE
 
+                // Aplicar Tema a la Tarjeta
+                if (isThemedMode) {
+                    vh.card.setCardBackgroundColor(cardBgColor)
+                    vh.card.strokeColor = strokeColor
+                    vh.card.strokeWidth = 2
+                    vh.textTitle.setTextColor(Color.WHITE)
+                    vh.textDate.setTextColor(Color.WHITE)
+                    vh.textDate.alpha = 0.7f
+                    vh.textReview.setTextColor(Color.WHITE)
+                    vh.textReview.alpha = 0.8f
+                } else {
+                    vh.card.setCardBackgroundColor(vh.itemView.context.getColor(R.color.surface_app))
+                    vh.card.strokeWidth = 0
+                    vh.textTitle.setTextColor(vh.itemView.context.getColor(R.color.text_primary))
+                    vh.textDate.setTextColor(vh.itemView.context.getColor(R.color.text_secondary))
+                    vh.textDate.alpha = 0.6f
+                    vh.textReview.setTextColor(vh.itemView.context.getColor(R.color.text_secondary))
+                }
+
                 // Mostrar u ocultar el corazón si es favorito
                 if (isFavorite != null && isFavorite.invoke(entry.movieId)) {
                     vh.imgHeart.visibility = View.VISIBLE
+                    if (isThemedMode) vh.imgHeart.imageTintList = ColorStateList.valueOf(accentColor)
+                    else vh.imgHeart.imageTintList = ColorStateList.valueOf(vh.itemView.context.getColor(R.color.primary))
                 } else {
                     vh.imgHeart.visibility = View.GONE
                 }
@@ -108,13 +150,13 @@ class DiaryGroupedAdapter(
                         if (index < entry.rating) {
                             setImageResource(android.R.drawable.btn_star_big_on)
                             imageTintList = ColorStateList.valueOf(
-                                context.getColor(R.color.primary)
+                                if (isThemedMode) accentColor else context.getColor(R.color.primary)
                             )
                             alpha = 1.0f
                         } else {
                             setImageResource(android.R.drawable.btn_star_big_off)
                             imageTintList = ColorStateList.valueOf(
-                                context.getColor(R.color.text_secondary)
+                                if (isThemedMode) Color.DKGRAY else context.getColor(R.color.text_secondary)
                             )
                             alpha = 0.3f
                         }

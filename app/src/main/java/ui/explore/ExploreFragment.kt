@@ -17,6 +17,7 @@ import com.google.android.material.tabs.TabLayout
 import com.vexo.app.R
 import data.repository.TMDBRepository
 import ui.detail.DetailActivity
+import ui.recommendation.RecommendationActivity
 
 class ExploreFragment : Fragment() {
 
@@ -50,6 +51,11 @@ class ExploreFragment : Fragment() {
         
         view.findViewById<ImageButton>(R.id.btnSettings).setOnClickListener {
             showSettingsMenu()
+        }
+
+        // Corregido: btnRecommend ahora es un TextView, usamos View para evitar ClassCastException
+        view.findViewById<View>(R.id.btnRecommend).setOnClickListener {
+            startActivity(Intent(requireContext(), RecommendationActivity::class.java))
         }
     }
 

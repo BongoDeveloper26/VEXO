@@ -3,4 +3,147 @@
     <string name="default_email">correo@ejemplo.com</string>
     <string name="no_email_linked">Sin correo vinculado</string>
     <string name="default_web_client_id" translatable="false">182031845064-dj83loc2cp09lntlt5scq52o8f5c49m9.apps.googleusercontent.com</string>
+
+    <!-- Navigation -->
+    <string name="nav_explore">Explorar</string>
+    <string name="nav_search">Buscar</string>
+    <string name="nav_list">Listas</string>
+    <string name="nav_news">Noticias</string>
+    <string name="nav_profile">Perfil</string>
+
+    <!-- Login -->
+    <string name="welcome">Bienvenido</string>
+    <string name="login_sub">Inicia sesión en tu cuenta de Vexo.</string>
+    <string name="email">Email</string>
+    <string name="password">Contraseña</string>
+    <string name="login">Iniciar Sesión</string>
+    <string name="or">o</string>
+    <string name="continue_with_google">Continuar con Google</string>
+    <string name="no_account_register">¿No tienes cuenta? Regístrate</string>
+
+    <!-- Explore -->
+    <string name="movies">PELÍCULAS</string>
+    <string name="tv_shows">SERIES</string>
+    <string name="discover">DISCOVER</string>
+    <string name="change_language">Cambiar Idioma</string>
+    <string name="about_us">Quiénes Somos</string>
+    <string name="select_language">Seleccionar Idioma</string>
+
+    <!-- Discovery -->
+    <string name="no_results">No hay resultados</string>
+    <string name="try_changing_filters">Prueba a cambiar los filtros de género.</string>
+    <string name="filter_by_genres">Filtrar por Géneros</string>
+    <string name="apply">Aplicar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="clear">Limpiar</string>
+
+    <!-- Profile -->
+    <string name="featured_vitrina">VITRINA DESTACADA</string>
+    <string name="vitrina_sub">Enseña tus obras favoritas</string>
+    <string name="recent_activity">ACTIVIDAD RECIENTE</string>
+    <string name="activity_sub">Lo último que has visto</string>
+    <string name="view_all">Ver todas</string>
+    <string name="stats_movies">PELÍCULAS</string>
+    <string name="stats_average">NOTA MEDIA</string>
+    <string name="my_reviews">MIS RESEÑAS</string>
+    <string name="reviews_sub">Lo que opinas del cine</string>
+    <string name="my_diary">MI DIARIO</string>
+    <string name="diary_sub">Tus reflexiones personales</string>
+    <string name="logout">Cerrar Sesión</string>
+    <string name="change_name">Cambiar nombre</string>
+    <string name="save">Guardar</string>
+    <string name="add_favorites_first">Añade películas a favoritos primero</string>
+    <string name="select_for_vitrina">Selecciona para tu Vitrina</string>
+    <string name="share_profile_title">Compartir perfil</string>
+    <string name="share_profile_format">🎬 Perfil de %1$s en VEXO\n📊 Películas: %2$d\n⭐ Nota: %3$.1f\n🔗 %4$s</string>
+    <string name="default_background">Predeterminado</string>
+    <string name="header_transparent">Cabecera Transparente</string>
+
+    <!-- Detail -->
+    <string name="add_to_list">AÑADIR A MI LISTA</string>
+    <string name="in_my_lists">EN MIS LISTAS</string>
+    <string name="rated_content">Has valorado este contenido.</string>
+    <string name="remove_from_vitrina">Quitar de mi vitrina</string>
+    <string name="add_to_vitrina">Destacar en mi vitrina</string>
+    <string name="remove_from_watched">Quitar de vistas</string>
+    <string name="mark_as_watched">Marcar como vista</string>
+    <string name="rating_saved_title">¡VALORACIÓN GUARDADA!</string>
+    <string name="rating_saved_msg">Tu opinión se ha registrado en el diario.</string>
+    <string name="deleted">ELIMINADA</string>
+    <string name="rating_removed_msg">Se ha quitado la valoración de la película.</string>
+    <string name="added">¡AÑADIDA!</string>
+    <string name="removed">QUITADA</string>
+    <string name="list_created">¡LISTA CREADA!</string>
+    <string name="added_to_list_msg">Se ha añadido a \'%1$s\'</string>
+    <string name="in_list_msg">En \'%1$s\'</string>
+    <string name="from_list_msg">De \'%1$s\'</string>
+    <string name="view_poster">Ver póster</string>
+    <string name="view_full_poster">Ver póster completo</string>
+    <string name="write_review">Escribir reseña</string>
+    <string name="featured_title">¡DESTACADA!</string>
+    <string name="featured_msg">La película ya luce en tu vitrina personal.</string>
+    <string name="cast">REPARTO</string>
+    <string name="crew">EQUIPO</string>
+    <string name="genres_tab">GÉNEROS</string>
+    <string name="details_tab">DETALLES</string>
+    <string name="pegi_label">PEGI %1$s</string>
+    <string name="runtime_format">%1$d min</string>
+    <string name="seasons_label">TEMPORADAS</string>
+    <string name="episodes_label">EPISODIOS</string>
+    <string name="status_label">ESTADO</string>
+    <string name="release_date_label">ESTRENO</string>
+    <string name="original_title_label">TÍTULO ORIGINAL</string>
+    <string name="original_language_label">IDIOMA</string>
+    <string name="production_countries_label">PAÍSES DE PRODUCCIÓN</string>
+    <string name="production_companies_label">ESTUDIOS</string>
+    <string name="similar_content">RECOMENDADO PARA TI</string>
+    <string name="saga_collection">UNIVERSO Y SAGA</string>
+    <string name="watch_trailer">Ver tráiler</string>
+    <string name="play_on_youtube">REPRODUCIR EN YOUTUBE</string>
+    <string name="available_on">Disponible en</string>
+    <string name="new_collection">Nueva Colección</string>
+    <string name="create">Crear</string>
+    <string name="rating_format">★ %1$.1f</string>
+    <string name="synopsis">Sinopsis</string>
+    <string name="budget_label">PRESUPUESTO</string>
+    <string name="revenue_label">RECAUDACIÓN</string>
+    <string name="add_to_any_list">Añadir a una lista</string>
+
+    <!-- Categories - Movies -->
+    <string name="cat_trending_movies">Películas en Tendencia</string>
+    <string name="cat_top_rated_movies">Películas Mejor Valoradas</string>
+    <string name="cat_now_playing">En Cines</string>
+
+    <!-- Categories - TV -->
+    <string name="cat_trending_tv">Series en Tendencia</string>
+    <string name="cat_top_rated_tv">Series Mejor Valoradas</string>
+
+    <!-- Genres -->
+    <string name="genre_action">Acción</string>
+    <string name="genre_adventure">Aventura</string>
+    <string name="genre_animation">Animación</string>
+    <string name="genre_comedy">Comedia</string>
+    <string name="genre_crime">Crimen</string>
+    <string name="genre_documentary">Documental</string>
+    <string name="genre_drama">Drama</string>
+    <string name="genre_family">Familia</string>
+    <string name="genre_fantasy">Fantasía</string>
+    <string name="genre_history">Historia</string>
+    <string name="genre_horror">Terror</string>
+    <string name="genre_music">Música</string>
+    <string name="genre_mystery">Misterio</string>
+    <string name="genre_romance">Romance</string>
+    <string name="genre_sci_fi">Ciencia Ficción</string>
+    <string name="genre_thriller">Suspense</string>
+    <string name="genre_war">Bélica</string>
+    <string name="genre_western">Western</string>
+    <string name="genre_action_adventure">Acción y Aventura</string>
+    <string name="genre_kids">Infantil</string>
+    <string name="genre_news">Noticias</string>
+    <string name="genre_reality">Reality</string>
+    <string name="genre_sci_fi_fantasy">Sci-Fi y Fantasía</string>
+    <string name="genre_soap">Soap</string>
+    <string name="genre_talk">Talk Show</string>
+    <string name="genre_war_politics">Bélica y Política</string>
+
 </resources>

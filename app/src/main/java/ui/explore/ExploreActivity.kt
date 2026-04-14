@@ -7,6 +7,8 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -15,6 +17,7 @@ import com.google.android.material.tabs.TabLayout
 import com.vexo.app.R
 import data.repository.TMDBRepository
 import ui.detail.DetailActivity
+import ui.recommendation.RecommendationActivity
 import ui.search.SearchActivity
 
 class ExploreActivity : AppCompatActivity() {
@@ -49,14 +52,17 @@ class ExploreActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btnSettings).setOnClickListener {
             showSettingsMenu()
         }
+
+        findViewById<View>(R.id.btnRecommend).setOnClickListener {
+            startActivity(Intent(this, RecommendationActivity::class.java))
+        }
     }
 
     private fun setupTabs() {
         tabLayout = findViewById(R.id.tabLayoutExplore)
-        val isSpanish = repository.getLanguage() == "es-ES"
         
-        tabLayout.getTabAt(0)?.text = if (isSpanish) "PELÍCULAS" else "MOVIES"
-        tabLayout.getTabAt(1)?.text = if (isSpanish) "SERIES" else "SERIES"
+        tabLayout.getTabAt(0)?.text = getString(R.string.movies)
+        tabLayout.getTabAt(1)?.text = getString(R.string.tv_shows)
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -109,6 +115,13 @@ class ExploreActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Refresh strings in case of language change
+        tabLayout.getTabAt(0)?.text = getString(R.string.movies)
+        tabLayout.getTabAt(1)?.text = getString(R.string.tv_shows)
+    }
+
     private fun observeViewModel() {
         viewModel.movieCategories.observe(this) { categories ->
             movieAdapter.updateCategories(categories)
@@ -121,10 +134,9 @@ class ExploreActivity : AppCompatActivity() {
     private fun showSettingsMenu() {
         val bottomSheet = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
         val view = layoutInflater.inflate(R.layout.layout_explore_menu, null)
-        val isSpanish = repository.getLanguage() == "es-ES"
 
-        view.findViewById<TextView>(R.id.textOptionLanguage).text = if (isSpanish) "Cambiar Idioma" else "Change Language"
-        view.findViewById<TextView>(R.id.textOptionAbout).text = if (isSpanish) "Quiénes Somos" else "About Us"
+        view.findViewById<TextView>(R.id.textOptionLanguage).text = getString(R.string.change_language)
+        view.findViewById<TextView>(R.id.textOptionAbout).text = getString(R.string.about_us)
 
         view.findViewById<View>(R.id.optionLanguage).setOnClickListener {
             bottomSheet.dismiss()
@@ -133,12 +145,9 @@ class ExploreActivity : AppCompatActivity() {
 
         view.findViewById<View>(R.id.optionAbout).setOnClickListener {
             bottomSheet.dismiss()
-            // Asumimos que AboutActivity existe en el paquete ui.explore o similar
             try {
                 startActivity(Intent(this, AboutActivity::class.java))
-            } catch (e: Exception) {
-                // Si no existe, no hacemos nada para evitar crashes
-            }
+            } catch (e: Exception) {}
         }
 
         bottomSheet.setContentView(view)
@@ -147,15 +156,19 @@ class ExploreActivity : AppCompatActivity() {
 
     private fun showLanguageDialog() {
         val languages = arrayOf("Español", "English")
-        val currentLang = if (repository.getLanguage() == "es-ES") 0 else 1
+        val currentLocales = AppCompatDelegate.getApplicationLocales()
+        val currentLang = if (currentLocales.toLanguageTags().contains("es")) 0 else 1
 
         MaterialAlertDialogBuilder(this)
-            .setTitle(if (repository.getLanguage() == "es-ES") "Seleccionar Idioma" else "Select Language")
+            .setTitle(getString(R.string.select_language))
             .setSingleChoiceItems(languages, currentLang) { dialog, which ->
-                val newLang = if (which == 0) "es-ES" else "en-US"
-                if (newLang != repository.getLanguage()) {
-                    repository.setLanguage(newLang)
-                    recreate()
+                val langTag = if (which == 0) "es" else "en"
+                
+                if ((which == 0 && !currentLocales.toLanguageTags().contains("es")) || 
+                    (which == 1 && !currentLocales.toLanguageTags().contains("en"))) {
+                    
+                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(langTag))
+                    repository.clearCache()
                 }
                 dialog.dismiss()
             }

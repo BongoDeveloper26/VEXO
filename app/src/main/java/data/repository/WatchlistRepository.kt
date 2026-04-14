@@ -122,8 +122,8 @@ class WatchlistRepository(private val context: Context) {
             // Si el rating es 0, lo tratamos como "quitar valoración"
             ratings.remove(movie.id.toString())
             ratedMovies.removeAll { it.id == movie.id }
-            // En el diario podrías decidir si borrar la última o todas. 
-            // Por ahora, para no romper el historial, solo quitamos la película de la lista de "valoradas".
+            // Al borrar la valoración, eliminamos también las entradas del diario para esta película
+            diary.removeAll { it.movieId == movie.id }
         } else {
             // Actualizamos el rating actual de la película
             ratings[movie.id.toString()] = rating

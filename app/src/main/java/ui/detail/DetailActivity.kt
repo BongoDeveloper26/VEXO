@@ -99,7 +99,7 @@ class DetailActivity : AppCompatActivity() {
         val btnBack: ImageButton = findViewById(R.id.btnBackDetail)
 
         textTitle.text = movie.title
-        textRating.text = "★ ${String.format("%.1f", movie.rating)}"
+        textRating.text = getString(R.string.rating_format, movie.rating)
         textOverview.text = movie.overview
 
         btnBack.setOnClickListener { finish() }
@@ -139,7 +139,7 @@ class DetailActivity : AppCompatActivity() {
         
         if (entry != null && (entry.rating > 0 || !entry.review.isNullOrEmpty())) {
             layoutReview.visibility = View.VISIBLE
-            textReview.text = if (!entry.review.isNullOrEmpty()) "\"${entry.review}\"" else "Has valorado este contenido."
+            textReview.text = if (!entry.review.isNullOrEmpty()) "\"${entry.review}\"" else getString(R.string.rated_content)
             
             // Actualizar las estrellas dentro de la tarjeta de reseña
             val reviewStars = listOf<ImageView>(
@@ -181,7 +181,7 @@ class DetailActivity : AppCompatActivity() {
             else -> "#FF5252"
         }
         
-        pegiTextView.text = "PEGI $pegi"
+        pegiTextView.text = getString(R.string.pegi_label, pegi)
         pegiTextView.backgroundTintList = ColorStateList.valueOf(Color.parseColor(color))
     }
 
@@ -192,7 +192,7 @@ class DetailActivity : AppCompatActivity() {
                 currentMovie = currentMovie?.copy(releaseDate = details.release_date)
                 val year = details.release_date.take(4)
                 findViewById<TextView>(R.id.textYearDetail)?.text = year
-                findViewById<TextView>(R.id.textRuntimeDetail)?.text = "${details.runtime} min"
+                findViewById<TextView>(R.id.textRuntimeDetail)?.text = getString(R.string.runtime_format, details.runtime)
                 findViewById<TextView>(R.id.textTagline)?.text = details.tagline ?: ""
                 findViewById<View>(R.id.cardSeasonsHighlight)?.visibility = View.GONE
                 
@@ -426,7 +426,9 @@ class DetailActivity : AppCompatActivity() {
             
             // Traer el nombre y la fecha (En español)
             textMovieName.text = movie.title
-            val currentDate = SimpleDateFormat("d 'de' MMMM, yyyy", Locale("es", "ES")).format(Date())
+            val isSpanish = repository.getLanguage() == "es-ES"
+            val locale = if (isSpanish) Locale("es", "ES") else Locale("en", "US")
+            val currentDate = SimpleDateFormat("d 'de' MMMM, yyyy", locale).format(Date())
             textRatingDate.text = currentDate
 
             var currentRating = watchlistRepository.getMovieRating(movie.id)
@@ -520,18 +522,18 @@ class DetailActivity : AppCompatActivity() {
                 showRatingBottomSheet(movie)
             }
 
-            view.findViewById<TextView>(R.id.textMenuVitrina)?.text = if (isInVitrina) "Quitar de mi vitrina" else "Destacar en mi vitrina"
-            view.findViewById<TextView>(R.id.textMenuWatched)?.text = if (isWatched) "Quitar de vistas" else "Marcar como vista"
+            view.findViewById<TextView>(R.id.textMenuVitrina)?.text = if (isInVitrina) getString(R.string.remove_from_vitrina) else getString(R.string.add_to_vitrina)
+            view.findViewById<TextView>(R.id.textMenuWatched)?.text = if (isWatched) getString(R.string.remove_from_watched) else getString(R.string.mark_as_watched)
 
             view.findViewById<View>(R.id.optionVitrina).setOnClickListener {
                 bottomSheet.dismiss()
                 if (isInVitrina) {
                     watchlistRepository.removeFromVitrina(movie.id)
-                    showDopamineSuccess("QUITADA DE VITRINA", "Se ha liberado un espacio en tu escaparate.")
+                    showDopamineSuccess(getString(R.string.removed), "")
                 } else {
                     val result = watchlistRepository.addMovieToVitrinaAuto(currentMovie ?: movie)
                     when (result) {
-                        0 -> showDopamineSuccess("¡DESTACADA!", "La película ya luce en tu vitrina personal.")
+                        0 -> showDopamineSuccess(getString(R.string.featured_title), getString(R.string.featured_msg))
                         1 -> Toast.makeText(this, "Esta película ya está en tu vitrina", Toast.LENGTH_SHORT).show()
                         2 -> Toast.makeText(this, "Tu vitrina está llena (máx. 4)", Toast.LENGTH_SHORT).show()
                     }
@@ -565,14 +567,14 @@ class DetailActivity : AppCompatActivity() {
         fun updateButtonState() {
             val isInAnyList = watchlistRepository.isInWatchlist(movie.id)
             if (isInAnyList) {
-                btnAdd.text = "EN MIS LISTAS"
+                btnAdd.text = getString(R.string.in_my_lists)
                 btnAdd.setIconResource(android.R.drawable.checkbox_on_background)
                 btnAdd.setBackgroundColor(getColor(R.color.surface_app))
                 btnAdd.setTextColor(getColor(R.color.primary))
                 btnAdd.setStrokeColorResource(R.color.primary)
                 btnAdd.strokeWidth = 4
             } else {
-                btnAdd.text = "AÑADIR A MI LISTA"
+                btnAdd.text = getString(R.string.add_to_list)
                 btnAdd.setIconResource(android.R.drawable.ic_input_add)
                 btnAdd.setBackgroundColor(getColor(R.color.primary))
                 btnAdd.setTextColor(Color.WHITE)
@@ -588,6 +590,11 @@ class DetailActivity : AppCompatActivity() {
         val tabCrew: TextView = findViewById(R.id.tabCrew)
         val tabGenres: TextView = findViewById(R.id.tabGenres)
         val tabDetails: TextView = findViewById(R.id.tabDetails)
+
+        tabCast.text = getString(R.string.cast)
+        tabCrew.text = getString(R.string.crew)
+        tabGenres.text = getString(R.string.genres_tab)
+        tabDetails.text = getString(R.string.details_tab)
 
         val contents = listOf(
             findViewById<View>(R.id.recyclerCastTab),
@@ -667,7 +674,9 @@ class DetailActivity : AppCompatActivity() {
         editReview.setText(existingEntry?.review ?: "")
         
         // Mostrar fecha actual (En español)
-        val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale("es", "ES")).format(Date())
+        val isSpanish = repository.getLanguage() == "es-ES"
+        val locale = if (isSpanish) Locale("es", "ES") else Locale("en", "US")
+        val currentDate = SimpleDateFormat("dd/MM/yyyy", locale).format(Date())
         textDate.text = currentDate
         
         fun updateStarsUI(rating: Float, animated: Boolean = false) {
@@ -758,7 +767,7 @@ class DetailActivity : AppCompatActivity() {
             loadUserReview(movie.id)
             setupWatchlistButton(movie)
             bottomSheet.dismiss()
-            showDopamineSuccess("¡VALORACIÓN GUARDADA!", "Tu opinión se ha registrado en el diario.")
+            showDopamineSuccess(getString(R.string.rating_saved_title), getString(R.string.rating_saved_msg))
         }
 
         view.findViewById<View>(R.id.btnRemoveRating).setOnClickListener {
@@ -766,7 +775,7 @@ class DetailActivity : AppCompatActivity() {
             updateStatusIcons(movie.id)
             loadUserReview(movie.id)
             bottomSheet.dismiss()
-            showDopamineSuccess("ELIMINADA", "Se ha quitado la valoración de la película.")
+            showDopamineSuccess(getString(R.string.deleted), getString(R.string.rating_removed_msg))
         }
 
         bottomSheet.setContentView(view)
@@ -830,10 +839,10 @@ class DetailActivity : AppCompatActivity() {
         recycler.adapter = ListSelectionAdapter(userLists, movie.id) { list: UserList, isChecked: Boolean ->
             if (isChecked) {
                 watchlistRepository.addMovieToList(list.id, movie)
-                showDopamineSuccess("¡AÑADIDA!", "En '${list.name}'")
+                showDopamineSuccess(getString(R.string.added), getString(R.string.in_list_msg, list.name))
             } else {
                 watchlistRepository.removeMovieFromList(list.id, movie.id)
-                showDopamineSuccess("QUITADA", "De '${list.name}'")
+                showDopamineSuccess(getString(R.string.removed), getString(R.string.from_list_msg, list.name))
             }
             onComplete()
         }
@@ -849,7 +858,7 @@ class DetailActivity : AppCompatActivity() {
 
     private fun showModernCreateListDialog(movie: Movie? = null, onComplete: (() -> Unit)? = null) {
         val builder = MaterialAlertDialogBuilder(this)
-        builder.setTitle("Nueva Colección")
+        builder.setTitle(getString(R.string.new_collection))
         
         val input = EditText(this)
         val container = LinearLayout(this)
@@ -857,11 +866,11 @@ class DetailActivity : AppCompatActivity() {
         val params = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         params.setMargins(64, 0, 64, 0)
         input.layoutParams = params
-        input.hint = "Nombre de la lista"
+        input.hint = getString(R.string.nav_list)
         container.addView(input)
         
         builder.setView(container)
-        builder.setPositiveButton("Crear") { _, _ ->
+        builder.setPositiveButton(getString(R.string.create)) { _, _ ->
             val name = input.text.toString().trim()
             if (name.isNotEmpty()) {
                 watchlistRepository.createUserList(name)
@@ -869,13 +878,13 @@ class DetailActivity : AppCompatActivity() {
                     val allLists = watchlistRepository.getUserLists()
                     if (allLists.isNotEmpty()) {
                         watchlistRepository.addMovieToList(allLists.last().id, it)
-                        showDopamineSuccess("¡LISTA CREADA!", "Se ha añadido a '$name'")
+                        showDopamineSuccess(getString(R.string.list_created), getString(R.string.added_to_list_msg, name))
                     }
                 }
                 onComplete?.invoke()
             }
         }
-        builder.setNegativeButton("Cancelar", null)
+        builder.setNegativeButton(getString(R.string.cancel), null)
         builder.show()
     }
 

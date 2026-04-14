@@ -96,10 +96,11 @@
                 android:src="@android:drawable/ic_menu_edit"
                 app:tint="@color/primary" />
             <TextView
+                android:id="@+id/textOptionWriteReview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:text="Escribir reseña"
+                android:text="@string/write_review"
                 android:textColor="@color/text_primary"
                 android:textSize="16sp" />
         </LinearLayout>
@@ -122,7 +123,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:text="Añadir a una lista"
+                android:text="@string/nav_list"
                 android:textColor="@color/text_primary"
                 android:textSize="16sp" />
         </LinearLayout>
@@ -147,7 +148,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:text="Destacar en mi vitrina"
+                android:text="@string/add_to_vitrina"
                 android:textColor="@color/text_primary"
                 android:textSize="16sp" />
         </LinearLayout>
@@ -172,7 +173,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:text="Marcar como vista"
+                android:text="@string/mark_as_watched"
                 android:textColor="@color/text_primary"
                 android:textSize="16sp" />
         </LinearLayout>
@@ -192,10 +193,11 @@
                 android:src="@android:drawable/ic_menu_report_image"
                 app:tint="@color/primary" />
             <TextView
+                android:id="@+id/textOptionViewPoster"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:text="Ver póster completo"
+                android:text="@string/view_poster"
                 android:textColor="@color/text_primary"
                 android:textSize="16sp" />
         </LinearLayout>

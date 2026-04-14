@@ -367,9 +367,10 @@
                                 android:textStyle="bold"
                                 tools:text="5" />
                             <TextView
+                                android:id="@+id/textSeasonsLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="TEMPORADAS"
+                                android:text="@string/seasons_label"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="10sp"
                                 android:textStyle="bold"
@@ -396,9 +397,10 @@
                                 android:textStyle="bold"
                                 tools:text="62" />
                             <TextView
+                                android:id="@+id/textEpisodesLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="EPISODIOS"
+                                android:text="@string/episodes_label"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="10sp"
                                 android:textStyle="bold"
@@ -486,10 +488,11 @@
                                 app:tint="@color/primary" />
 
                             <TextView
+                                android:id="@+id/textAvailableLabelDetail"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="8dp"
-                                android:text="Disponible en"
+                                android:text="@string/available_on"
                                 android:textColor="@color/text_primary"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
@@ -516,7 +519,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
-                    android:text="Sinopsis"
+                    android:text="@string/synopsis"
                     android:textColor="@color/text_primary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -555,7 +558,7 @@
                             android:id="@+id/textTrailerTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="VER TRÁILER OFICIAL"
+                            android:text="@string/watch_trailer"
                             android:textColor="@color/primary"
                             android:textSize="14sp"
                             android:textStyle="bold"
@@ -566,7 +569,7 @@
                             android:id="@+id/btnWatchTrailer"
                             android:layout_width="match_parent"
                             android:layout_height="60dp"
-                            android:text="REPRODUCIR EN YOUTUBE"
+                            android:text="@string/play_on_youtube"
                             android:textStyle="bold"
                             app:cornerRadius="16dp"
                             app:icon="@android:drawable/ic_media_play"
@@ -600,7 +603,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingEnd="24dp"
-                            android:text="REPARTO"
+                            android:text="@string/cast"
                             android:textColor="@color/primary"
                             android:textSize="15sp"
                             android:textStyle="bold"
@@ -611,7 +614,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingEnd="24dp"
-                            android:text="EQUIPO"
+                            android:text="@string/crew"
                             android:textColor="@color/text_secondary"
                             android:textSize="15sp"
                             android:textStyle="bold"
@@ -622,7 +625,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingEnd="24dp"
-                            android:text="GÉNEROS"
+                            android:text="@string/genres_tab"
                             android:textColor="@color/text_secondary"
                             android:textSize="15sp"
                             android:textStyle="bold"
@@ -632,7 +635,7 @@
                             android:id="@+id/tabDetails"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="DETALLES"
+                            android:text="@string/details_tab"
                             android:textColor="@color/text_secondary"
                             android:textSize="15sp"
                             android:textStyle="bold"
@@ -689,42 +692,42 @@
                                 android:padding="20dp">
 
                                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="16dp">
-                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TÍTULO ORIGINAL" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/primary" android:letterSpacing="0.1"/>
+                                    <TextView android:id="@+id/textOriginalTitleLabelDetail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/original_title_label" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/primary" android:letterSpacing="0.1"/>
                                     <TextView android:id="@+id/textOriginalTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" tools:text="Breaking Bad"/>
                                 </LinearLayout>
 
                                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="16dp">
-                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ESTADO" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/primary" android:letterSpacing="0.1"/>
+                                    <TextView android:id="@+id/textStatusLabelDetail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/status_label" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/primary" android:letterSpacing="0.1"/>
                                     <TextView android:id="@+id/textStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" tools:text="Ended"/>
                                 </LinearLayout>
 
                                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="16dp">
-                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ESTRENO" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/primary" android:letterSpacing="0.1"/>
+                                    <TextView android:id="@+id/textReleaseDateLabelDetail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/release_date_label" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/primary" android:letterSpacing="0.1"/>
                                     <TextView android:id="@+id/textReleaseDateFull" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" tools:text="2008-01-20"/>
                                 </LinearLayout>
 
                                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="16dp">
-                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="IDIOMA" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/primary" android:letterSpacing="0.1"/>
+                                    <TextView android:id="@+id/textOriginalLanguageLabelDetail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/original_language_label" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/primary" android:letterSpacing="0.1"/>
                                     <TextView android:id="@+id/textOriginalLanguage" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" tools:text="EN"/>
                                 </LinearLayout>
 
                                 <LinearLayout android:id="@+id/layoutBudgetData" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="16dp" android:visibility="gone">
-                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="PRESUPUESTO" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/primary" android:letterSpacing="0.1"/>
+                                    <TextView android:id="@+id/textBudgetLabelDetail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/budget_label" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/primary" android:letterSpacing="0.1"/>
                                     <TextView android:id="@+id/textBudget" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" tools:text="--"/>
                                 </LinearLayout>
 
                                 <LinearLayout android:id="@+id/layoutRevenueData" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
-                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="RECAUDACIÓN" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/primary" android:letterSpacing="0.1"/>
+                                    <TextView android:id="@+id/textRevenueLabelDetail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/revenue_label" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/primary" android:letterSpacing="0.1"/>
                                     <TextView android:id="@+id/textRevenue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" tools:text="--"/>
                                 </LinearLayout>
 
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
 
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:text="PAÍSES DE PRODUCCIÓN" android:textColor="@color/text_primary" android:textSize="13sp" android:textStyle="bold" android:letterSpacing="0.05" />
+                        <TextView android:id="@+id/textProductionCountriesLabelDetail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:text="@string/production_countries_label" android:textColor="@color/text_primary" android:textSize="13sp" android:textStyle="bold" android:letterSpacing="0.05" />
                         <TextView android:id="@+id/textProductionCountries" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:textColor="@color/text_secondary" android:textSize="15sp" tools:text="United States of America" />
 
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:text="ESTUDIOS" android:textColor="@color/text_primary" android:textSize="13sp" android:textStyle="bold" android:letterSpacing="0.05" />
+                        <TextView android:id="@+id/textProductionCompaniesLabelDetail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:text="@string/production_companies_label" android:textColor="@color/text_primary" android:textSize="13sp" android:textStyle="bold" android:letterSpacing="0.05" />
                         <TextView android:id="@+id/textProductionCompanies" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:textColor="@color/text_secondary" android:textSize="15sp" tools:text="Sony Pictures Television" />
 
                     </LinearLayout>
@@ -759,9 +762,10 @@
                             android:layout_marginBottom="16dp">
 
                             <TextView
+                                android:id="@+id/textMyReviewLabelDetail"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="MI RESEÑA"
+                                android:text="@string/my_reviews"
                                 android:textColor="@color/primary"
                                 android:textSize="10sp" android:textStyle="bold" android:letterSpacing="0.2" />
 
@@ -823,7 +827,7 @@
                             android:id="@+id/textSagaTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="UNIVERSO Y SAGA"
+                            android:text="@string/saga_collection"
                             android:textColor="@color/primary"
                             android:textSize="14sp"
                             android:textStyle="bold"
@@ -832,8 +836,8 @@
                         
                         <View 
                             android:layout_width="40dp" 
-                            android:layout_height="3dp" 
-                            android:background="@color/primary" 
+                            android:background="@color/primary"
+                            android:layout_height="3dp"
                             android:layout_marginTop="4dp"/>
 
                         <androidx.recyclerview.widget.RecyclerView
@@ -847,11 +851,11 @@
 
                 <!-- RECOMENDACIONES -->
                 <TextView
-                    android:id="@+id/textSimilarTitle"
+                    android:id="@+id/textSimilarLabelDetail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="40dp"
-                    android:text="RECOMENDADO PARA TI"
+                    android:text="@string/similar_content"
                     android:textColor="@color/text_primary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -869,7 +873,7 @@
                     android:layout_height="60dp"
                     android:layout_marginTop="48dp"
                     android:layout_marginBottom="24dp"
-                    android:text="AÑADIR A MI LISTA"
+                    android:text="@string/add_to_list"
                     android:textAllCaps="true"
                     android:textSize="16sp"
                     android:textStyle="bold"

@@ -8,6 +8,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+import androidx.appcompat.app.AppCompatDelegate
+import java.util.Locale
 
 interface TMDBApi {
 
@@ -181,10 +183,7 @@ data class PersonMovieCreditsDTO(val cast: List<MovieDTO>, val crew: List<MovieD
 
 class TMDBRepository {
     private val apiKey = "8998a694dcd2ced231502e3d00a40689"
-    private var currentLanguage = "es-ES"
     private val api: TMDBApi
-
-    // In-memory cache for common requests
     private val cache = mutableMapOf<String, Any>()
 
     init {
@@ -192,78 +191,86 @@ class TMDBRepository {
         api = retrofit.create(TMDBApi::class.java)
     }
 
-    fun setLanguage(language: String) { 
-        if (currentLanguage != language) {
-            currentLanguage = language
-            cache.clear() // Clear cache when language changes
+    fun getLanguage(): String {
+        // Detectar el idioma actual de la aplicación configurado vía AppCompatDelegate
+        val locales = AppCompatDelegate.getApplicationLocales()
+        if (!locales.isEmpty) {
+            val lang = locales.get(0)?.language
+            return if (lang == "es") "es-ES" else "en-US"
         }
+        // Fallback al locale del sistema si no se ha establecido uno específico
+        return if (Locale.getDefault().language == "es") "es-ES" else "en-US"
     }
-    fun getLanguage(): String = currentLanguage
+
+    fun clearCache() {
+        cache.clear()
+    }
 
     @Suppress("UNCHECKED_CAST")
     private suspend fun <T> withCache(key: String, block: suspend () -> T): T {
-        cache[key]?.let { return it as T }
+        val cacheKey = "${getLanguage()}_$key"
+        cache[cacheKey]?.let { return it as T }
         val result = block()
         if (result != null && (result as? List<*>)?.isNotEmpty() != false) {
-            cache[key] = result as Any
+            cache[cacheKey] = result as Any
         }
         return result
     }
 
     suspend fun getTrendingMovies(page: Int = 1): List<Movie> = withCache("trending_movies_$page") {
-        try { api.getTrendingMovies(apiKey, currentLanguage, page).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
+        try { api.getTrendingMovies(apiKey, getLanguage(), page).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
     }
 
     suspend fun getTopRatedMovies(page: Int = 1): List<Movie> = withCache("top_rated_movies_$page") {
-        try { api.getTopRatedMovies(apiKey, currentLanguage, page).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
+        try { api.getTopRatedMovies(apiKey, getLanguage(), page).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
     }
 
     suspend fun getNowPlayingMovies(page: Int = 1): List<Movie> = withCache("now_playing_movies_$page") {
-        try { api.getNowPlayingMovies(apiKey, currentLanguage, page).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
+        try { api.getNowPlayingMovies(apiKey, getLanguage(), page).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
     }
 
     suspend fun getTrendingTV(page: Int = 1): List<Movie> = withCache("trending_tv_$page") {
-        try { api.getTrendingTV(apiKey, currentLanguage, page).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
+        try { api.getTrendingTV(apiKey, getLanguage(), page).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
     }
 
     suspend fun getTopRatedTV(page: Int = 1): List<Movie> = withCache("top_rated_tv_$page") {
-        try { api.getTopRatedTV(apiKey, currentLanguage, page).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
+        try { api.getTopRatedTV(apiKey, getLanguage(), page).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
     }
 
-    suspend fun searchAll(query: String): List<Movie> = try { api.searchMulti(apiKey, query, currentLanguage).results.filter { it.media_type == "movie" || it.media_type == "tv" }.map { it.toMovie() } } catch (e: Exception) { emptyList() }
+    suspend fun searchAll(query: String): List<Movie> = try { api.searchMulti(apiKey, query, getLanguage()).results.filter { it.media_type == "movie" || it.media_type == "tv" }.map { it.toMovie() } } catch (e: Exception) { emptyList() }
     
-    suspend fun searchPeople(query: String): List<PersonDTO> = try { api.searchPeople(apiKey, query, currentLanguage).results } catch (e: Exception) { emptyList() }
+    suspend fun searchPeople(query: String): List<PersonDTO> = try { api.searchPeople(apiKey, query, getLanguage()).results } catch (e: Exception) { emptyList() }
     
     suspend fun getMoviesByGenre(genreIds: List<Int>, page: Int = 1, sortBy: String = "vote_average.desc", voteCountGte: Int = 500): List<Movie> = withCache("movies_genre_${genreIds.joinToString(",")}_$page") {
-        try { api.getMoviesByGenre(apiKey, genreIds.joinToString(","), page, currentLanguage, sortBy, voteCountGte).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
+        try { api.getMoviesByGenre(apiKey, genreIds.joinToString(","), page, getLanguage(), sortBy, voteCountGte).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
     }
 
     suspend fun getTVByGenre(genreIds: List<Int>, page: Int = 1, sortBy: String = "vote_average.desc", voteCountGte: Int = 100): List<Movie> = withCache("tv_genre_${genreIds.joinToString(",")}_$page") {
-        try { api.getTVByGenre(apiKey, genreIds.joinToString(","), page, currentLanguage, sortBy, voteCountGte).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
+        try { api.getTVByGenre(apiKey, genreIds.joinToString(","), page, getLanguage(), sortBy, voteCountGte).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
     }
 
     suspend fun getMovieDetails(movieId: Int): MovieDetailDTO? = withCache("movie_details_$movieId") {
-        try { api.getMovieDetails(movieId, apiKey, currentLanguage) } catch (e: Exception) { null }
+        try { api.getMovieDetails(movieId, apiKey, getLanguage()) } catch (e: Exception) { null }
     }
 
     suspend fun getTVDetails(tvId: Int): TVDetailDTO? = withCache("tv_details_$tvId") {
-        try { api.getTVDetails(tvId, apiKey, currentLanguage) } catch (e: Exception) { null }
+        try { api.getTVDetails(tvId, apiKey, getLanguage()) } catch (e: Exception) { null }
     }
 
     suspend fun getMovieRecommendations(movieId: Int): List<Movie> = withCache("movie_rec_$movieId") {
-        try { api.getMovieRecommendations(movieId, apiKey, currentLanguage).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
+        try { api.getMovieRecommendations(movieId, apiKey, getLanguage()).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
     }
 
     suspend fun getTVRecommendations(tvId: Int): List<Movie> = withCache("tv_rec_$tvId") {
-        try { api.getTVRecommendations(tvId, apiKey, currentLanguage).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
+        try { api.getTVRecommendations(tvId, apiKey, getLanguage()).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
     }
 
     suspend fun getMovieCredits(movieId: Int): MovieCreditsDTO? = withCache("movie_credits_$movieId") {
-        try { api.getMovieCredits(movieId, apiKey, currentLanguage) } catch (e: Exception) { null }
+        try { api.getMovieCredits(movieId, apiKey, getLanguage()) } catch (e: Exception) { null }
     }
 
     suspend fun getTVCredits(tvId: Int): MovieCreditsDTO? = withCache("tv_credits_$tvId") {
-        try { api.getTVCredits(tvId, apiKey, currentLanguage) } catch (e: Exception) { null }
+        try { api.getTVCredits(tvId, apiKey, getLanguage()) } catch (e: Exception) { null }
     }
     
     suspend fun getMovieImages(movieId: Int): List<String> = withCache("movie_images_$movieId") {
@@ -281,32 +288,32 @@ class TMDBRepository {
     }
 
     suspend fun getCollectionMovies(collectionId: Int): List<Movie> = withCache("collection_$collectionId") {
-        try { api.getCollectionDetails(collectionId, apiKey, currentLanguage).parts.map { it.toMovie() } } catch (e: Exception) { emptyList() }
+        try { api.getCollectionDetails(collectionId, apiKey, getLanguage()).parts.map { it.toMovie() } } catch (e: Exception) { emptyList() }
     }
 
     suspend fun getPersonDetails(personId: Int): PersonDetailDTO? = withCache("person_details_$personId") {
-        try { api.getPersonDetails(personId, apiKey, currentLanguage) } catch (e: Exception) { null }
+        try { api.getPersonDetails(personId, apiKey, getLanguage()) } catch (e: Exception) { null }
     }
 
     suspend fun getMoviesByPerson(personId: Int): List<Movie> = withCache("person_movies_$personId") {
-        try { val response = api.getPersonMovieCredits(personId, apiKey, currentLanguage); (response.cast + response.crew).map { it.toMovie() }.distinctBy { it.id } } catch (e: Exception) { emptyList() }
+        try { val response = api.getPersonMovieCredits(personId, apiKey, getLanguage()); (response.cast + response.crew).map { it.toMovie() }.distinctBy { it.id } } catch (e: Exception) { emptyList() }
     }
 
     suspend fun getMovieTrailers(movieId: Int): List<VideoDTO> = withCache("movie_trailers_$movieId") {
         try { 
-            api.getMovieVideos(movieId, apiKey, currentLanguage).results.filter { it.site.lowercase() == "youtube" && it.type.lowercase() == "trailer" }
+            api.getMovieVideos(movieId, apiKey, getLanguage()).results.filter { it.site.lowercase() == "youtube" && it.type.lowercase() == "trailer" }
         } catch (e: Exception) { emptyList() }
     }
 
     suspend fun getTVTrailers(tvId: Int): List<VideoDTO> = withCache("tv_trailers_$tvId") {
         try { 
-            api.getTVVideos(tvId, apiKey, currentLanguage).results.filter { it.site.lowercase() == "youtube" && it.type.lowercase() == "trailer" }
+            api.getTVVideos(tvId, apiKey, getLanguage()).results.filter { it.site.lowercase() == "youtube" && it.type.lowercase() == "trailer" }
         } catch (e: Exception) { emptyList() }
     }
 
     suspend fun getTVSeasonDetails(tvId: Int, seasonNumber: Int): TVSeasonDetailDTO? = withCache("tv_season_${tvId}_$seasonNumber") {
         try {
-            api.getTVSeasonDetails(tvId, seasonNumber, apiKey, currentLanguage)
+            api.getTVSeasonDetails(tvId, seasonNumber, apiKey, getLanguage())
         } catch (e: Exception) { null }
     }
 

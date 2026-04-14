@@ -22,7 +22,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="FILTROS AVANZADOS"
+            android:text="FILTROS"
             android:textColor="@color/primary"
             android:textSize="18sp"
             android:fontFamily="sans-serif-black"
@@ -48,22 +48,52 @@
             app:checkedButton="@+id/btnTypeMovie"
             android:layout_marginBottom="24dp">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnTypeMovie"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="PELÍCULAS" />
+                android:text="PELÍCULAS"
+                app:backgroundTint="@color/toggle_bg_selector"
+                android:textColor="@color/toggle_text_selector"
+                app:strokeColor="@color/primary"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnTypeTV"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="SERIES" />
+                android:text="SERIES"
+                app:backgroundTint="@color/toggle_bg_selector"
+                android:textColor="@color/toggle_text_selector"
+                app:strokeColor="@color/primary"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent" />
         </com.google.android.material.button.MaterialButtonToggleGroup>
+
+        <!-- PLATAFORMAS (WATCH PROVIDERS) -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Plataformas de Streaming"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="12dp" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupProviders"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:chipSpacingHorizontal="8dp"
+            app:chipSpacingVertical="4dp"
+            android:layout_marginBottom="24dp" />
 
         <!-- GÉNEROS -->
         <TextView
@@ -77,6 +107,24 @@
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chipGroupGenres"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:chipSpacingHorizontal="8dp"
+            app:chipSpacingVertical="4dp"
+            android:layout_marginBottom="24dp" />
+
+        <!-- TEMÁTICAS -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Temáticas"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="12dp" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupKeywords"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:chipSpacingHorizontal="8dp"
@@ -101,7 +149,7 @@
                 android:id="@+id/textYearValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1970 - 2025"
+                android:text="2000 - 2025"
                 android:textColor="@color/primary"
                 android:fontFamily="sans-serif-black" />
         </LinearLayout>
@@ -112,6 +160,7 @@
             android:layout_height="wrap_content"
             android:valueFrom="1970"
             android:valueTo="2025"
+            android:stepSize="1"
             app:values="@array/initial_year_range"
             android:layout_marginBottom="24dp"
             app:thumbColor="@color/primary"

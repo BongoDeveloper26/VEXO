@@ -59,13 +59,27 @@ class RecommendationViewModel(application: Application) : AndroidViewModel(appli
         }
     }
 
-    fun loadWithFilters(genres: List<Int>?, yearStart: Int?, yearEnd: Int?, rating: Float?, isTv: Boolean) {
+    fun loadWithFilters(genres: List<Int>?, yearStart: Int?, yearEnd: Int?, rating: Float?, watchProviders: List<Int>?, keywords: List<Int>?, isTv: Boolean) {
         viewModelScope.launch {
             _isLoadingRatings.value = true
             val results = if (isTv) {
-                tmdbRepository.discoverTV(genres, yearStart, yearEnd, rating)
+                tmdbRepository.discoverTV(
+                    genreIds = genres,
+                    yearStart = yearStart,
+                    yearEnd = yearEnd,
+                    minRating = rating,
+                    watchProviders = watchProviders,
+                    keywords = keywords
+                )
             } else {
-                tmdbRepository.discoverMovies(genres, yearStart, yearEnd, rating)
+                tmdbRepository.discoverMovies(
+                    genreIds = genres,
+                    yearStart = yearStart,
+                    yearEnd = yearEnd,
+                    minRating = rating,
+                    watchProviders = watchProviders,
+                    keywords = keywords
+                )
             }
             
             _movies.value = results.shuffled()

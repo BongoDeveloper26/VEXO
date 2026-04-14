@@ -9,11 +9,13 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.slider.LabelFormatter
 import com.google.android.material.slider.RangeSlider
 import com.google.android.material.slider.Slider
 import com.vexo.app.R
@@ -35,6 +37,36 @@ class RecommendationActivity : AppCompatActivity() {
         36 to "Historia", 27 to "Terror", 10402 to "Música",
         9648 to "Misterio", 10749 to "Romance", 878 to "Ciencia Ficción",
         53 to "Suspense", 10752 to "Bélica", 37 to "Western"
+    )
+
+    private val providersMap = mapOf(
+        8 to "Netflix",
+        119 to "Prime Video",
+        337 to "Disney+",
+        350 to "Apple TV+",
+        384 to "HBO Max",
+        149 to "Movistar+",
+        63 to "Filmin",
+        2 to "Apple TV",
+        35 to "Rakuten TV",
+        11 to "MUBI",
+        283 to "Crunchyroll",
+        541 to "Atresplayer",
+        543 to "RTVE Play"
+    )
+
+    // IDs de Keywords de TMDB actualizados con temáticas populares
+    private val keywordsMap = mapOf(
+        9715 to "Superhéroes",
+        9672 to "Hechos reales",
+        9717 to "Venganza",
+        6075 to "Deportes",
+        9663 to "Slasher",
+        9748 to "Asesinos",
+        4565 to "Distopía",
+        1009 to "Zombies",
+        10084 to "Atracos",
+        1612 to "Espionaje"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,7 +117,9 @@ class RecommendationActivity : AppCompatActivity() {
         val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
         val view = layoutInflater.inflate(R.layout.layout_discover_filters, null)
         
-        val chipGroup = view.findViewById<ChipGroup>(R.id.chipGroupGenres)
+        val chipGroupGenres = view.findViewById<ChipGroup>(R.id.chipGroupGenres)
+        val chipGroupProviders = view.findViewById<ChipGroup>(R.id.chipGroupProviders)
+        val chipGroupKeywords = view.findViewById<ChipGroup>(R.id.chipGroupKeywords)
         val sliderYear = view.findViewById<RangeSlider>(R.id.sliderYear)
         val sliderRating = view.findViewById<Slider>(R.id.sliderRating)
         val textYear = view.findViewById<TextView>(R.id.textYearValue)
@@ -93,15 +127,45 @@ class RecommendationActivity : AppCompatActivity() {
         val toggleType = view.findViewById<MaterialButtonToggleGroup>(R.id.toggleContentType)
         val btnApply = view.findViewById<Button>(R.id.btnApplyFilters)
 
-        allGenresMap.forEach { (id, name) ->
-            val chip = Chip(this).apply {
-                text = name
-                isCheckable = true
-                tag = id
-                setChipBackgroundColorResource(R.color.background_app)
-            }
-            chipGroup.addView(chip)
+        // Estilo común para los Chips
+        val setupChip: (Chip, Int) -> Unit = { chip, id ->
+            chip.isCheckable = true
+            chip.tag = id
+            chip.setChipBackgroundColorResource(R.color.toggle_bg_selector)
+            chip.setTextColor(ContextCompat.getColorStateList(this, R.color.toggle_text_selector))
+            chip.setChipStrokeColorResource(R.color.primary)
+            chip.chipStrokeWidth = 1f
+            chip.isCheckedIconVisible = false
         }
+
+        // Populate Genres
+        allGenresMap.forEach { (id, name) ->
+            val chip = Chip(this).apply { text = name }
+            setupChip(chip, id)
+            chipGroupGenres.addView(chip)
+        }
+
+        // Populate Providers
+        providersMap.forEach { (id, name) ->
+            val chip = Chip(this).apply { text = name }
+            setupChip(chip, id)
+            chipGroupProviders.addView(chip)
+        }
+
+        // Populate Keywords
+        keywordsMap.forEach { (id, name) ->
+            val chip = Chip(this).apply { text = name }
+            setupChip(chip, id)
+            chipGroupKeywords.addView(chip)
+        }
+
+        // --- FIX DECIMALES INICIALES ---
+        val initialYearValues = sliderYear.values
+        textYear.text = "${initialYearValues[0].toInt()} - ${initialYearValues[1].toInt()}"
+        
+        textRating.text = String.format("%.1f", sliderRating.value)
+
+        sliderYear.setLabelFormatter { value -> value.toInt().toString() }
 
         sliderYear.addOnChangeListener { slider, _, _ -> 
             val values = slider.values
@@ -113,20 +177,18 @@ class RecommendationActivity : AppCompatActivity() {
         }
 
         btnApply.setOnClickListener {
-            val selectedGenres = mutableListOf<Int>()
-            for (i in 0 until chipGroup.childCount) {
-                val chip = chipGroup.getChildAt(i) as Chip
-                if (chip.isChecked) {
-                    selectedGenres.add(chip.tag as Int)
-                }
-            }
+            val selectedGenres = getCheckedIds(chipGroupGenres)
+            val selectedProviders = getCheckedIds(chipGroupProviders)
+            val selectedKeywords = getCheckedIds(chipGroupKeywords)
 
             val yearValues = sliderYear.values
             viewModel.loadWithFilters(
-                selectedGenres, 
+                if (selectedGenres.isEmpty()) null else selectedGenres, 
                 yearValues[0].toInt(), 
                 yearValues[1].toInt(), 
                 sliderRating.value, 
+                if (selectedProviders.isEmpty()) null else selectedProviders,
+                if (selectedKeywords.isEmpty()) null else selectedKeywords,
                 toggleType.checkedButtonId == R.id.btnTypeTV
             )
             
@@ -135,6 +197,17 @@ class RecommendationActivity : AppCompatActivity() {
 
         dialog.setContentView(view)
         dialog.show()
+    }
+
+    private fun getCheckedIds(chipGroup: ChipGroup): List<Int> {
+        val ids = mutableListOf<Int>()
+        for (i in 0 until chipGroup.childCount) {
+            val chip = chipGroup.getChildAt(i) as Chip
+            if (chip.isChecked) {
+                ids.add(chip.tag as Int)
+            }
+        }
+        return ids
     }
 
     private fun observeViewModel() {

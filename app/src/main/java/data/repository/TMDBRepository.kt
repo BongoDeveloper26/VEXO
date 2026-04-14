@@ -35,7 +35,10 @@ interface TMDBApi {
         @Query("primary_release_date.gte") dateGte: String? = null,
         @Query("primary_release_date.lte") dateLte: String? = null,
         @Query("vote_average.gte") minRating: Float? = null,
-        @Query("vote_count.gte") minVoteCount: Int? = null
+        @Query("vote_count.gte") minVoteCount: Int? = null,
+        @Query("with_watch_providers") watchProviders: String? = null,
+        @Query("watch_region") watchRegion: String? = "ES",
+        @Query("with_keywords") keywords: String? = null
     ): TMDBResponse
 
     @GET("discover/tv")
@@ -47,7 +50,10 @@ interface TMDBApi {
         @Query("with_genres") genres: String? = null,
         @Query("first_air_date.gte") dateGte: String? = null,
         @Query("first_air_date.lte") dateLte: String? = null,
-        @Query("vote_average.gte") minRating: Float? = null
+        @Query("vote_average.gte") minRating: Float? = null,
+        @Query("with_watch_providers") watchProviders: String? = null,
+        @Query("watch_region") watchRegion: String? = "ES",
+        @Query("with_keywords") keywords: String? = null
     ): TMDBResponse
 
     @GET("discover/tv")
@@ -225,6 +231,10 @@ class TMDBRepository {
         return if (Locale.getDefault().language == "es") "es-ES" else "en-US"
     }
 
+    fun getRegion(): String {
+        return if (getLanguage() == "es-ES") "ES" else "US"
+    }
+
     fun clearCache() {
         cache.clear()
     }
@@ -277,9 +287,11 @@ class TMDBRepository {
         yearStart: Int? = null,
         yearEnd: Int? = null,
         minRating: Float? = null,
+        watchProviders: List<Int>? = null,
         sortBy: String = "popularity.desc",
-        page: Int = 1
-    ): List<Movie> = withCache("discover_movies_${genreIds?.joinToString(",")}_${yearStart}_${yearEnd}_${minRating}_${sortBy}_$page") {
+        page: Int = 1,
+        keywords: List<Int>? = null
+    ): List<Movie> = withCache("discover_movies_${genreIds?.joinToString(",")}_${yearStart}_${yearEnd}_${minRating}_${watchProviders?.joinToString(",")}_${sortBy}_${keywords?.joinToString(",")}_$page") {
         try { 
             api.discoverMovies(
                 apiKey, getLanguage(), page, sortBy, 
@@ -287,7 +299,10 @@ class TMDBRepository {
                 yearStart?.let { "$it-01-01" },
                 yearEnd?.let { "$it-12-31" },
                 minRating, 
-                if (minRating != null) 100 else null
+                if (minRating != null) 100 else null,
+                watchProviders?.joinToString("|"),
+                getRegion(),
+                keywords?.joinToString(",")
             ).results.map { it.toMovie() }
         } catch (e: Exception) { emptyList() }
     }
@@ -297,16 +312,21 @@ class TMDBRepository {
         yearStart: Int? = null,
         yearEnd: Int? = null,
         minRating: Float? = null,
+        watchProviders: List<Int>? = null,
         sortBy: String = "popularity.desc",
-        page: Int = 1
-    ): List<Movie> = withCache("discover_tv_${genreIds?.joinToString(",")}_${yearStart}_${yearEnd}_${minRating}_${sortBy}_$page") {
+        page: Int = 1,
+        keywords: List<Int>? = null
+    ): List<Movie> = withCache("discover_tv_${genreIds?.joinToString(",")}_${yearStart}_${yearEnd}_${minRating}_${watchProviders?.joinToString(",")}_${sortBy}_${keywords?.joinToString(",")}_$page") {
         try { 
             api.discoverTV(
                 apiKey, getLanguage(), page, sortBy, 
                 genreIds?.joinToString(","), 
                 yearStart?.let { "$it-01-01" },
                 yearEnd?.let { "$it-12-31" },
-                minRating
+                minRating,
+                watchProviders?.joinToString("|"),
+                getRegion(),
+                keywords?.joinToString(",")
             ).results.map { it.toMovie() }
         } catch (e: Exception) { emptyList() }
     }

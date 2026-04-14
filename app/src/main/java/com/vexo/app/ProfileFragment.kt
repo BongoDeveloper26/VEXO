@@ -325,6 +325,7 @@ class ProfileFragment : Fragment() {
         
         val options = listOf(
             BackgroundOption(null, "Predeterminado", 0),
+            BackgroundOption("fondo_vexocine", "VEXO Cine", R.drawable.fondo_vexocine),
             BackgroundOption("fondo_futurista", "Futurista", R.drawable.fondo_futurista),
             BackgroundOption("fondo_espacio", "Espacio", R.drawable.fondo_espacio),
             BackgroundOption("fondo_salacine", "Sala Cine", R.drawable.fondo_salacine),
@@ -367,6 +368,7 @@ class ProfileFragment : Fragment() {
         imgHeaderBackground.alpha = if (isTransparent) 0.5f else 1.0f
 
         when (bgName) {
+            "fondo_vexocine" -> setThemeConfig(R.drawable.fondo_vexocine, "#7C3AED", "#CC1A1A1A", "#407C3AED")
             "fondo_futurista" -> setThemeConfig(R.drawable.fondo_futurista, "#00E5FF", "#CC1A1A1A", "#3300E5FF")
             "fondo_espacio" -> setThemeConfig(R.drawable.fondo_espacio, "#B0E0E6", "#CC0B1026", "#40B0E0E6")
             "fondo_salacine" -> setThemeConfig(R.drawable.fondo_salacine, "#FFD700", "#CC2B0000", "#40FFD700")
@@ -387,7 +389,11 @@ class ProfileFragment : Fragment() {
     private fun setThemeConfig(resId: Int, accent: String, cardBg: String, stroke: String) {
         imgContentBackground.visibility = View.VISIBLE
         imgContentBackground.setImageResource(resId)
+        imgContentBackground.alpha = 1.0f // Revertido a opacidad total
+        
         viewBackgroundOverlay.visibility = View.VISIBLE
+        viewBackgroundOverlay.setBackgroundColor(Color.parseColor("#99000000")) // Revertido a opacidad original
+
         layoutContentProfile.setBackgroundResource(0)
         scrollViewProfile.setBackgroundColor(Color.TRANSPARENT)
         applyThemedColors(Color.parseColor(accent), Color.parseColor(cardBg), Color.parseColor(stroke))
@@ -510,6 +516,7 @@ class ProfileFragment : Fragment() {
     private fun updateAdapterThemes() {
         val bgName = watchlistRepository.getHeaderBackground()
         when (bgName) {
+            "fondo_vexocine" -> applyThemedColors(Color.parseColor("#7C3AED"), Color.parseColor("#CC1A1A1A"), Color.parseColor("#407C3AED"))
             "fondo_futurista" -> applyThemedColors(Color.parseColor("#00E5FF"), Color.parseColor("#CC1A1A1A"), Color.parseColor("#3300E5FF"))
             "fondo_espacio" -> applyThemedColors(Color.parseColor("#B0E0E6"), Color.parseColor("#CC0B1026"), Color.parseColor("#40B0E0E6"))
             "fondo_salacine" -> applyThemedColors(Color.parseColor("#FFD700"), Color.parseColor("#CC2B0000"), Color.parseColor("#40FFD700"))

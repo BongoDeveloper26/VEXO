@@ -63,6 +63,7 @@ class AllRatedMoviesActivity : AppCompatActivity() {
         val btnBack = findViewById<ImageButton>(R.id.btnBackAllRated)
 
         val themeConfig = when (bgName) {
+            "fondo_vexocine" -> ThemeConfig(R.drawable.fondo_vexocine, "#7C3AED", "#1A1A1A")
             "fondo_futurista" -> ThemeConfig(R.drawable.fondo_futurista, "#00E5FF", "#1A1A1A")
             "fondo_espacio" -> ThemeConfig(R.drawable.fondo_espacio, "#B0E0E6", "#0B1026")
             "fondo_salacine" -> ThemeConfig(R.drawable.fondo_salacine, "#FFD700", "#2B0000")
@@ -76,7 +77,9 @@ class AllRatedMoviesActivity : AppCompatActivity() {
         if (themeConfig != null) {
             imgBg.visibility = View.VISIBLE
             imgBg.setImageResource(themeConfig.resId)
+            imgBg.alpha = 1.0f // Imagen con brillo total
             overlay.visibility = View.VISIBLE
+            overlay.setBackgroundColor(Color.parseColor("#99000000")) // Overlay al 60% para que se vea mucho más el fondo
             root.setBackgroundColor(Color.TRANSPARENT)
             
             val accent = Color.parseColor(themeConfig.accent)

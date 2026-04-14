@@ -177,7 +177,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
-        android:paddingBottom="48dp"
+        android:paddingBottom="80dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <!-- Dislike Button (X) -->

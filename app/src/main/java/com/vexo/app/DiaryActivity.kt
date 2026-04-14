@@ -107,6 +107,11 @@ class DiaryActivity : AppCompatActivity() {
         val vistasLabel = findViewById<TextView>(R.id.textVistasLabel)
         val monthLabel = findViewById<TextView>(R.id.textMonthLabel)
         val mediaLabel = findViewById<TextView>(R.id.textMediaLabel)
+        
+        // Stats Numbers
+        val textTotalCount = findViewById<TextView>(R.id.textTotalCount)
+        val textMonthCount = findViewById<TextView>(R.id.textMonthCount)
+        val textAvgRating = findViewById<TextView>(R.id.textAvgRating)
 
         val themeConfig = when (bgName) {
             "fondo_vexocine" -> ThemeConfig(R.drawable.fondo_vexocine, "#7C3AED", "#1A1A1A", "#CC1A1A1A", "#407C3AED")
@@ -123,11 +128,11 @@ class DiaryActivity : AppCompatActivity() {
         if (themeConfig != null) {
             imgBg?.visibility = View.VISIBLE
             imgBg?.setImageResource(themeConfig.resId)
-            imgBg?.alpha = 1.0f // Imagen con brillo total
+            imgBg?.alpha = 1.0f 
             
             overlay?.visibility = View.VISIBLE
-            overlay?.setBackgroundColor(Color.parseColor("#99000000")) // Overlay al 60% para que se vea mucho más el fondo
-
+            overlay?.setBackgroundColor(Color.parseColor("#99000000")) 
+            
             rootLayout?.setBackgroundColor(Color.TRANSPARENT)
             headerContainer?.setBackgroundColor(Color.TRANSPARENT)
             
@@ -135,6 +140,11 @@ class DiaryActivity : AppCompatActivity() {
             title?.setTextColor(accent)
             label?.setTextColor(accent)
             btnBack?.imageTintList = android.content.res.ColorStateList.valueOf(accent)
+            
+            // Números de estadísticas con el color de acento
+            textTotalCount?.setTextColor(accent)
+            textMonthCount?.setTextColor(accent)
+            textAvgRating?.setTextColor(accent)
             
             // Labels stats en blanco/claro para contraste sobre fondo oscuro
             vistasLabel?.setTextColor(Color.WHITE)
@@ -153,9 +163,15 @@ class DiaryActivity : AppCompatActivity() {
             headerContainer?.setBackgroundResource(R.color.surface_app)
             
             val primary = ContextCompat.getColor(this, R.color.primary)
-            title?.setTextColor(ContextCompat.getColor(this, R.color.text_primary))
+            val textPrimary = ContextCompat.getColor(this, R.color.text_primary)
+            
+            title?.setTextColor(textPrimary)
             label?.setTextColor(primary)
             btnBack?.imageTintList = android.content.res.ColorStateList.valueOf(primary)
+            
+            textTotalCount?.setTextColor(textPrimary)
+            textMonthCount?.setTextColor(textPrimary)
+            textAvgRating?.setTextColor(ContextCompat.getColor(this, R.color.accent))
             
             vistasLabel?.setTextColor(ContextCompat.getColor(this, R.color.text_secondary))
             monthLabel?.setTextColor(ContextCompat.getColor(this, R.color.text_secondary))

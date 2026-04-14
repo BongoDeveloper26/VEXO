@@ -53,6 +53,8 @@ class DiaryGroupedAdapter(
         val textReview: TextView = view.findViewById(R.id.textDiaryReview)
         val layoutTimeline: View = view.findViewById(R.id.layoutTimeline)
         val imgHeart: ImageView = view.findViewById(R.id.imgDiaryHeart)
+        val timelineLine: View? = (layoutTimeline as? ViewGroup)?.getChildAt(0)
+        val timelineDot: View? = (layoutTimeline as? ViewGroup)?.getChildAt(1)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -106,6 +108,10 @@ class DiaryGroupedAdapter(
                     vh.textDate.alpha = 0.7f
                     vh.textReview.setTextColor(Color.WHITE)
                     vh.textReview.alpha = 0.8f
+                    
+                    vh.timelineDot?.backgroundTintList = ColorStateList.valueOf(accentColor)
+                    vh.timelineLine?.backgroundTintList = ColorStateList.valueOf(accentColor)
+                    vh.timelineLine?.alpha = 0.15f
                 } else {
                     vh.card.setCardBackgroundColor(vh.itemView.context.getColor(R.color.surface_app))
                     vh.card.strokeWidth = 0
@@ -113,6 +119,10 @@ class DiaryGroupedAdapter(
                     vh.textDate.setTextColor(vh.itemView.context.getColor(R.color.text_secondary))
                     vh.textDate.alpha = 0.6f
                     vh.textReview.setTextColor(vh.itemView.context.getColor(R.color.text_secondary))
+                    
+                    vh.timelineDot?.backgroundTintList = null
+                    vh.timelineLine?.backgroundTintList = null
+                    vh.timelineLine?.alpha = 0.1f
                 }
 
                 // Mostrar u ocultar el corazón si es favorito

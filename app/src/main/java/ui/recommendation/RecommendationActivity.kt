@@ -5,10 +5,17 @@ import android.os.Bundle
 import android.view.View
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.widget.Button
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.button.MaterialButtonToggleGroup
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
+import com.google.android.material.slider.RangeSlider
+import com.google.android.material.slider.Slider
 import com.vexo.app.R
 import com.vexo.app.databinding.ActivityRecommendationBinding
 import data.model.Movie
@@ -21,25 +28,13 @@ class RecommendationActivity : AppCompatActivity() {
     private val viewModel: RecommendationViewModel by viewModels()
     private var isAnimating = false
 
-    private val genresMap = mapOf(
-        "Acción" to 28,
-        "Aventura" to 12,
-        "Animación" to 16,
-        "Comedia" to 35,
-        "Crimen" to 80,
-        "Documental" to 99,
-        "Drama" to 18,
-        "Familia" to 10751,
-        "Fantasía" to 14,
-        "Historia" to 36,
-        "Terror" to 27,
-        "Música" to 10402,
-        "Misterio" to 9648,
-        "Romance" to 10749,
-        "Ciencia ficción" to 878,
-        "Suspense" to 53,
-        "Bélica" to 10752,
-        "Western" to 37
+    private val allGenresMap = mapOf(
+        28 to "Acción", 12 to "Aventura", 16 to "Animación",
+        35 to "Comedia", 80 to "Crimen", 99 to "Doc",
+        18 to "Drama", 10751 to "Familiar", 14 to "Fantasía",
+        36 to "Historia", 27 to "Terror", 10402 to "Música",
+        9648 to "Misterio", 10749 to "Romance", 878 to "Ciencia Ficción",
+        53 to "Suspense", 10752 to "Bélica", 37 to "Western"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,8 +49,9 @@ class RecommendationActivity : AppCompatActivity() {
     private fun setupUI() {
         binding.btnBack.setOnClickListener { finish() }
 
+        binding.btnFilter.visibility = View.VISIBLE
         binding.btnFilter.setOnClickListener {
-            showGenreFilterDialog()
+            showAdvancedFilters()
         }
 
         binding.btnLike.setOnClickListener {
@@ -85,38 +81,67 @@ class RecommendationActivity : AppCompatActivity() {
         }
     }
 
-    private fun showGenreFilterDialog() {
-        val genresNames = genresMap.keys.toTypedArray()
-        val checkedItems = BooleanArray(genresNames.size) { index ->
-            viewModel.selectedGenres.value?.contains(genresMap[genresNames[index]]) == true
+    private fun showAdvancedFilters() {
+        val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+        val view = layoutInflater.inflate(R.layout.layout_discover_filters, null)
+        
+        val chipGroup = view.findViewById<ChipGroup>(R.id.chipGroupGenres)
+        val sliderYear = view.findViewById<RangeSlider>(R.id.sliderYear)
+        val sliderRating = view.findViewById<Slider>(R.id.sliderRating)
+        val textYear = view.findViewById<TextView>(R.id.textYearValue)
+        val textRating = view.findViewById<TextView>(R.id.textRatingValue)
+        val toggleType = view.findViewById<MaterialButtonToggleGroup>(R.id.toggleContentType)
+        val btnApply = view.findViewById<Button>(R.id.btnApplyFilters)
+
+        allGenresMap.forEach { (id, name) ->
+            val chip = Chip(this).apply {
+                text = name
+                isCheckable = true
+                tag = id
+                setChipBackgroundColorResource(R.color.background_app)
+            }
+            chipGroup.addView(chip)
         }
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Filtrar por Géneros")
-            .setMultiChoiceItems(genresNames, checkedItems) { _, which, isChecked ->
-                checkedItems[which] = isChecked
-            }
-            .setPositiveButton("Aplicar") { _, _ ->
-                val selectedIds = mutableListOf<Int>()
-                for (i in checkedItems.indices) {
-                    if (checkedItems[i]) {
-                        genresMap[genresNames[i]]?.let { selectedIds.add(it) }
-                    }
+        sliderYear.addOnChangeListener { slider, _, _ -> 
+            val values = slider.values
+            textYear.text = "${values[0].toInt()} - ${values[1].toInt()}"
+        }
+
+        sliderRating.addOnChangeListener { _, value, _ -> 
+            textRating.text = String.format("%.1f", value)
+        }
+
+        btnApply.setOnClickListener {
+            val selectedGenres = mutableListOf<Int>()
+            for (i in 0 until chipGroup.childCount) {
+                val chip = chipGroup.getChildAt(i) as Chip
+                if (chip.isChecked) {
+                    selectedGenres.add(chip.tag as Int)
                 }
-                viewModel.setGenres(selectedIds)
             }
-            .setNegativeButton("Cancelar", null)
-            .setNeutralButton("Limpiar") { _, _ ->
-                viewModel.setGenres(emptyList())
-            }
-            .show()
+
+            val yearValues = sliderYear.values
+            viewModel.loadWithFilters(
+                selectedGenres, 
+                yearValues[0].toInt(), 
+                yearValues[1].toInt(), 
+                sliderRating.value, 
+                toggleType.checkedButtonId == R.id.btnTypeTV
+            )
+            
+            dialog.dismiss()
+        }
+
+        dialog.setContentView(view)
+        dialog.show()
     }
 
     private fun observeViewModel() {
         viewModel.movies.observe(this) { movies ->
-            if (movies.isNotEmpty() && !isAnimating) {
+            if (movies != null && movies.isNotEmpty() && !isAnimating) {
                 updateMovieUI(movies[viewModel.currentMovieIndex.value ?: 0])
-            } else if (movies.isEmpty() && !isAnimating) {
+            } else if (movies != null && movies.isEmpty() && !isAnimating) {
                 showEmptyState()
             }
         }
@@ -125,6 +150,8 @@ class RecommendationActivity : AppCompatActivity() {
             val movies = viewModel.movies.value
             if (movies != null && index < movies.size) {
                 updateMovieUI(movies[index])
+            } else if (movies != null && index >= movies.size && movies.isNotEmpty()) {
+                showEmptyState()
             }
         }
 
@@ -152,7 +179,7 @@ class RecommendationActivity : AppCompatActivity() {
 
     private fun showEmptyState() {
         binding.textMovieTitle.text = "No hay resultados"
-        binding.textMovieDescription.text = "Prueba a cambiar los filtros de género."
+        binding.textMovieDescription.text = "Prueba con otros filtros arriba a la derecha."
         binding.imgPoster.setImageResource(R.drawable.logo_vexo_app)
         binding.imgPoster.scaleType = android.widget.ImageView.ScaleType.CENTER_INSIDE
         binding.textTMDBRating.text = ""

@@ -59,6 +59,25 @@ class RecommendationViewModel(application: Application) : AndroidViewModel(appli
         }
     }
 
+    fun loadWithFilters(genres: List<Int>?, yearStart: Int?, yearEnd: Int?, rating: Float?, isTv: Boolean) {
+        viewModelScope.launch {
+            _isLoadingRatings.value = true
+            val results = if (isTv) {
+                tmdbRepository.discoverTV(genres, yearStart, yearEnd, rating)
+            } else {
+                tmdbRepository.discoverMovies(genres, yearStart, yearEnd, rating)
+            }
+            
+            _movies.value = results.shuffled()
+            _currentMovieIndex.value = 0
+            if (results.isNotEmpty()) {
+                fetchDetailedRatings(results[0])
+            } else {
+                _isLoadingRatings.value = false
+            }
+        }
+    }
+
     fun setGenres(genreIds: List<Int>) {
         _selectedGenres.value = genreIds
         loadRecommendations()
@@ -72,7 +91,7 @@ class RecommendationViewModel(application: Application) : AndroidViewModel(appli
             _currentMovieIndex.value = nextIndex
             fetchDetailedRatings(currentList[nextIndex])
         } else {
-            loadRecommendations()
+            _movies.value = emptyList()
         }
     }
 

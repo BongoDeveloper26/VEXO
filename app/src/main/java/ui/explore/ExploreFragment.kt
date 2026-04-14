@@ -56,6 +56,7 @@ class ExploreFragment : Fragment() {
             showSettingsMenu()
         }
 
+        // REVERTIDO: Abre directamente RecommendationActivity como antes
         view.findViewById<View>(R.id.btnRecommend).setOnClickListener {
             startActivity(Intent(requireContext(), RecommendationActivity::class.java))
         }
@@ -63,7 +64,6 @@ class ExploreFragment : Fragment() {
 
     private fun setupTabs(view: View) {
         tabLayout = view.findViewById(R.id.tabLayoutExplore)
-        
         tabLayout.getTabAt(0)?.text = getString(R.string.movies)
         tabLayout.getTabAt(1)?.text = getString(R.string.tv_shows)
 
@@ -155,14 +155,10 @@ class ExploreFragment : Fragment() {
             .setTitle(getString(R.string.select_language))
             .setSingleChoiceItems(languages, currentLang) { dialog, which ->
                 val langTag = if (which == 0) "es" else "en"
-                
                 if ((which == 0 && !currentLocales.toLanguageTags().contains("es")) || 
                     (which == 1 && !currentLocales.toLanguageTags().contains("en"))) {
-                    
                     AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(langTag))
-                    
                     repository.clearCache()
-
                     activity?.let {
                         val intent = Intent(it, MainActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

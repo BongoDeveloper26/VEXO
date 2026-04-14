@@ -44,6 +44,7 @@
         <!-- Otras Activities -->
         <activity android:name="ui.explore.ExploreActivity" android:exported="false"/>
         <activity android:name="ui.explore.CategoryMoviesActivity" android:exported="false"/>
+        <activity android:name="ui.explore.DiscoverResultsActivity" android:exported="false"/>
         <activity android:name="ui.detail.DetailActivity" android:exported="false"/>
         <activity android:name="ui.detail.PersonMoviesActivity" android:exported="false"/>
         <activity android:name="ui.search.SearchActivity" android:exported="false"/>

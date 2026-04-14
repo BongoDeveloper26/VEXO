@@ -25,6 +25,31 @@ interface TMDBApi {
     @GET("discover/movie")
     suspend fun getMoviesByGenre(@Query("api_key") apiKey: String, @Query("with_genres") genreId: String, @Query("page") page: Int = 1, @Query("language") language: String, @Query("sort_by") sortBy: String = "vote_average.desc", @Query("vote_count.gte") voteCount: Int = 500): TMDBResponse
 
+    @GET("discover/movie")
+    suspend fun discoverMovies(
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String,
+        @Query("page") page: Int = 1,
+        @Query("sort_by") sortBy: String = "popularity.desc",
+        @Query("with_genres") genres: String? = null,
+        @Query("primary_release_date.gte") dateGte: String? = null,
+        @Query("primary_release_date.lte") dateLte: String? = null,
+        @Query("vote_average.gte") minRating: Float? = null,
+        @Query("vote_count.gte") minVoteCount: Int? = null
+    ): TMDBResponse
+
+    @GET("discover/tv")
+    suspend fun discoverTV(
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String,
+        @Query("page") page: Int = 1,
+        @Query("sort_by") sortBy: String = "popularity.desc",
+        @Query("with_genres") genres: String? = null,
+        @Query("first_air_date.gte") dateGte: String? = null,
+        @Query("first_air_date.lte") dateLte: String? = null,
+        @Query("vote_average.gte") minRating: Float? = null
+    ): TMDBResponse
+
     @GET("discover/tv")
     suspend fun getTVByGenre(@Query("api_key") apiKey: String, @Query("with_genres") genreId: String, @Query("page") page: Int = 1, @Query("language") language: String, @Query("sort_by") sortBy: String = "vote_average.desc", @Query("vote_count.gte") voteCount: Int = 100): TMDBResponse
 
@@ -192,13 +217,11 @@ class TMDBRepository {
     }
 
     fun getLanguage(): String {
-        // Detectar el idioma actual de la aplicación configurado vía AppCompatDelegate
         val locales = AppCompatDelegate.getApplicationLocales()
         if (!locales.isEmpty) {
             val lang = locales.get(0)?.language
             return if (lang == "es") "es-ES" else "en-US"
         }
-        // Fallback al locale del sistema si no se ha establecido uno específico
         return if (Locale.getDefault().language == "es") "es-ES" else "en-US"
     }
 
@@ -247,6 +270,45 @@ class TMDBRepository {
 
     suspend fun getTVByGenre(genreIds: List<Int>, page: Int = 1, sortBy: String = "vote_average.desc", voteCountGte: Int = 100): List<Movie> = withCache("tv_genre_${genreIds.joinToString(",")}_$page") {
         try { api.getTVByGenre(apiKey, genreIds.joinToString(","), page, getLanguage(), sortBy, voteCountGte).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
+    }
+
+    suspend fun discoverMovies(
+        genreIds: List<Int>? = null,
+        yearStart: Int? = null,
+        yearEnd: Int? = null,
+        minRating: Float? = null,
+        sortBy: String = "popularity.desc",
+        page: Int = 1
+    ): List<Movie> = withCache("discover_movies_${genreIds?.joinToString(",")}_${yearStart}_${yearEnd}_${minRating}_${sortBy}_$page") {
+        try { 
+            api.discoverMovies(
+                apiKey, getLanguage(), page, sortBy, 
+                genreIds?.joinToString(","), 
+                yearStart?.let { "$it-01-01" },
+                yearEnd?.let { "$it-12-31" },
+                minRating, 
+                if (minRating != null) 100 else null
+            ).results.map { it.toMovie() }
+        } catch (e: Exception) { emptyList() }
+    }
+
+    suspend fun discoverTV(
+        genreIds: List<Int>? = null,
+        yearStart: Int? = null,
+        yearEnd: Int? = null,
+        minRating: Float? = null,
+        sortBy: String = "popularity.desc",
+        page: Int = 1
+    ): List<Movie> = withCache("discover_tv_${genreIds?.joinToString(",")}_${yearStart}_${yearEnd}_${minRating}_${sortBy}_$page") {
+        try { 
+            api.discoverTV(
+                apiKey, getLanguage(), page, sortBy, 
+                genreIds?.joinToString(","), 
+                yearStart?.let { "$it-01-01" },
+                yearEnd?.let { "$it-12-31" },
+                minRating
+            ).results.map { it.toMovie() }
+        } catch (e: Exception) { emptyList() }
     }
 
     suspend fun getMovieDetails(movieId: Int): MovieDetailDTO? = withCache("movie_details_$movieId") {

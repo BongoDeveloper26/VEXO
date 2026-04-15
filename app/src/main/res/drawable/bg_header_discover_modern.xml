@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Fondo con ligero degradado hacia el color de fondo de la app -->
+    <item>
+        <shape>
+            <gradient
+                android:startColor="#332D1B4E"
+                android:endColor="@color/login_background"
+                android:angle="270" />
+        </shape>
+    </item>
+    <!-- Línea sutil en el fondo para dar separación elegante -->
+    <item android:top="79dp">
+        <shape>
+            <solid android:color="#1AFFFFFF" />
+        </shape>
+    </item>
+</layer-list>

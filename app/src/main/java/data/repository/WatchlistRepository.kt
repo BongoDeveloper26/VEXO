@@ -41,6 +41,7 @@ class WatchlistRepository(private val context: Context) {
         private const val KEY_HEADER_TRANSPARENT = "user_header_transparent"
         private const val KEY_HEADER_COLOR = "user_header_color"
         private const val KEY_USER_NAME = "user_name"
+        private const val KEY_SEEN_ACHIEVEMENTS = "seen_achievements_count"
         private const val TAG = "WatchlistRepository"
     }
 
@@ -111,6 +112,14 @@ class WatchlistRepository(private val context: Context) {
         if (!firebaseUser?.displayName.isNullOrEmpty()) return firebaseUser?.displayName!!
         return getPrefs().getString(KEY_USER_NAME, "Usuario VEXO") ?: "Usuario VEXO"
     }
+
+    // --- LOGROS ---
+    fun setSeenAchievementsCount(count: Int) {
+        getPrefs().edit().putInt(KEY_SEEN_ACHIEVEMENTS, count).apply()
+        saveDataCloud(KEY_SEEN_ACHIEVEMENTS, count)
+    }
+
+    fun getSeenAchievementsCount(): Int = getPrefs().getInt(KEY_SEEN_ACHIEVEMENTS, 0)
 
     // --- VALORACIONES Y DIARIO ---
     fun setMovieRating(movie: Movie, rating: Float, review: String? = null) {

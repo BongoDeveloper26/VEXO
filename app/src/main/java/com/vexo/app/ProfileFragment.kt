@@ -7,9 +7,11 @@ import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.text.InputFilter
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.OvershootInterpolator
 import android.widget.Button
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -23,6 +25,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -34,6 +37,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import data.model.Movie
 import data.repository.WatchlistRepository
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ui.detail.DetailActivity
 
 class ProfileFragment : Fragment() {
@@ -71,6 +76,7 @@ class ProfileFragment : Fragment() {
                 } catch (e: Exception) {}
                 watchlistRepository.setProfileImageUri(it.toString())
                 loadProfileImage()
+                checkNewAchievements()
             }
         }
 
@@ -592,6 +598,7 @@ class ProfileFragment : Fragment() {
             .setItems(options) { _, which ->
                 watchlistRepository.setVitrinaMovie(slotIndex, favorites[which])
                 loadVitrina()
+                checkNewAchievements()
             }.show()
     }
 
@@ -633,5 +640,55 @@ class ProfileFragment : Fragment() {
             putExtra(Intent.EXTRA_TEXT, shareText)
         }
         startActivity(Intent.createChooser(intent, "Compartir perfil"))
+    }
+
+    private fun checkNewAchievements() {
+        val allAchievements = AchievementsActivity.getAchievements(watchlistRepository)
+        val seenCount = watchlistRepository.getSeenAchievementsCount()
+        val completedAchievements = allAchievements.filter { it.currentProgress >= it.maxProgress }
+        
+        if (completedAchievements.size > seenCount) {
+            val newAchievement = completedAchievements.getOrNull(seenCount)
+            if (newAchievement != null) {
+                showAchievementNotification(newAchievement)
+            }
+            watchlistRepository.setSeenAchievementsCount(completedAchievements.size)
+        }
+    }
+
+    private fun showAchievementNotification(achievement: Achievement) {
+        val rootLayout = activity?.findViewById<ViewGroup>(android.R.id.content) ?: return
+        val achievementView = layoutInflater.inflate(R.layout.layout_achievement_unlocked, rootLayout, false)
+        
+        achievementView.findViewById<TextView>(R.id.textAchievementTitle).text = achievement.title
+        achievementView.findViewById<TextView>(R.id.textAchievementDescription).text = achievement.description
+        
+        val params = FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        params.gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
+        params.topMargin = 280
+        achievementView.layoutParams = params
+        
+        rootLayout.addView(achievementView)
+        
+        achievementView.alpha = 0f
+        achievementView.translationY = -100f
+        
+        achievementView.animate()
+            .alpha(1f)
+            .translationY(0f)
+            .setDuration(600)
+            .setInterpolator(OvershootInterpolator())
+            .withEndAction {
+                lifecycleScope.launch {
+                    delay(4500)
+                    achievementView.animate()
+                        .alpha(0f)
+                        .translationY(-100f)
+                        .setDuration(500)
+                        .withEndAction { rootLayout.removeView(achievementView) }
+                        .start()
+                }
+            }
+            .start()
     }
 }

@@ -18,6 +18,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,6 +32,8 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vexo.app.R
+import com.vexo.app.AchievementsActivity
+import com.vexo.app.Achievement
 import data.model.Movie
 import data.model.UserList
 import data.repository.TMDBRepository
@@ -139,7 +142,7 @@ class DetailActivity : AppCompatActivity() {
         
         if (entry != null && (entry.rating > 0 || !entry.review.isNullOrEmpty())) {
             layoutReview.visibility = View.VISIBLE
-            textReview.text = if (!entry.review.isNullOrEmpty()) "\"${entry.review}\"" else getString(R.string.rated_content)
+            textReview.text = if (!entry.review.isNullOrEmpty()) "${entry.review}" else getString(R.string.rated_content)
             
             // Actualizar las estrellas dentro de la tarjeta de reseña
             val reviewStars = listOf<ImageView>(
@@ -505,6 +508,7 @@ class DetailActivity : AppCompatActivity() {
                     updateMenuStarsUI(newRating, true)
                     updateStatusIcons(movie.id)
                     loadUserReview(movie.id)
+                    checkNewAchievements()
                 }
             }
 
@@ -514,6 +518,7 @@ class DetailActivity : AppCompatActivity() {
                 updateMenuHeartUI(true)
                 updateStatusIcons(movie.id)
                 setupWatchlistButton(movie)
+                checkNewAchievements()
             }
 
             // --- RESTO DE OPCIONES ---
@@ -533,7 +538,10 @@ class DetailActivity : AppCompatActivity() {
                 } else {
                     val result = watchlistRepository.addMovieToVitrinaAuto(currentMovie ?: movie)
                     when (result) {
-                        0 -> showDopamineSuccess(getString(R.string.featured_title), getString(R.string.featured_msg))
+                        0 -> {
+                            showDopamineSuccess(getString(R.string.featured_title), getString(R.string.featured_msg))
+                            checkNewAchievements()
+                        }
                         1 -> Toast.makeText(this, "Esta película ya está en tu vitrina", Toast.LENGTH_SHORT).show()
                         2 -> Toast.makeText(this, "Tu vitrina está llena (máx. 4)", Toast.LENGTH_SHORT).show()
                     }
@@ -550,6 +558,7 @@ class DetailActivity : AppCompatActivity() {
                 bottomSheet.dismiss()
                 watchlistRepository.toggleWatched(currentMovie ?: movie)
                 updateStatusIcons(movie.id)
+                checkNewAchievements()
             }
 
             view.findViewById<View>(R.id.optionViewPoster).setOnClickListener {
@@ -768,6 +777,9 @@ class DetailActivity : AppCompatActivity() {
             setupWatchlistButton(movie)
             bottomSheet.dismiss()
             showDopamineSuccess(getString(R.string.rating_saved_title), getString(R.string.rating_saved_msg))
+            
+            // Comprobar logros tras valoración
+            view.postDelayed({ checkNewAchievements() }, 600)
         }
 
         view.findViewById<View>(R.id.btnRemoveRating).setOnClickListener {
@@ -790,7 +802,7 @@ class DetailActivity : AppCompatActivity() {
         dopamineView.findViewById<TextView>(R.id.textSuccessMsg).text = msg
         
         // Ajustamos los parámetros para que no se pegue arriba (StatusBar)
-        val params = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        val params = FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         params.gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
         params.topMargin = 120 // Bajamos la notificación para que no tape la hora
         dopamineView.layoutParams = params
@@ -840,6 +852,7 @@ class DetailActivity : AppCompatActivity() {
             if (isChecked) {
                 watchlistRepository.addMovieToList(list.id, movie)
                 showDopamineSuccess(getString(R.string.added), getString(R.string.in_list_msg, list.name))
+                checkNewAchievements()
             } else {
                 watchlistRepository.removeMovieFromList(list.id, movie.id)
                 showDopamineSuccess(getString(R.string.removed), getString(R.string.from_list_msg, list.name))
@@ -879,6 +892,7 @@ class DetailActivity : AppCompatActivity() {
                     if (allLists.isNotEmpty()) {
                         watchlistRepository.addMovieToList(allLists.last().id, it)
                         showDopamineSuccess(getString(R.string.list_created), getString(R.string.added_to_list_msg, name))
+                        checkNewAchievements()
                     }
                 }
                 onComplete?.invoke()
@@ -985,6 +999,58 @@ class DetailActivity : AppCompatActivity() {
         intent.putExtra("movie", movie)
         startActivity(intent)
         finish()
+    }
+
+    private fun checkNewAchievements() {
+        val allAchievements = AchievementsActivity.getAchievements(watchlistRepository)
+        val seenCount = watchlistRepository.getSeenAchievementsCount()
+        val completedAchievements = allAchievements.filter { it.currentProgress >= it.maxProgress }
+        
+        if (completedAchievements.size > seenCount) {
+            // El usuario ha completado uno o varios logros nuevos
+            // Mostramos el primero que no haya sido "visto"
+            val newAchievement = completedAchievements.getOrNull(seenCount)
+            if (newAchievement != null) {
+                showAchievementNotification(newAchievement)
+            }
+            watchlistRepository.setSeenAchievementsCount(completedAchievements.size)
+        }
+    }
+
+    private fun showAchievementNotification(achievement: Achievement) {
+        val rootLayout = findViewById<ViewGroup>(android.R.id.content)
+        val achievementView = layoutInflater.inflate(R.layout.layout_achievement_unlocked, rootLayout, false)
+        
+        achievementView.findViewById<TextView>(R.id.textAchievementTitle).text = achievement.title
+        achievementView.findViewById<TextView>(R.id.textAchievementDescription).text = achievement.description
+        
+        val params = FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        params.gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
+        params.topMargin = 280
+        achievementView.layoutParams = params
+        
+        rootLayout.addView(achievementView)
+        
+        achievementView.alpha = 0f
+        achievementView.translationY = -100f
+        
+        achievementView.animate()
+            .alpha(1f)
+            .translationY(0f)
+            .setDuration(600)
+            .setInterpolator(OvershootInterpolator())
+            .withEndAction {
+                lifecycleScope.launch {
+                    delay(4500)
+                    achievementView.animate()
+                        .alpha(0f)
+                        .translationY(-100f)
+                        .setDuration(500)
+                        .withEndAction { rootLayout.removeView(achievementView) }
+                        .start()
+                }
+            }
+            .start()
     }
 
     inner class WatchProviderAdapter(private val providers: List<WatchProviderItem>) : RecyclerView.Adapter<WatchProviderAdapter.ViewHolder>() {

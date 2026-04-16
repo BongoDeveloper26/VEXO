@@ -82,6 +82,7 @@ class UserListDetailActivity : AppCompatActivity() {
         recycler.adapter = movieAdapter
         recycler.setPadding(12, 0, 12, 20)
 
+        findViewById<ImageButton>(R.id.btnShareUserList).setOnClickListener { shareList() }
         findViewById<ImageButton>(R.id.btnEditListName).setOnClickListener { showEditListDialog() }
         findViewById<ImageButton>(R.id.btnDeleteUserList).setOnClickListener { showDeleteConfirmDialog() }
     }
@@ -108,6 +109,20 @@ class UserListDetailActivity : AppCompatActivity() {
         } else {
             finish()
         }
+    }
+
+    private fun shareList() {
+        val lists = watchlistRepository.getUserLists()
+        val currentList = lists.find { it.id == userListId } ?: return
+        
+        val listLink = "vexo://list/${currentList.id}"
+        val shareContent = "🍿 ¡Mira mi lista \"${currentList.name}\" en VEXO!\n📊 Contiene ${currentList.movies.size} películas\n🔗 $listLink"
+        
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, shareContent)
+        }
+        startActivity(Intent.createChooser(intent, "Compartir lista"))
     }
 
     private fun showEditListDialog() {

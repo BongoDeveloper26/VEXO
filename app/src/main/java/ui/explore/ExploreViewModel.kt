@@ -41,7 +41,7 @@ class ExploreViewModel(application: Application) : AndroidViewModel(application)
             val genreJobs = genreMap.map { (id, name) ->
                 async {
                     val movies = repository.getMoviesByGenre(listOf(id))
-                    if (movies.isNotEmpty()) Category(name, movies) else null
+                    if (movies.isNotEmpty()) Category(name, movies, id) else null
                 }
             }
             list.addAll(genreJobs.awaitAll().filterNotNull())
@@ -62,8 +62,12 @@ class ExploreViewModel(application: Application) : AndroidViewModel(application)
             val genreMap = getTVGenres()
             val genreJobs = genreMap.map { (id, name) ->
                 async {
-                    val tvShows = repository.getTVByGenre(listOf(id))
-                    if (tvShows.isNotEmpty()) Category(name, tvShows) else null
+                    val tvShows = when (id) {
+                        9715 -> repository.discoverTV(keywords = listOf(id)) // Superhéroes (Keyword)
+                        53, 27 -> repository.discoverTV(genreIds = listOf(id)) // Suspense / Terror
+                        else -> repository.getTVByGenre(listOf(id))
+                    }
+                    if (tvShows.isNotEmpty()) Category(name, tvShows, id) else null
                 }
             }
             list.addAll(genreJobs.awaitAll().filterNotNull())
@@ -102,11 +106,11 @@ class ExploreViewModel(application: Application) : AndroidViewModel(application)
         10751 to context.getString(R.string.genre_family),
         10762 to context.getString(R.string.genre_kids),
         9648 to context.getString(R.string.genre_mystery),
-        10763 to context.getString(R.string.genre_news),
+        9715 to context.getString(R.string.genre_superheroes),
         10764 to context.getString(R.string.genre_reality),
         10765 to context.getString(R.string.genre_sci_fi_fantasy),
-        10766 to context.getString(R.string.genre_soap),
-        10767 to context.getString(R.string.genre_talk),
+        53 to context.getString(R.string.genre_thriller),
+        27 to context.getString(R.string.genre_horror),
         10768 to context.getString(R.string.genre_war_politics),
         37 to context.getString(R.string.genre_western)
     )

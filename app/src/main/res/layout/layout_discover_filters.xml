@@ -77,6 +77,25 @@
                 app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent" />
         </com.google.android.material.button.MaterialButtonToggleGroup>
 
+        <!-- PAÍS DE ORIGEN -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="País de origen"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="12dp" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupCountries"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:singleSelection="true"
+            app:chipSpacingHorizontal="8dp"
+            app:chipSpacingVertical="4dp"
+            android:layout_marginBottom="24dp" />
+
         <!-- PLATAFORMAS (WATCH PROVIDERS) -->
         <TextView
             android:layout_width="wrap_content"
@@ -158,13 +177,56 @@
             android:id="@+id/sliderYear"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:valueFrom="1970"
+            android:valueFrom="1900"
             android:valueTo="2025"
             android:stepSize="1"
             app:values="@array/initial_year_range"
             android:layout_marginBottom="24dp"
             app:thumbColor="@color/primary"
             app:trackColorActive="@color/primary" />
+
+        <!-- CONTENEDOR DINÁMICO DE DURACIÓN (SOLO PELÍCULAS) -->
+        <LinearLayout
+            android:id="@+id/layoutDurationFilter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- DURACIÓN (RANGO) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Duración (minutos)"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-medium" />
+                <TextView
+                    android:id="@+id/textDurationValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 - 240+"
+                    android:textColor="@color/primary"
+                    android:fontFamily="sans-serif-black" />
+            </LinearLayout>
+
+            <com.google.android.material.slider.RangeSlider
+                android:id="@+id/sliderDuration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:valueFrom="0"
+                android:valueTo="240"
+                android:stepSize="10"
+                app:values="@array/initial_duration_range"
+                android:layout_marginBottom="24dp"
+                app:thumbColor="@color/primary"
+                app:trackColorActive="@color/primary" />
+        </LinearLayout>
 
         <!-- PUNTUACIÓN MÍNIMA -->
         <LinearLayout
@@ -213,5 +275,4 @@
             android:layout_marginBottom="12dp" />
 
     </LinearLayout>
-
 </androidx.core.widget.NestedScrollView>

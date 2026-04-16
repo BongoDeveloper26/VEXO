@@ -55,7 +55,6 @@ class RecommendationActivity : AppCompatActivity() {
         543 to "RTVE Play"
     )
 
-    // IDs de Keywords de TMDB actualizados con temáticas populares
     private val keywordsMap = mapOf(
         9715 to "Superhéroes",
         9672 to "Hechos reales",
@@ -67,6 +66,19 @@ class RecommendationActivity : AppCompatActivity() {
         1009 to "Zombies",
         10084 to "Atracos",
         1612 to "Espionaje"
+    )
+
+    private val countriesMap = mapOf(
+        "US" to "Estados Unidos",
+        "ES" to "España",
+        "JP" to "Japón",
+        "KR" to "Corea del Sur",
+        "GB" to "Reino Unido",
+        "FR" to "Francia",
+        "IT" to "Italia",
+        "DE" to "Alemania",
+        "MX" to "México",
+        "IN" to "India"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -120,15 +132,19 @@ class RecommendationActivity : AppCompatActivity() {
         val chipGroupGenres = view.findViewById<ChipGroup>(R.id.chipGroupGenres)
         val chipGroupProviders = view.findViewById<ChipGroup>(R.id.chipGroupProviders)
         val chipGroupKeywords = view.findViewById<ChipGroup>(R.id.chipGroupKeywords)
+        val chipGroupCountries = view.findViewById<ChipGroup>(R.id.chipGroupCountries)
         val sliderYear = view.findViewById<RangeSlider>(R.id.sliderYear)
+        val sliderDuration = view.findViewById<RangeSlider>(R.id.sliderDuration)
         val sliderRating = view.findViewById<Slider>(R.id.sliderRating)
+        
         val textYear = view.findViewById<TextView>(R.id.textYearValue)
+        val textDuration = view.findViewById<TextView>(R.id.textDurationValue)
         val textRating = view.findViewById<TextView>(R.id.textRatingValue)
         val toggleType = view.findViewById<MaterialButtonToggleGroup>(R.id.toggleContentType)
+        val layoutDuration = view.findViewById<View>(R.id.layoutDurationFilter)
         val btnApply = view.findViewById<Button>(R.id.btnApplyFilters)
 
-        // Estilo común para los Chips
-        val setupChip: (Chip, Int) -> Unit = { chip, id ->
+        val setupChip: (Chip, Any) -> Unit = { chip, id ->
             chip.isCheckable = true
             chip.tag = id
             chip.setChipBackgroundColorResource(R.color.toggle_bg_selector)
@@ -138,38 +154,59 @@ class RecommendationActivity : AppCompatActivity() {
             chip.isCheckedIconVisible = false
         }
 
-        // Populate Genres
+        countriesMap.forEach { (code, name) ->
+            val chip = Chip(this).apply { text = name }
+            setupChip(chip, code)
+            chipGroupCountries.addView(chip)
+        }
+
         allGenresMap.forEach { (id, name) ->
             val chip = Chip(this).apply { text = name }
             setupChip(chip, id)
             chipGroupGenres.addView(chip)
         }
 
-        // Populate Providers
         providersMap.forEach { (id, name) ->
             val chip = Chip(this).apply { text = name }
             setupChip(chip, id)
             chipGroupProviders.addView(chip)
         }
 
-        // Populate Keywords
         keywordsMap.forEach { (id, name) ->
             val chip = Chip(this).apply { text = name }
             setupChip(chip, id)
             chipGroupKeywords.addView(chip)
         }
 
-        // --- FIX DECIMALES INICIALES ---
+        // --- VALORES INICIALES ---
         val initialYearValues = sliderYear.values
         textYear.text = "${initialYearValues[0].toInt()} - ${initialYearValues[1].toInt()}"
         
+        val initialDurationValues = sliderDuration.values
+        textDuration.text = "${initialDurationValues[0].toInt()} - ${initialDurationValues[1].toInt()} min"
+        
         textRating.text = String.format("%.1f", sliderRating.value)
 
-        sliderYear.setLabelFormatter { value -> value.toInt().toString() }
+        // --- LÓGICA DINÁMICA DE DURACIÓN ---
+        toggleType.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                layoutDuration.visibility = if (checkedId == R.id.btnTypeMovie) View.VISIBLE else View.GONE
+            }
+        }
+        // Estado inicial
+        layoutDuration.visibility = if (toggleType.checkedButtonId == R.id.btnTypeMovie) View.VISIBLE else View.GONE
 
+        // --- LISTENERS ---
+        sliderYear.setLabelFormatter { value -> value.toInt().toString() }
         sliderYear.addOnChangeListener { slider, _, _ -> 
             val values = slider.values
             textYear.text = "${values[0].toInt()} - ${values[1].toInt()}"
+        }
+
+        sliderDuration.setLabelFormatter { value -> "${value.toInt()} min" }
+        sliderDuration.addOnChangeListener { slider, _, _ -> 
+            val values = slider.values
+            textDuration.text = "${values[0].toInt()} - ${values[1].toInt()} min"
         }
 
         sliderRating.addOnChangeListener { _, value, _ -> 
@@ -177,11 +214,15 @@ class RecommendationActivity : AppCompatActivity() {
         }
 
         btnApply.setOnClickListener {
-            val selectedGenres = getCheckedIds(chipGroupGenres)
-            val selectedProviders = getCheckedIds(chipGroupProviders)
-            val selectedKeywords = getCheckedIds(chipGroupKeywords)
+            val selectedGenres = getCheckedIds<Int>(chipGroupGenres)
+            val selectedProviders = getCheckedIds<Int>(chipGroupProviders)
+            val selectedKeywords = getCheckedIds<Int>(chipGroupKeywords)
+            val selectedCountry = getCheckedIds<String>(chipGroupCountries).firstOrNull()
 
             val yearValues = sliderYear.values
+            val durationValues = sliderDuration.values
+            val isTv = toggleType.checkedButtonId == R.id.btnTypeTV
+            
             viewModel.loadWithFilters(
                 if (selectedGenres.isEmpty()) null else selectedGenres, 
                 yearValues[0].toInt(), 
@@ -189,7 +230,10 @@ class RecommendationActivity : AppCompatActivity() {
                 sliderRating.value, 
                 if (selectedProviders.isEmpty()) null else selectedProviders,
                 if (selectedKeywords.isEmpty()) null else selectedKeywords,
-                toggleType.checkedButtonId == R.id.btnTypeTV
+                isTv,
+                selectedCountry,
+                if (isTv) null else durationValues[0].toInt(),
+                if (isTv) null else durationValues[1].toInt()
             )
             
             dialog.dismiss()
@@ -199,12 +243,13 @@ class RecommendationActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun getCheckedIds(chipGroup: ChipGroup): List<Int> {
-        val ids = mutableListOf<Int>()
+    private fun <T> getCheckedIds(chipGroup: ChipGroup): List<T> {
+        val ids = mutableListOf<T>()
         for (i in 0 until chipGroup.childCount) {
             val chip = chipGroup.getChildAt(i) as Chip
             if (chip.isChecked) {
-                ids.add(chip.tag as Int)
+                @Suppress("UNCHECKED_CAST")
+                ids.add(chip.tag as T)
             }
         }
         return ids

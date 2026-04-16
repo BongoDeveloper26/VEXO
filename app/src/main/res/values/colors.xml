@@ -19,8 +19,8 @@
     <color name="nav_indicator_color">#337C3AED</color>
 
     <!-- Colores específicos para el Login moderno -->
-    <color name="login_background">#1A0B2E</color> <!-- Morado Muy Oscuro -->
-    <color name="login_input_bg">#2D1B4E</color>
+    <color name="login_background">#2E1B4E</color> <!-- Morado más claro, igual al de los inputs originales -->
+    <color name="login_input_bg">#3D2B5E</color> <!-- Aclaro un poco los inputs para que sigan resaltando -->
     <color name="login_text_primary">#F8FAFC</color>
     <color name="login_text_secondary">#94A3B8</color>
     <color name="login_primary">#A78BFA</color>

@@ -16,6 +16,7 @@
     <string name="login_sub">Inicia sesión en tu cuenta de Vexo.</string>
     <string name="email">Email</string>
     <string name="password">Contraseña</string>
+    <string name="remember_me">Recordarme</string>
     <string name="login">Iniciar Sesión</string>
     <string name="or">o</string>
     <string name="continue_with_google">Continuar con Google</string>
@@ -145,5 +146,6 @@
     <string name="genre_soap">Soap</string>
     <string name="genre_talk">Talk Show</string>
     <string name="genre_war_politics">Bélica y Política</string>
+    <string name="genre_superheroes">Superhéroes</string>
 
 </resources>

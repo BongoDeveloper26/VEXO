@@ -4,4 +4,8 @@
         <item>2000</item>
         <item>2025</item>
     </array>
+    <array name="initial_duration_range">
+        <item>0</item>
+        <item>240</item>
+    </array>
 </resources>

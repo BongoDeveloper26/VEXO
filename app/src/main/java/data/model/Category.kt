@@ -2,5 +2,6 @@ package data.model
 
 data class Category(
     val title: String,
-    val movies: List<Movie>
+    val movies: List<Movie>,
+    val genreId: Int? = null
 )

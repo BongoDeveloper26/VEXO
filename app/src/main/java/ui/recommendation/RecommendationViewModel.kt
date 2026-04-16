@@ -59,17 +59,31 @@ class RecommendationViewModel(application: Application) : AndroidViewModel(appli
         }
     }
 
-    fun loadWithFilters(genres: List<Int>?, yearStart: Int?, yearEnd: Int?, rating: Float?, watchProviders: List<Int>?, keywords: List<Int>?, isTv: Boolean) {
+    fun loadWithFilters(
+        genres: List<Int>?, 
+        yearStart: Int?, 
+        yearEnd: Int?, 
+        rating: Float?, 
+        watchProviders: List<Int>?, 
+        keywords: List<Int>?, 
+        isTv: Boolean,
+        originCountry: String? = null,
+        runtimeMin: Int? = null,
+        runtimeMax: Int? = null
+    ) {
         viewModelScope.launch {
             _isLoadingRatings.value = true
             val results = if (isTv) {
+                // TMDB discovery for TV doesn't support runtime filter as effectively as movies
+                // But we'll pass originCountry which we added before
                 tmdbRepository.discoverTV(
                     genreIds = genres,
                     yearStart = yearStart,
                     yearEnd = yearEnd,
                     minRating = rating,
                     watchProviders = watchProviders,
-                    keywords = keywords
+                    keywords = keywords,
+                    originCountry = originCountry
                 )
             } else {
                 tmdbRepository.discoverMovies(
@@ -78,7 +92,10 @@ class RecommendationViewModel(application: Application) : AndroidViewModel(appli
                     yearEnd = yearEnd,
                     minRating = rating,
                     watchProviders = watchProviders,
-                    keywords = keywords
+                    keywords = keywords,
+                    originCountry = originCountry,
+                    runtimeGte = runtimeMin,
+                    runtimeLte = runtimeMax
                 )
             }
             

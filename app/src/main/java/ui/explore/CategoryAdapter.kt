@@ -69,6 +69,7 @@ class CategoryAdapter(
             titleLower.contains("historia", true) -> "RELATOS DEL PASADO"
             titleLower.contains("música", true) || titleLower.contains("music", true) -> "RITMO Y ESPECTÁCULO"
             titleLower.contains("western", true) -> "DUELOS Y LEYENDAS"
+            titleLower.contains("superhéroes", true) -> "HÉROES Y VILLANOS"
             else -> "CONTENIDO SELECCIONADO PARA TI"
         }
 
@@ -81,7 +82,9 @@ class CategoryAdapter(
             holder.layoutViewMore.setOnClickListener {
                 val intent = Intent(holder.itemView.context, CategoryMoviesActivity::class.java)
                 intent.putExtra("categoryTitle", category.title)
-                intent.putParcelableArrayListExtra("movies", ArrayList(category.movies))
+                intent.putExtra("genreId", category.genreId ?: -1)
+                val isTv = category.movies.firstOrNull()?.isTvShow ?: false
+                intent.putExtra("isTv", isTv)
                 holder.itemView.context.startActivity(intent)
             }
             holder.textTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)

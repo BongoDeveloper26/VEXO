@@ -25,7 +25,8 @@
         </activity>
 
         <activity android:name="com.vexo.app.RegisterActivity" android:exported="false" />
-        
+        <activity android:name="com.vexo.app.ForgotPasswordActivity" android:exported="false" />
+
         <!-- MainActivity manejará los Deep Links -->
         <activity 
             android:name="com.vexo.app.MainActivity"

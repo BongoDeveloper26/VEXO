@@ -17,10 +17,21 @@
     <string name="email">Email</string>
     <string name="password">Contraseña</string>
     <string name="remember_me">Recordarme</string>
+    <string name="forgot_password">¿Has olvidado tu contraseña?</string>
+    <string name="reset_password_sent">Se ha enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada y SPAM.</string>
+    <string name="error_invalid_email">Formato de correo inválido</string>
+    <string name="error_empty_email">Introduce tu correo electrónico</string>
+    <string name="error_user_not_found">No existe ninguna cuenta con este correo</string>
     <string name="login">Iniciar Sesión</string>
     <string name="or">o</string>
     <string name="continue_with_google">Continuar con Google</string>
     <string name="no_account_register">¿No tienes cuenta? Regístrate</string>
+
+    <!-- Forgot Password Screen -->
+    <string name="recover_account">Recuperar Cuenta</string>
+    <string name="recover_desc">Introduce tu correo electrónico y te enviaremos las instrucciones para restablecer tu contraseña.</string>
+    <string name="send_link">Enviar enlace</string>
+    <string name="back">Atrás</string>
 
     <!-- Explore -->
     <string name="movies">PELÍCULAS</string>

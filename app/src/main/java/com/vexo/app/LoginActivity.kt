@@ -121,6 +121,10 @@ class LoginActivity : AppCompatActivity() {
         binding.btnGoToRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
+
+        binding.btnForgotPassword.setOnClickListener {
+            startActivity(Intent(this, ForgotPasswordActivity::class.java))
+        }
     }
 
     private fun firebaseAuthWithGoogle(idToken: String) {

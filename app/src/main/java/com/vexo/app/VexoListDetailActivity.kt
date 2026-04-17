@@ -29,18 +29,25 @@ class VexoListDetailActivity : AppCompatActivity() {
 
         val listId = intent.getStringExtra("listId") ?: "top_250_movies"
         val listName = intent.getStringExtra("listName") ?: "Top 250"
+        val listDesc = intent.getStringExtra("listDesc") ?: ""
         
-        setupUI(listName)
+        setupUI(listName, listDesc)
         
-        if (listId == "top_250_tv") {
-            loadTop250Series()
-        } else {
-            loadTop250Movies()
+        when (listId) {
+            "top_250_tv" -> loadTop250Series()
+            "marvel_universe" -> loadMarvelUniverse()
+            "star_wars_universe" -> loadStarWarsUniverse()
+            else -> loadTop250Movies()
         }
     }
 
-    private fun setupUI(name: String) {
+    private fun setupUI(name: String, description: String) {
         findViewById<TextView>(R.id.textUserListNameHeader).text = name.uppercase()
+        findViewById<TextView>(R.id.textUserListDescription).apply {
+            text = description
+            visibility = if (description.isNotEmpty()) View.VISIBLE else View.GONE
+        }
+        
         findViewById<ImageButton>(R.id.btnBackUserListDetail).setOnClickListener { finish() }
 
         val recycler = findViewById<RecyclerView>(R.id.recyclerUserListMovies)
@@ -53,6 +60,9 @@ class VexoListDetailActivity : AppCompatActivity() {
             startActivity(intent)
         }
         recycler.adapter = movieAdapter
+
+        findViewById<View>(R.id.btnLikeList).visibility = View.VISIBLE
+        findViewById<View>(R.id.btnMoreOptions).visibility = View.GONE
     }
 
     private fun loadTop250Movies() {
@@ -87,6 +97,144 @@ class VexoListDetailActivity : AppCompatActivity() {
                 }
                 deferredPages.awaitAll().forEach { allSeries.addAll(it) }
                 movieAdapter.updateMovies(allSeries.take(250))
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                progress.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun loadMarvelUniverse() {
+        val progress = findViewById<ProgressBar>(R.id.progressUserList)
+        progress.visibility = View.VISIBLE
+
+        lifecycleScope.launch {
+            try {
+                val allContent = mutableListOf<Movie>()
+                
+                val movieDeferred = (1..6).map { page ->
+                    async { 
+                        repository.discoverMovies(
+                            sortBy = "primary_release_date.desc",
+                            page = page,
+                            companyIds = listOf(420)
+                        )
+                    }
+                }
+                
+                val tvDeferred = (1..4).map { page ->
+                    async {
+                        repository.discoverTV(
+                            sortBy = "first_air_date.desc",
+                            page = page,
+                            companyIds = listOf(420)
+                        )
+                    }
+                }
+
+                val movieResults = movieDeferred.awaitAll()
+                val tvResults = tvDeferred.awaitAll()
+
+                movieResults.forEach { movies ->
+                    allContent.addAll(movies.filter { movie ->
+                        !movie.genreIds.contains(99) && 
+                        !movie.title.contains("Making of", true) &&
+                        !movie.title.contains("Assembled", true)
+                    })
+                }
+
+                tvResults.forEach { series ->
+                    allContent.addAll(series.filter { show ->
+                        !show.genreIds.contains(99) &&
+                        !show.title.contains("Making of", true) &&
+                        !show.title.contains("Assembled", true)
+                    })
+                }
+
+                val finalResult = allContent
+                    .distinctBy { it.id }
+                    .sortedByDescending { it.releaseDate }
+
+                movieAdapter.updateMovies(finalResult)
+                findViewById<TextView>(R.id.textListInfo).text = "MCU COMPLETO • ${finalResult.size} ELEMENTOS"
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                progress.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun loadStarWarsUniverse() {
+        val progress = findViewById<ProgressBar>(R.id.progressUserList)
+        progress.visibility = View.VISIBLE
+
+        lifecycleScope.launch {
+            try {
+                val allContent = mutableListOf<Movie>()
+                
+                // Lucasfilm Ltd. ID es 1
+                // Ampliamos la búsqueda a más páginas para no perder nada
+                val movieDeferred = (1..8).map { page ->
+                    async { 
+                        repository.discoverMovies(
+                            sortBy = "primary_release_date.desc",
+                            page = page,
+                            companyIds = listOf(1)
+                        )
+                    }
+                }
+                
+                val tvDeferred = (1..5).map { page ->
+                    async {
+                        repository.discoverTV(
+                            sortBy = "first_air_date.desc",
+                            page = page,
+                            companyIds = listOf(1)
+                        )
+                    }
+                }
+
+                val movieResults = movieDeferred.awaitAll()
+                val tvResults = tvDeferred.awaitAll()
+
+                movieResults.forEach { movies ->
+                    allContent.addAll(movies.filter { movie ->
+                        // Filtro más permisivo para Star Wars (títulos que contienen "Star Wars", "Vader", "Skywalker", etc.)
+                        (movie.title.contains("Star Wars", true) || 
+                         movie.title.contains("Skywalker", true) || 
+                         movie.title.contains("Empire Strikes", true) ||
+                         movie.title.contains("Jedi", true)) && 
+                        !movie.genreIds.contains(99) &&
+                        !movie.title.contains("Making of", true) &&
+                        !movie.title.contains("Legacy of", true)
+                    })
+                }
+
+                tvResults.forEach { series ->
+                    allContent.addAll(series.filter { show ->
+                        (show.title.contains("Star Wars", true) || 
+                         show.title.contains("Mandalorian", true) || 
+                         show.title.contains("Ahsoka", true) ||
+                         show.title.contains("Andor", true) ||
+                         show.title.contains("Obi-Wan", true) ||
+                         show.title.contains("Boba Fett", true) ||
+                         show.title.contains("Bad Batch", true) ||
+                         show.title.contains("Clone Wars", true) ||
+                         show.title.contains("Rebels", true)) && 
+                        !show.genreIds.contains(99)
+                    })
+                }
+
+                val finalResult = allContent
+                    .distinctBy { it.id }
+                    .sortedByDescending { it.releaseDate }
+
+                movieAdapter.updateMovies(finalResult)
+                findViewById<TextView>(R.id.textListInfo).text = "SAGA COMPLETA • ${finalResult.size} ELEMENTOS"
+
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {

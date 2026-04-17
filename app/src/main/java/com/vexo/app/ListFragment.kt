@@ -31,6 +31,7 @@ class ListFragment : Fragment() {
             name = "LAS 250 MEJORES PELÍCULAS",
             description = "La selección oficial de Vexo con las obras maestras del cine.",
             imageRes = R.drawable.vexo_logo,
+            countText = "250 ELEMENTOS",
             previewPosters = listOf(
                 "https://image.tmdb.org/t/p/w500/q6y0Go1tsYmUuAtfj6KyB30OXvN.jpg",
                 "https://image.tmdb.org/t/p/w500/3bhkrjSTWv4ayisdqAs6arW0Lja.jpg",
@@ -43,11 +44,38 @@ class ListFragment : Fragment() {
             name = "LAS 250 MEJORES SERIES",
             description = "El ranking definitivo de Vexo con las mejores producciones de TV.",
             imageRes = R.drawable.vexo_logo,
+            countText = "250 ELEMENTOS",
             previewPosters = listOf(
                 "https://image.tmdb.org/t/p/w500/ggm8bbv9v0f15c10v9f9f15c10v.jpg",
                 "https://image.tmdb.org/t/p/w500/7WsyChvLEz79BMo33owrR7Z9XnS.jpg",
-                "https://image.tmdb.org/t/p/w500/reksS7S7S7S7S7S7S7S7S7S7S7S.jpg",
-                "https://image.tmdb.org/t/p/w500/y6y6y6y6y6y6y6y6y6y6y6y6y6y.jpg"
+                "https://image.tmdb.org/t/p/w500/reksS7S7S7S7S7S7S7S7S7S7S.jpg",
+                "https://image.tmdb.org/t/p/w500/y6y6y6y6y6y6y6y6y6y6y6y6y.jpg"
+            )
+        ),
+        VexoList(
+            id = "marvel_universe",
+            name = "MARVEL",
+            description = "Todas las películas y series del Universo Cinematográfico de Marvel Studios.",
+            imageRes = R.drawable.vexo_logo,
+            countText = "MCU COMPLETO",
+            previewPosters = listOf(
+                "https://image.tmdb.org/t/p/w500/7WsyChvLEz79BMo33owrR7Z9XnS.jpg", // Avengers
+                "https://image.tmdb.org/t/p/w500/RYMX2wcG6MAmJhSTqXv4vTckqG.jpg", // Infinity War
+                "https://image.tmdb.org/t/p/w500/or06vSfvSu12BqG9pCNCtzpNU1M.jpg", // Endgame
+                "https://image.tmdb.org/t/p/w500/8Gxv8S7HaU0STqyzSjN9769K1oP.jpg"  // Iron Man
+            )
+        ),
+        VexoList(
+            id = "star_wars_universe",
+            name = "STAR WARS",
+            description = "Toda la saga galáctica: películas, series y animaciones de una galaxia muy, muy lejana.",
+            imageRes = R.drawable.vexo_logo,
+            countText = "SAGA COMPLETA",
+            previewPosters = listOf(
+                "https://image.tmdb.org/t/p/w500/6FfCt3Svxn5Hms0M19pZ9oq9fsW.jpg", // A New Hope
+                "https://image.tmdb.org/t/p/w500/e9n27asTMYef20XmB604oInODbp.jpg", // Mandalorian
+                "https://image.tmdb.org/t/p/w500/mS91N96mAs3l4C7Z894m955f1Tz.jpg", // Revenge of the Sith
+                "https://image.tmdb.org/t/p/w500/y9X7678X96N06mAt86f4H8v0X.jpg"  // Ahsoka
             )
         )
     )
@@ -118,10 +146,10 @@ class ListFragment : Fragment() {
             val intent = Intent(requireContext(), VexoListDetailActivity::class.java)
             intent.putExtra("listId", vexolist.id)
             intent.putExtra("listName", vexolist.name)
+            intent.putExtra("listDesc", vexolist.description)
             startActivity(intent)
         }
 
-        // CAMBIO: Ahora usamos GridLayoutManager con 2 columnas
         recyclerVexo.layoutManager = GridLayoutManager(requireContext(), 2)
         recyclerVexo.adapter = vexoListAdapter
     }

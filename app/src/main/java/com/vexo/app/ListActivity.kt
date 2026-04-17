@@ -31,6 +31,7 @@ class ListActivity : AppCompatActivity() {
             "LAS 250 MEJORES PELÍCULAS", 
             "La selección oficial de cine con las películas mejor valoradas de todos los tiempos.", 
             R.drawable.vexo_logo,
+            "250 ELEMENTOS",
             listOf(
                 "https://image.tmdb.org/t/p/w500/q6y0Go1tsYmUuAtfj6KyB30OXvN.jpg",
                 "https://image.tmdb.org/t/p/w500/3bhkrjSTWv4ayisdqAs6arW0Lja.jpg",
@@ -43,11 +44,38 @@ class ListActivity : AppCompatActivity() {
             "LAS 250 MEJORES SERIES", 
             "El ranking oficial de televisión con las producciones más aclamadas por la crítica.", 
             R.drawable.vexo_logo,
+            "250 ELEMENTOS",
             listOf(
                 "https://image.tmdb.org/t/p/w500/ztkUQvBZ77Z7iB1u66NuJvSTN7h.jpg",
                 "https://image.tmdb.org/t/p/w500/7WsyChvLEz79BMo33owrR7Z9XnS.jpg",
-                "https://image.tmdb.org/t/p/w500/reksS7S7S7S7S7S7S7S7S7S7S7S.jpg",
+                "https://image.tmdb.org/t/p/w500/reksS7S7S7S7S7S7S7S7S7S7S.jpg",
                 "https://image.tmdb.org/t/p/w500/69Uqt7vSbeFwb1L3rsLbt64H64o.jpg"
+            )
+        ),
+        VexoList(
+            "marvel_universe",
+            "MARVEL",
+            "Todas las películas y series del Universo Cinematográfico de Marvel Studios.",
+            R.drawable.vexo_logo,
+            "30+ ELEMENTOS",
+            listOf(
+                "https://image.tmdb.org/t/p/w500/7WsyChvLEz79BMo33owrR7Z9XnS.jpg",
+                "https://image.tmdb.org/t/p/w500/RYMX2wcG6MAmJhSTqXv4vTckqG.jpg",
+                "https://image.tmdb.org/t/p/w500/or06vSfvSu12BqG9pCNCtzpNU1M.jpg",
+                "https://image.tmdb.org/t/p/w500/8Gxv8S7HaU0STqyzSjN9769K1oP.jpg"
+            )
+        ),
+        VexoList(
+            "star_wars_universe",
+            "STAR WARS",
+            "Toda la saga galáctica: películas, series y animaciones de una galaxia muy, muy lejana.",
+            R.drawable.vexo_logo,
+            "20+ ELEMENTOS",
+            listOf(
+                "https://image.tmdb.org/t/p/w500/6FfCt3Svxn5Hms0M19pZ9oq9fsW.jpg", // A New Hope
+                "https://image.tmdb.org/t/p/w500/e9n27asTMYef20XmB604oInODbp.jpg", // Mandalorian
+                "https://image.tmdb.org/t/p/w500/mS91N96mAs3l4C7Z894m955f1Tz.jpg", // Revenge of the Sith
+                "https://image.tmdb.org/t/p/w500/y9X7678X96N06mAt86f4H8v0X.jpg"  // Ahsoka
             )
         )
     )
@@ -78,11 +106,12 @@ class ListActivity : AppCompatActivity() {
 
     private fun setupVexoListsView() {
         val recyclerVexo = findViewById<RecyclerView>(R.id.recyclerVexoLists)
-        recyclerVexo.layoutManager = LinearLayoutManager(this)
+        recyclerVexo.layoutManager = androidx.recyclerview.widget.GridLayoutManager(this, 2)
         vexoAdapter = VexoListAdapter(officialVexoLists) { item ->
             val intent = Intent(this, VexoListDetailActivity::class.java)
             intent.putExtra("listId", item.id)
             intent.putExtra("listName", item.name)
+            intent.putExtra("listDesc", item.description)
             startActivity(intent)
         }
         recyclerVexo.adapter = vexoAdapter
@@ -98,7 +127,6 @@ class ListActivity : AppCompatActivity() {
             if (cardSearch.visibility == View.VISIBLE) {
                 cardSearch.visibility = View.GONE
                 editSearch.setText("")
-                // Al cerrar, restauramos la lista completa
                 vexoAdapter.updateLists(officialVexoLists)
             } else {
                 cardSearch.visibility = View.VISIBLE

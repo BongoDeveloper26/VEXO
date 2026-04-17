@@ -14,6 +14,7 @@ data class VexoList(
     val name: String,
     val description: String,
     val imageRes: Int,
+    val countText: String, 
     val previewPosters: List<String> = emptyList()
 )
 
@@ -33,7 +34,6 @@ class VexoListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        // CAMBIO: Ahora inflamos el nuevo layout item_user_list_grid
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_user_list_grid, parent, false)
         return ViewHolder(view)
     }
@@ -42,10 +42,17 @@ class VexoListAdapter(
         val list = lists[position]
         
         holder.name.text = if (list.name.length > 25) list.name.take(25) + "..." else list.name
-        holder.count.text = "250 ELEMENTOS"
+        holder.count.text = list.countText 
         
         val imgs = listOf(holder.img1, holder.img2, holder.img3, holder.img4)
         
+        // Reset
+        imgs.forEach { 
+            it.visibility = View.GONE
+            it.setPadding(0, 0, 0, 0)
+        }
+        holder.textMore.visibility = View.GONE
+
         if (list.previewPosters.isEmpty()) {
             imgs[0].visibility = View.VISIBLE
             imgs[0].setImageResource(R.drawable.vexo_logo)
@@ -61,8 +68,17 @@ class VexoListAdapter(
                         .into(imgs[index])
                 }
             }
-            holder.textMore.visibility = View.VISIBLE
-            holder.textMore.text = "+246"
+            
+            // Ajustamos el "+" según el tipo de lista para que no mienta con el número de elementos
+            if (list.previewPosters.size >= 4) {
+                holder.textMore.visibility = View.VISIBLE
+                val extra = when (list.id) {
+                    "marvel_universe" -> "40+"
+                    "star_wars_universe" -> "25+"
+                    else -> "240+"
+                }
+                holder.textMore.text = "+$extra"
+            }
         }
 
         holder.itemView.setOnClickListener { onListClick(list) }

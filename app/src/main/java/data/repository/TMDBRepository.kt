@@ -41,7 +41,8 @@ interface TMDBApi {
         @Query("with_keywords") keywords: String? = null,
         @Query("with_origin_country") originCountry: String? = null,
         @Query("with_runtime.gte") runtimeGte: Int? = null,
-        @Query("with_runtime.lte") runtimeLte: Int? = null
+        @Query("with_runtime.lte") runtimeLte: Int? = null,
+        @Query("with_companies") companies: String? = null
     ): TMDBResponse
 
     @GET("discover/tv")
@@ -57,7 +58,8 @@ interface TMDBApi {
         @Query("with_watch_providers") watchProviders: String? = null,
         @Query("watch_region") watchRegion: String? = "ES",
         @Query("with_keywords") keywords: String? = null,
-        @Query("with_origin_country") originCountry: String? = null
+        @Query("with_origin_country") originCountry: String? = null,
+        @Query("with_companies") companies: String? = null
     ): TMDBResponse
 
     @GET("discover/tv")
@@ -297,8 +299,9 @@ class TMDBRepository {
         keywords: List<Int>? = null,
         originCountry: String? = null,
         runtimeGte: Int? = null,
-        runtimeLte: Int? = null
-    ): List<Movie> = withCache("discover_movies_${genreIds?.joinToString(",")}_${yearStart}_${yearEnd}_${minRating}_${watchProviders?.joinToString(",")}_${sortBy}_${keywords?.joinToString(",")}_${originCountry}_${runtimeGte}_${runtimeLte}_$page") {
+        runtimeLte: Int? = null,
+        companyIds: List<Int>? = null
+    ): List<Movie> = withCache("discover_movies_${genreIds?.joinToString(",")}_${yearStart}_${yearEnd}_${minRating}_${watchProviders?.joinToString(",")}_${sortBy}_${keywords?.joinToString(",")}_${originCountry}_${runtimeGte}_${runtimeLte}_${companyIds?.joinToString(",")}_$page") {
         try { 
             api.discoverMovies(
                 apiKey, getLanguage(), page, sortBy, 
@@ -312,7 +315,8 @@ class TMDBRepository {
                 keywords?.joinToString(","),
                 originCountry,
                 runtimeGte,
-                runtimeLte
+                runtimeLte,
+                companyIds?.joinToString(",")
             ).results.map { it.toMovie() }
         } catch (e: Exception) { emptyList() }
     }
@@ -326,8 +330,9 @@ class TMDBRepository {
         sortBy: String = "popularity.desc",
         page: Int = 1,
         keywords: List<Int>? = null,
-        originCountry: String? = null
-    ): List<Movie> = withCache("discover_tv_${genreIds?.joinToString(",")}_${yearStart}_${yearEnd}_${minRating}_${watchProviders?.joinToString(",")}_${sortBy}_${keywords?.joinToString(",")}_${originCountry}_$page") {
+        originCountry: String? = null,
+        companyIds: List<Int>? = null
+    ): List<Movie> = withCache("discover_tv_${genreIds?.joinToString(",")}_${yearStart}_${yearEnd}_${minRating}_${watchProviders?.joinToString(",")}_${sortBy}_${keywords?.joinToString(",")}_${originCountry}_${companyIds?.joinToString(",")}_$page") {
         try { 
             api.discoverTV(
                 apiKey, getLanguage(), page, sortBy, 
@@ -338,7 +343,8 @@ class TMDBRepository {
                 watchProviders?.joinToString("|"),
                 getRegion(),
                 keywords?.joinToString(","),
-                originCountry
+                originCountry,
+                companyIds?.joinToString(",")
             ).results.map { it.toMovie() }
         } catch (e: Exception) { emptyList() }
     }

@@ -10,5 +10,6 @@ data class UserList(
     var description: String? = null,
     val movies: MutableList<Movie> = mutableListOf(),
     val createdAt: Long = System.currentTimeMillis(),
-    var isPublic: Boolean = false
+    var isPublic: Boolean = false,
+    var likes: Int = 0
 ) : Parcelable

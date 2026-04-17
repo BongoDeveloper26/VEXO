@@ -9,7 +9,6 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,6 +18,7 @@ import ui.detail.DetailActivity
 import ui.explore.MovieAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.bumptech.glide.Glide
 
 class UserListDetailActivity : AppCompatActivity() {
@@ -26,6 +26,7 @@ class UserListDetailActivity : AppCompatActivity() {
     private lateinit var watchlistRepository: WatchlistRepository
     private lateinit var movieAdapter: MovieAdapter
     private var userListId: String? = null
+    private var isLiked = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +51,6 @@ class UserListDetailActivity : AppCompatActivity() {
     private fun setupUI() {
         findViewById<ImageButton>(R.id.btnBackUserListDetail).setOnClickListener { finish() }
 
-        // Personalización para "Mis Listas" (Cuenta del usuario)
         val imgProfile = findViewById<ImageView>(R.id.imgCreatorProfile)
         val profileUri = watchlistRepository.getProfileImageUri()
         
@@ -82,9 +82,78 @@ class UserListDetailActivity : AppCompatActivity() {
         recycler.adapter = movieAdapter
         recycler.setPadding(12, 0, 12, 20)
 
-        findViewById<ImageButton>(R.id.btnShareUserList).setOnClickListener { shareList() }
-        findViewById<ImageButton>(R.id.btnEditListName).setOnClickListener { showEditListDialog() }
-        findViewById<ImageButton>(R.id.btnDeleteUserList).setOnClickListener { showDeleteConfirmDialog() }
+        findViewById<ImageButton>(R.id.btnMoreOptions).setOnClickListener {
+            showModernOptionsSheet()
+        }
+
+        // Lógica del botón de Like
+        val btnLike = findViewById<View>(R.id.btnLikeList)
+        btnLike.setOnClickListener {
+            toggleLike()
+        }
+    }
+
+    private fun toggleLike() {
+        val lists = watchlistRepository.getUserLists()
+        val currentList = lists.find { it.id == userListId } ?: return
+        
+        // Cambiamos el estado
+        isLiked = !isLiked
+        
+        // Actualizamos el contador acumulable
+        if (isLiked) {
+            currentList.likes += 1
+        } else {
+            if (currentList.likes > 0) currentList.likes -= 1
+        }
+        
+        // Guardamos de forma persistente:
+        // 1. El nuevo total de likes de la lista
+        watchlistRepository.updateUserListLikes(currentList.id, currentList.likes)
+        // 2. Que ESTE usuario ya ha dado like a ESTA lista (para que no pueda repetir)
+        watchlistRepository.setListLiked(currentList.id, isLiked)
+        
+        updateLikeUI(currentList.likes)
+    }
+
+    private fun updateLikeUI(likes: Int) {
+        val imgLike = findViewById<ImageView>(R.id.imgLike)
+        val textLikes = findViewById<TextView>(R.id.textLikeCount)
+        
+        textLikes.text = likes.toString()
+        
+        if (isLiked) {
+            imgLike.setImageResource(R.drawable.ic_heart_filled)
+            imgLike.imageTintList = ColorStateList.valueOf(getColor(R.color.primary))
+            textLikes.setTextColor(getColor(R.color.primary))
+        } else {
+            imgLike.setImageResource(R.drawable.ic_heart_outline)
+            imgLike.imageTintList = ColorStateList.valueOf(getColor(R.color.text_secondary))
+            textLikes.setTextColor(getColor(R.color.text_secondary))
+        }
+    }
+
+    private fun showModernOptionsSheet() {
+        val bottomSheet = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+        val view = layoutInflater.inflate(R.layout.layout_list_options_menu, null)
+
+        view.findViewById<View>(R.id.optionShare).setOnClickListener {
+            bottomSheet.dismiss()
+            shareList()
+        }
+
+        view.findViewById<View>(R.id.optionEdit).setOnClickListener {
+            bottomSheet.dismiss()
+            showEditListDialog()
+        }
+
+        view.findViewById<View>(R.id.optionDelete).setOnClickListener {
+            bottomSheet.dismiss()
+            showDeleteConfirmDialog()
+        }
+
+        bottomSheet.setContentView(view)
+        bottomSheet.show()
     }
 
     private fun refreshListData() {
@@ -102,6 +171,10 @@ class UserListDetailActivity : AppCompatActivity() {
             val infoText = if (currentList.isPublic) "Lista Pública • ${currentList.movies.size} películas" 
                            else "Lista Privada • ${currentList.movies.size} películas"
             findViewById<TextView>(R.id.textListInfo).text = infoText
+            
+            // IMPORTANTE: Cargar si el usuario ya le dio like anteriormente
+            isLiked = watchlistRepository.isListLiked(currentList.id)
+            updateLikeUI(currentList.likes)
             
             val movies = currentList.movies
             findViewById<View>(R.id.layoutEmptyUserList).visibility = if (movies.isEmpty()) View.VISIBLE else View.GONE
@@ -138,7 +211,6 @@ class UserListDetailActivity : AppCompatActivity() {
         editName.setText(currentList.name)
         editDesc.setText(currentList.description ?: "")
         
-        // Configuración del Switch según el estado actual
         switchPublic.isChecked = currentList.isPublic
         updateSwitchUI(switchPublic, textHint, currentList.isPublic)
 

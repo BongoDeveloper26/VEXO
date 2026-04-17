@@ -19,13 +19,10 @@ class WatchlistRepository(private val context: Context) {
     private val firestore = FirebaseFirestore.getInstance()
     private val gson = Gson()
     
-    // El userId debe obtenerse dinámicamente cada vez
     val userId: String? get() = auth.currentUser?.uid
 
-    // Referencia al documento del usuario en Firestore
     private fun getUserDoc() = userId?.let { firestore.collection("users").document(it) }
 
-    // Preferencias locales específicas por usuario para evitar mezclas
     private fun getPrefs() = context.getSharedPreferences("vexo_prefs_${userId ?: "guest"}", Context.MODE_PRIVATE)
 
     companion object {
@@ -42,6 +39,7 @@ class WatchlistRepository(private val context: Context) {
         private const val KEY_HEADER_COLOR = "user_header_color"
         private const val KEY_USER_NAME = "user_name"
         private const val KEY_SEEN_ACHIEVEMENTS = "seen_achievements_count"
+        private const val KEY_LIKED_LISTS = "user_liked_lists_ids"
         private const val TAG = "WatchlistRepository"
     }
 
@@ -70,6 +68,19 @@ class WatchlistRepository(private val context: Context) {
         val userDoc = getUserDoc() ?: return
         userDoc.set(mapOf(key to value), SetOptions.merge())
             .addOnFailureListener { e -> Log.e(TAG, "Error guardando $key en nube", e) }
+    }
+
+    // --- LIKES DE LISTAS ---
+    fun isListLiked(listId: String): Boolean {
+        val likedSet = getPrefs().getStringSet(KEY_LIKED_LISTS, emptySet()) ?: emptySet()
+        return likedSet.contains(listId)
+    }
+
+    fun setListLiked(listId: String, liked: Boolean) {
+        val likedSet = getPrefs().getStringSet(KEY_LIKED_LISTS, emptySet())?.toMutableSet() ?: mutableSetOf()
+        if (liked) likedSet.add(listId) else likedSet.remove(listId)
+        getPrefs().edit().putStringSet(KEY_LIKED_LISTS, likedSet).apply()
+        saveDataCloud(KEY_LIKED_LISTS, likedSet.toList())
     }
 
     // --- PERFIL ---
@@ -128,23 +139,14 @@ class WatchlistRepository(private val context: Context) {
         val diary = getDiary().toMutableList()
 
         if (rating <= 0) {
-            // Si el rating es 0, lo tratamos como "quitar valoración"
             ratings.remove(movie.id.toString())
             ratedMovies.removeAll { it.id == movie.id }
-            // Al borrar la valoración, eliminamos también las entradas del diario para esta película
             diary.removeAll { it.movieId == movie.id }
         } else {
-            // Actualizamos el rating actual de la película
             ratings[movie.id.toString()] = rating
-            
-            // Actualizamos la lista de películas valoradas (sin duplicados de la misma película en la lista general)
             ratedMovies.removeAll { it.id == movie.id }
             ratedMovies.add(0, movie)
-
-            // AÑADIR AL DIARIO SIN BORRAR LO ANTERIOR
             val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
-            
-            // Creamos una nueva entrada. No borramos las anteriores para permitir historial.
             diary.add(0, DiaryEntry(
                 movieId = movie.id,
                 movieTitle = movie.title,
@@ -264,6 +266,15 @@ class WatchlistRepository(private val context: Context) {
         val index = lists.indexOfFirst { it.id == listId }
         if (index != -1) {
             lists[index] = lists[index].copy(name = name, description = description, isPublic = isPublic)
+            saveUserLists(lists)
+        }
+    }
+
+    fun updateUserListLikes(listId: String, likes: Int) {
+        val lists = getUserLists().toMutableList()
+        val index = lists.indexOfFirst { it.id == listId }
+        if (index != -1) {
+            lists[index] = lists[index].copy(likes = likes)
             saveUserLists(lists)
         }
     }

@@ -24,7 +24,6 @@ class VexoListAdapter(
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val name: TextView = view.findViewById(R.id.textListName)
-        val description: TextView = view.findViewById(R.id.textListDescription)
         val count: TextView = view.findViewById(R.id.textMovieCount)
         val img1: ImageView = view.findViewById(R.id.imgPreview1)
         val img2: ImageView = view.findViewById(R.id.imgPreview2)
@@ -34,46 +33,31 @@ class VexoListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_user_list, parent, false)
+        // CAMBIO: Ahora inflamos el nuevo layout item_user_list_grid
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_user_list_grid, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val list = lists[position]
         
-        // Aplicamos límite de 25 caracteres al nombre
         holder.name.text = if (list.name.length > 25) list.name.take(25) + "..." else list.name
-        
-        // Mostramos la descripción
-        holder.description.text = list.description
-        holder.description.visibility = if (list.description.isNotEmpty()) View.VISIBLE else View.GONE
-
-        holder.count.text = "COLECCIÓN OFICIAL • 250 ELEMENTOS"
+        holder.count.text = "250 ELEMENTOS"
         
         val imgs = listOf(holder.img1, holder.img2, holder.img3, holder.img4)
         
-        // Reset inicial para evitar huecos blancos
-        imgs.forEach { 
-            it.visibility = View.GONE
-            it.setPadding(0, 0, 0, 0)
-            it.imageTintList = null 
-        }
-        holder.textMore.visibility = View.GONE
-
         if (list.previewPosters.isEmpty()) {
-            // Si no hay posters, ponemos el logo de Vexo para que no quede vacío
-            holder.img1.visibility = View.VISIBLE
-            holder.img1.setImageResource(R.drawable.vexo_logo)
-            holder.img1.setPadding(12, 12, 12, 12)
+            imgs[0].visibility = View.VISIBLE
+            imgs[0].setImageResource(R.drawable.vexo_logo)
+            imgs[0].setPadding(12, 12, 12, 12)
         } else {
-            // Cargamos los posters reales
             list.previewPosters.forEachIndexed { index, url ->
                 if (index < imgs.size) {
                     imgs[index].visibility = View.VISIBLE
                     Glide.with(holder.itemView.context)
                         .load(url)
                         .centerCrop()
-                        .placeholder(R.drawable.vexo_logo) // Logo mientras carga
+                        .placeholder(R.drawable.vexo_logo)
                         .into(imgs[index])
                 }
             }

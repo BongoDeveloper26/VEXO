@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -120,7 +121,8 @@ class ListFragment : Fragment() {
             startActivity(intent)
         }
 
-        recyclerVexo.layoutManager = LinearLayoutManager(requireContext())
+        // CAMBIO: Ahora usamos GridLayoutManager con 2 columnas
+        recyclerVexo.layoutManager = GridLayoutManager(requireContext(), 2)
         recyclerVexo.adapter = vexoListAdapter
     }
 

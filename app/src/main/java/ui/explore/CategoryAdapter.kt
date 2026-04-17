@@ -40,8 +40,8 @@ class CategoryAdapter(
         val title = category.title
         val titleLower = title.lowercase()
 
-        val isFeatured = titleLower.contains("tendencia") || titleLower.contains("trending") || 
-                         titleLower.contains("valoradas") || titleLower.contains("top rated") || 
+        val isTrending = titleLower.contains("tendencia") || titleLower.contains("trending")
+        val isFeatured = isTrending || titleLower.contains("valoradas") || titleLower.contains("top rated") || 
                          titleLower.contains("cines") || titleLower.contains("now playing")
 
         holder.textTitle.text = title
@@ -49,7 +49,7 @@ class CategoryAdapter(
         
         holder.textSubtitle.visibility = View.VISIBLE
         holder.textSubtitle.text = when {
-            titleLower.contains("tendencia") || titleLower.contains("trending") -> "TENDENCIAS GLOBALES"
+            isTrending -> "TENDENCIAS GLOBALES"
             titleLower.contains("valoradas") || titleLower.contains("top rated") -> "LAS MEJOR VALORADAS"
             titleLower.contains("cines") || titleLower.contains("now playing") -> "EN CARTELERA"
             titleLower.contains("acción", true) -> "ADRENALINA PURA"
@@ -95,7 +95,7 @@ class CategoryAdapter(
 
         val horizontalAdapter = if (isFeatured) {
             val mockPos = if (titleLower.contains("cines") || titleLower.contains("now playing")) 3 else 0
-            MovieFeaturedAdapter(category.movies, mockPos).apply { onItemClick = onMovieClick }
+            MovieFeaturedAdapter(category.movies, mockPos, isTrending).apply { onItemClick = onMovieClick }
         } else {
             MovieHorizontalAdapter(category.movies).apply { onItemClick = onMovieClick }
         }
@@ -104,7 +104,7 @@ class CategoryAdapter(
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = horizontalAdapter as? RecyclerView.Adapter<*>
             setHasFixedSize(true)
-            setItemViewCacheSize(10) // Cache de vistas para scroll horizontal suave
+            setItemViewCacheSize(10)
         }
     }
 
@@ -118,7 +118,8 @@ class CategoryAdapter(
 
 class MovieFeaturedAdapter(
     private val movies: List<Movie>,
-    private val categoryPos: Int = -1
+    private val categoryPos: Int = -1,
+    private val showRank: Boolean = false
 ) : RecyclerView.Adapter<MovieFeaturedAdapter.MovieViewHolder>() {
 
     var onItemClick: ((Movie) -> Unit)? = null
@@ -128,6 +129,7 @@ class MovieFeaturedAdapter(
         val textTitle: android.widget.TextView = itemView.findViewById(R.id.textTitle)
         val textRating: android.widget.TextView = itemView.findViewById(R.id.textRating)
         val badgeTop: android.widget.TextView = itemView.findViewById(R.id.textTopBadge)
+        val textRank: android.widget.TextView = itemView.findViewById(R.id.textRank)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
@@ -142,10 +144,16 @@ class MovieFeaturedAdapter(
         holder.textRating.text = "★ ${String.format("%.1f", movie.rating)}"
 
         holder.badgeTop.visibility = if (categoryPos == 3) View.GONE else View.VISIBLE
+        
+        if (showRank) {
+            holder.textRank.visibility = View.VISIBLE
+            holder.textRank.text = (position + 1).toString()
+        } else {
+            holder.textRank.visibility = View.GONE
+        }
 
         val imageToLoad = movie.backdropPath ?: movie.posterPath
         
-        // Optimización de Glide para contenido destacado
         Glide.with(holder.itemView.context)
             .load(imageToLoad)
             .thumbnail(0.1f)

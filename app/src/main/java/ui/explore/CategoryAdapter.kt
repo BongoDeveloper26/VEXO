@@ -125,6 +125,7 @@ class MovieFeaturedAdapter(
     var onItemClick: ((Movie) -> Unit)? = null
 
     class MovieViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val featuredCard: View = itemView.findViewById(R.id.featuredCard)
         val imgPoster: android.widget.ImageView = itemView.findViewById(R.id.imgPoster)
         val textTitle: android.widget.TextView = itemView.findViewById(R.id.textTitle)
         val textRating: android.widget.TextView = itemView.findViewById(R.id.textRating)
@@ -161,11 +162,12 @@ class MovieFeaturedAdapter(
             .centerCrop()
             .into(holder.imgPoster)
 
-        holder.itemView.setOnClickListener {
-            val animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.click_scale)
-            holder.itemView.startAnimation(animation)
+        // IMPORTANTE: El click debe estar en la tarjeta (featuredCard) porque ella consume los eventos táctiles
+        holder.featuredCard.setOnClickListener {
+            val animation = AnimationUtils.loadAnimation(it.context, R.anim.click_scale)
+            it.startAnimation(animation)
             
-            holder.itemView.postDelayed({
+            it.postDelayed({
                 onItemClick?.invoke(movie)
             }, 150)
         }

@@ -32,6 +32,53 @@
             android:layout_marginBottom="32dp"
             android:letterSpacing="0.1"/>
 
+        <!-- Opción Detalles del Perfil (NUEVO) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/optionUserDetails"
+            android:layout_width="match_parent"
+            android:layout_height="84dp"
+            android:layout_marginBottom="20dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="24dp"
+            app:strokeWidth="1.5dp"
+            app:strokeColor="#FFB300"
+            android:clickable="true"
+            android:focusable="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="20dp">
+
+                <ImageView
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:background="@drawable/bg_settings_circle"
+                    android:backgroundTint="#1AFFB300"
+                    android:padding="14dp"
+                    android:src="@drawable/ic_nav_profile_modern"
+                    app:tint="#FFB300" />
+
+                <TextView
+                    android:id="@+id/textOptionUserDetails"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="20dp"
+                    android:text="Detalles del Perfil"
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_media_play"
+                    app:tint="#FFB300" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Opción Idioma -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/optionLanguage"

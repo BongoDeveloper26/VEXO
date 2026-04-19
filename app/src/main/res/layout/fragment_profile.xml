@@ -53,80 +53,30 @@
                     android:background="@drawable/bg_profile_header"
                     android:scaleType="centerCrop" />
 
-                <!-- Botones de Acción Superiores -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <!-- Botón de Menú Superior (Tres puntitos) Transparente -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/btnProfileMenu"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
                     android:layout_gravity="end|top"
                     android:layout_marginTop="32dp"
                     android:layout_marginEnd="16dp"
-                    android:orientation="horizontal">
+                    app:cardCornerRadius="22dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="#40FFFFFF">
 
-                    <!-- Botón Cambiar Fondo -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/btnChangeBackground"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:layout_marginEnd="12dp"
-                        app:cardCornerRadius="22dp"
-                        app:cardElevation="6dp"
-                        app:cardBackgroundColor="#CC000000"
-                        app:strokeWidth="1dp"
-                        app:strokeColor="#33FFFFFF">
-
-                        <ImageButton
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:src="@android:drawable/ic_menu_gallery"
-                            android:padding="11dp"
-                            app:tint="@color/white"
-                            android:clickable="false" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Botón Logros -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/btnAchievements"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:layout_marginEnd="12dp"
-                        app:cardCornerRadius="22dp"
-                        app:cardElevation="6dp"
-                        app:cardBackgroundColor="#CC000000"
-                        app:strokeWidth="1dp"
-                        app:strokeColor="#33FFFFFF">
-
-                        <ImageButton
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:src="@drawable/ic_trophy"
-                            android:padding="11dp"
-                            app:tint="@color/white"
-                            android:clickable="false" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Botón Compartir Moderno -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/btnShareProfile"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        app:cardCornerRadius="22dp"
-                        app:cardElevation="6dp"
-                        app:cardBackgroundColor="#CC000000"
-                        app:strokeWidth="1dp"
-                        app:strokeColor="#33FFFFFF">
-
-                        <ImageButton
-                            android:id="@+id/imgShareProfile"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:src="@drawable/ic_share_modern"
-                            android:padding="11dp"
-                            app:tint="@color/white" />
-                    </com.google.android.material.card.MaterialCardView>
-                </LinearLayout>
+                    <ImageButton
+                        android:id="@+id/imgProfileMenuIcon"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_more_vert_white"
+                        android:padding="11dp"
+                        app:tint="@color/white"
+                        android:clickable="false" />
+                </com.google.android.material.card.MaterialCardView>
 
                 <LinearLayout
                     android:layout_width="match_parent"

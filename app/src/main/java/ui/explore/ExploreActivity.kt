@@ -62,9 +62,7 @@ class ExploreActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
         
-        findViewById<ImageButton>(R.id.btnSettings).setOnClickListener {
-            showSettingsMenu()
-        }
+        // Botón de ajustes eliminado ya que se movió al Perfil
 
         findViewById<View>(R.id.btnRecommend).setOnClickListener {
             showDiscoverFilters()
@@ -195,49 +193,5 @@ class ExploreActivity : AppCompatActivity() {
         viewModel.tvCategories.observe(this) { categories ->
             tvAdapter.updateCategories(categories)
         }
-    }
-
-    private fun showSettingsMenu() {
-        val bottomSheet = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
-        val view = layoutInflater.inflate(R.layout.layout_explore_menu, null)
-
-        view.findViewById<TextView>(R.id.textOptionLanguage).text = getString(R.string.change_language)
-        view.findViewById<TextView>(R.id.textOptionAbout).text = getString(R.string.about_us)
-
-        view.findViewById<View>(R.id.optionLanguage).setOnClickListener {
-            bottomSheet.dismiss()
-            showLanguageDialog()
-        }
-
-        view.findViewById<View>(R.id.optionAbout).setOnClickListener {
-            bottomSheet.dismiss()
-            try {
-                startActivity(Intent(this, AboutActivity::class.java))
-            } catch (e: Exception) {}
-        }
-
-        bottomSheet.setContentView(view)
-        bottomSheet.show()
-    }
-
-    private fun showLanguageDialog() {
-        val languages = arrayOf("Español", "English")
-        val currentLocales = AppCompatDelegate.getApplicationLocales()
-        val currentLang = if (currentLocales.toLanguageTags().contains("es")) 0 else 1
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.select_language))
-            .setSingleChoiceItems(languages, currentLang) { dialog, which ->
-                val langTag = if (which == 0) "es" else "en"
-                
-                if ((which == 0 && !currentLocales.toLanguageTags().contains("es")) || 
-                    (which == 1 && !currentLocales.toLanguageTags().contains("en"))) {
-                    
-                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(langTag))
-                    repository.clearCache()
-                }
-                dialog.dismiss()
-            }
-            .show()
     }
 }

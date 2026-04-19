@@ -23,7 +23,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import androidx.core.os.LocaleListCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,10 +38,15 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import data.model.Movie
+import data.repository.TMDBRepository
 import data.repository.WatchlistRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ui.detail.DetailActivity
+import ui.explore.AboutActivity
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ProfileFragment : Fragment() {
 
@@ -127,10 +134,8 @@ class ProfileFragment : Fragment() {
         val cardProfileImage: MaterialCardView = view.findViewById(R.id.cardProfileImage)
         val btnEditName: ImageButton = view.findViewById(R.id.btnEditName)
         
-        val btnChangeBackground: View = view.findViewById(R.id.btnChangeBackground)
-        val containerShare: View = view.findViewById(R.id.btnShareProfile)
-        val btnShareIcon: View = view.findViewById(R.id.imgShareProfile)
-        val btnAchievements: View = view.findViewById(R.id.btnAchievements)
+        // Botón de Menú (Tres puntitos)
+        val btnProfileMenu: View = view.findViewById(R.id.btnProfileMenu)
         
         scrollViewProfile.setOnScrollChangeListener { _, _, scrollY, _, _ ->
             if (imgContentBackground.visibility == View.VISIBLE) {
@@ -187,12 +192,9 @@ class ProfileFragment : Fragment() {
 
         cardProfileImage.setOnClickListener { pickImageLauncher.launch("image/*") }
         btnEditName.setOnClickListener { showEditNameDialog() }
-        btnChangeBackground.setOnClickListener { showEnhancedBackgroundOptions() }
         
-        val shareAction = View.OnClickListener { shareProfile() }
-        containerShare.setOnClickListener(shareAction)
-        btnShareIcon.setOnClickListener(shareAction)
-        btnAchievements.setOnClickListener { startActivity(Intent(requireContext(), AchievementsActivity::class.java)) }
+        // Configuración del Menú Moderno (BottomSheet)
+        btnProfileMenu.setOnClickListener { showModernProfileMenu() }
 
         view.findViewById<Button>(R.id.btnLogout).setOnClickListener {
             auth.signOut()
@@ -251,8 +253,116 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    private fun showModernProfileMenu() {
+        val dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
+        val menuView = layoutInflater.inflate(R.layout.layout_profile_options_menu, null)
+        
+        menuView.findViewById<View>(R.id.btnMenuChangeBackground).setOnClickListener {
+            dialog.dismiss()
+            showEnhancedBackgroundOptions()
+        }
+        
+        menuView.findViewById<View>(R.id.btnMenuAchievements).setOnClickListener {
+            dialog.dismiss()
+            startActivity(Intent(requireContext(), AchievementsActivity::class.java))
+        }
+        
+        menuView.findViewById<View>(R.id.btnMenuShareProfile).setOnClickListener {
+            dialog.dismiss()
+            shareProfile()
+        }
+
+        menuView.findViewById<View>(R.id.btnMenuSettings).setOnClickListener {
+            dialog.dismiss()
+            showSettingsBottomSheet()
+        }
+        
+        dialog.setContentView(menuView)
+        dialog.show()
+    }
+
+    private fun showSettingsBottomSheet() {
+        val dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
+        val view = layoutInflater.inflate(R.layout.layout_explore_menu, null)
+
+        view.findViewById<TextView>(R.id.textMenuTitle).text = "CONFIGURACIÓN"
+        view.findViewById<TextView>(R.id.textOptionLanguage).text = getString(R.string.change_language)
+        view.findViewById<TextView>(R.id.textOptionAbout).text = getString(R.string.about_us)
+        
+        // Opción Nueva: Detalles del Perfil
+        view.findViewById<View>(R.id.optionUserDetails).setOnClickListener {
+            dialog.dismiss()
+            showUserDetailsBottomSheet()
+        }
+
+        view.findViewById<View>(R.id.optionLanguage).setOnClickListener {
+            dialog.dismiss()
+            showLanguageDialog()
+        }
+
+        view.findViewById<View>(R.id.optionAbout).setOnClickListener {
+            dialog.dismiss()
+            try {
+                startActivity(Intent(requireContext(), AboutActivity::class.java))
+            } catch (e: Exception) {}
+        }
+
+        dialog.setContentView(view)
+        dialog.show()
+    }
+
+    private fun showUserDetailsBottomSheet() {
+        val dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
+        val view = layoutInflater.inflate(R.layout.layout_user_details, null)
+        
+        val user = auth.currentUser
+        val nameText = view.findViewById<TextView>(R.id.detailUserName)
+        val emailText = view.findViewById<TextView>(R.id.detailUserEmail)
+        val sinceText = view.findViewById<TextView>(R.id.detailUserSince)
+        val idText = view.findViewById<TextView>(R.id.detailUserId)
+        
+        nameText.text = watchlistRepository.getUserName()
+        emailText.text = user?.email ?: getString(R.string.no_email_linked)
+        idText.text = user?.uid ?: "N/A"
+        
+        // Obtener fecha de creación desde Firebase
+        user?.metadata?.creationTimestamp?.let {
+            val date = Date(it)
+            val format = SimpleDateFormat("dd 'de' MMMM, yyyy", Locale("es", "ES"))
+            sinceText.text = format.format(date)
+        } ?: run {
+            sinceText.text = "Desconocida"
+        }
+        
+        view.findViewById<View>(R.id.btnDoneDetails).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.setContentView(view)
+        dialog.show()
+    }
+
+    private fun showLanguageDialog() {
+        val languages = arrayOf("Español", "English")
+        val currentLocales = AppCompatDelegate.getApplicationLocales()
+        val currentLang = if (currentLocales.toLanguageTags().contains("es")) 0 else 1
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.select_language))
+            .setSingleChoiceItems(languages, currentLang) { dialog, which ->
+                val langTag = if (which == 0) "es" else "en"
+                if ((which == 0 && !currentLocales.toLanguageTags().contains("es")) || 
+                    (which == 1 && !currentLocales.toLanguageTags().contains("en"))) {
+                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(langTag))
+                    TMDBRepository.getInstance().clearCache()
+                }
+                dialog.dismiss()
+            }
+            .show()
+    }
+
     private fun showEnhancedBackgroundOptions() {
-        val dialog = BottomSheetDialog(requireContext())
+        val dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
         val bottomSheetView = layoutInflater.inflate(R.layout.layout_background_selection, null)
         
         // Configurar Switch de Transparencia de Cabecera
@@ -568,7 +678,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun showMovieOptionsBottomSheet(slotIndex: Int, movie: Movie) {
-        val dialog = BottomSheetDialog(requireContext())
+        val dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
         val menuView = layoutInflater.inflate(R.layout.layout_vitrina_menu, null)
         menuView.findViewById<TextView>(R.id.vitrinaMenuTitle).text = movie.title
         menuView.findViewById<View>(R.id.btnVitrinaDetails).setOnClickListener {

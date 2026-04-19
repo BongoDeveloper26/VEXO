@@ -56,12 +56,11 @@
             android:id="@+id/cardRecommend"
             android:layout_width="wrap_content"
             android:layout_height="38dp"
-            android:layout_marginEnd="12dp"
             app:cardCornerRadius="19dp"
             app:cardElevation="4dp"
             app:cardBackgroundColor="@color/white"
             app:strokeWidth="0dp"
-            app:layout_constraintEnd_toStartOf="@id/cardSettings"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
@@ -79,30 +78,6 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:background="?attr/selectableItemBackground" />
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Botón Ajustes Premium -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardSettings"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            app:cardCornerRadius="22dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/white"
-            app:strokeWidth="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <ImageButton
-                android:id="@+id/btnSettings"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="11dp"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_settings_premium"
-                app:tint="@color/primary" />
         </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

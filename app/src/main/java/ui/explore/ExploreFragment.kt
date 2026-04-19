@@ -52,9 +52,7 @@ class ExploreFragment : Fragment() {
     private fun setupHeader(view: View) {
         view.findViewById<ImageButton>(R.id.btnBack).visibility = View.GONE
         
-        view.findViewById<ImageButton>(R.id.btnSettings).setOnClickListener {
-            showSettingsMenu()
-        }
+        // El botón de ajustes se ha movido al Perfil
 
         // REVERTIDO: Abre directamente RecommendationActivity como antes
         view.findViewById<View>(R.id.btnRecommend).setOnClickListener {
@@ -123,51 +121,5 @@ class ExploreFragment : Fragment() {
         viewModel.tvCategories.observe(viewLifecycleOwner) { categories ->
             tvAdapter.updateCategories(categories)
         }
-    }
-
-    private fun showSettingsMenu() {
-        val bottomSheet = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
-        val view = layoutInflater.inflate(R.layout.layout_explore_menu, null)
-
-        view.findViewById<TextView>(R.id.textOptionLanguage).text = getString(R.string.change_language)
-        view.findViewById<TextView>(R.id.textOptionAbout).text = getString(R.string.about_us)
-
-        view.findViewById<View>(R.id.optionLanguage).setOnClickListener {
-            bottomSheet.dismiss()
-            showLanguageDialog()
-        }
-
-        view.findViewById<View>(R.id.optionAbout).setOnClickListener {
-            bottomSheet.dismiss()
-            startActivity(Intent(requireContext(), AboutActivity::class.java))
-        }
-
-        bottomSheet.setContentView(view)
-        bottomSheet.show()
-    }
-
-    private fun showLanguageDialog() {
-        val languages = arrayOf("Español", "English")
-        val currentLocales = AppCompatDelegate.getApplicationLocales()
-        val currentLang = if (currentLocales.toLanguageTags().contains("es")) 0 else 1
-
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.select_language))
-            .setSingleChoiceItems(languages, currentLang) { dialog, which ->
-                val langTag = if (which == 0) "es" else "en"
-                if ((which == 0 && !currentLocales.toLanguageTags().contains("es")) || 
-                    (which == 1 && !currentLocales.toLanguageTags().contains("en"))) {
-                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(langTag))
-                    repository.clearCache()
-                    activity?.let {
-                        val intent = Intent(it, MainActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        it.startActivity(intent)
-                        it.finish()
-                    }
-                }
-                dialog.dismiss()
-            }
-            .show()
     }
 }

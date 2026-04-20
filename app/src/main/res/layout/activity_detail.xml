@@ -533,26 +533,23 @@
                     android:textColor="@color/text_secondary"
                     android:textSize="16sp" />
 
-                <!-- SECCIÓN TRÁILER -->
+                <!-- SECCIÓN TRÁILER REDISEÑADA (EMBEDDED) -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/layoutTrailer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="32dp"
                     app:cardCornerRadius="24dp"
-                    app:cardElevation="4dp"
+                    app:cardElevation="8dp"
                     app:cardBackgroundColor="@color/surface_app"
-                    app:strokeWidth="1.5dp"
-                    app:strokeColor="@color/primary"
+                    app:strokeWidth="0dp"
                     android:visibility="gone"
                     tools:visibility="visible">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp"
-                        android:gravity="center">
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/textTrailerTitle"
@@ -560,21 +557,41 @@
                             android:layout_height="wrap_content"
                             android:text="@string/watch_trailer"
                             android:textColor="@color/primary"
-                            android:textSize="14sp"
+                            android:textSize="12sp"
                             android:textStyle="bold"
-                            android:letterSpacing="0.1"
+                            android:letterSpacing="0.2"
+                            android:textAllCaps="true"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginStart="20dp"
                             android:layout_marginBottom="12dp" />
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnWatchTrailer"
+                        <com.google.android.material.card.MaterialCardView
                             android:layout_width="match_parent"
-                            android:layout_height="60dp"
-                            android:text="@string/play_on_youtube"
-                            android:textStyle="bold"
-                            app:cornerRadius="16dp"
-                            app:icon="@android:drawable/ic_media_play"
-                            app:iconGravity="textStart"
-                            app:backgroundTint="@color/primary" />
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="12dp"
+                            android:layout_marginBottom="12dp"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0dp">
+
+                            <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+                                android:id="@+id/youtube_player_view"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:enableAutomaticInitialization="false" />
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Botón secundario por si acaso no carga el player o para abrir en la app oficial -->
+                        <TextView
+                            android:id="@+id/btnWatchTrailer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Abrir en YouTube"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="11sp"
+                            android:layout_gravity="center"
+                            android:paddingBottom="16dp"
+                            android:alpha="0.6" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 

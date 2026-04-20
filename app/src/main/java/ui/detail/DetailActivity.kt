@@ -15,7 +15,6 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.FrameLayout
@@ -31,10 +30,6 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.vexo.app.R
 import com.vexo.app.AchievementsActivity
 import com.vexo.app.Achievement
@@ -973,26 +968,8 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun setupTrailerUI(youtubeKey: String) {
-        val layoutTrailer = findViewById<View>(R.id.layoutTrailer)
-        val youtubePlayerView = findViewById<YouTubePlayerView>(R.id.youtube_player_view)
         val btnWatch = findViewById<View>(R.id.btnWatchTrailer)
-        
-        layoutTrailer.visibility = View.VISIBLE
-        
-        // Configuramos opciones del reproductor incluyendo un origin para evitar bloqueos
-        val options = IFramePlayerOptions.Builder()
-            .controls(1)
-            .build()
-        
-        lifecycle.addObserver(youtubePlayerView)
-        
-        youtubePlayerView.initialize(object : AbstractYouTubePlayerListener() {
-            override fun onReady(youTubePlayer: YouTubePlayer) {
-                // 'cueVideo' carga el video y la miniatura sin reproducirlo automáticamente
-                youTubePlayer.cueVideo(youtubeKey, 0f)
-            }
-        }, options)
-
+        btnWatch.visibility = View.VISIBLE
         btnWatch.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=$youtubeKey"))
             startActivity(intent)

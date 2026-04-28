@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.vexo.app.R
 import data.model.Movie
 import java.util.Locale
@@ -37,8 +38,12 @@ class MovieHorizontalAdapter(private val movies: List<Movie>) :
         val formattedRating = String.format(Locale.US, "%.1f", movie.rating)
         holder.textRating.text = "★ $formattedRating"
 
+        // Optimización de Glide para carga rápida en horizontal
         Glide.with(holder.itemView.context)
             .load(movie.posterPath)
+            .thumbnail(0.1f) // Carga miniatura primero
+            .diskCacheStrategy(DiskCacheStrategy.ALL) // Cachear todo para rapidez
+            .centerCrop()
             .into(holder.imgPoster)
 
         holder.itemView.setOnClickListener {

@@ -19,6 +19,12 @@ class WatchlistRepository(private val context: Context) {
     private val firestore = FirebaseFirestore.getInstance()
     private val gson = Gson()
     
+    // Caché en memoria para evitar lecturas constantes de SharedPreferences y procesado de JSON
+    private var cachedLists: List<UserList>? = null
+    private var cachedRatings: Map<String, Float>? = null
+    private var cachedDiary: List<DiaryEntry>? = null
+    private var cachedRatedMovies: List<Movie>? = null
+
     val userId: String? get() = auth.currentUser?.uid
 
     private fun getUserDoc() = userId?.let { firestore.collection("users").document(it) }
@@ -55,6 +61,8 @@ class WatchlistRepository(private val context: Context) {
                     editor.putString(key, jsonValue)
                 }
                 editor.apply()
+                // Limpiar caché al descargar nuevos datos
+                clearMemoryCache()
                 onComplete(true)
             } else {
                 onComplete(false)
@@ -62,6 +70,13 @@ class WatchlistRepository(private val context: Context) {
         }.addOnFailureListener {
             onComplete(false)
         }
+    }
+
+    private fun clearMemoryCache() {
+        cachedLists = null
+        cachedRatings = null
+        cachedDiary = null
+        cachedRatedMovies = null
     }
 
     private fun saveDataCloud(key: String, value: Any) {
@@ -158,6 +173,11 @@ class WatchlistRepository(private val context: Context) {
             ))
         }
 
+        // Actualizar caché
+        cachedRatings = ratings
+        cachedRatedMovies = ratedMovies
+        cachedDiary = diary
+
         getPrefs().edit().apply {
             putString(KEY_RATINGS, gson.toJson(ratings))
             putString(KEY_RATED_MOVIES_DATA, gson.toJson(ratedMovies))
@@ -174,26 +194,35 @@ class WatchlistRepository(private val context: Context) {
     fun getAllRatedMovies(): List<Movie> = getRatedMoviesList()
 
     fun getDiary(): List<DiaryEntry> {
+        cachedDiary?.let { return it }
         val json = getPrefs().getString(KEY_DIARY, null) ?: return emptyList()
         return try {
             val type = object : TypeToken<List<DiaryEntry>>() {}.type
-            gson.fromJson(json, type)
+            val result: List<DiaryEntry> = gson.fromJson(json, type)
+            cachedDiary = result
+            result
         } catch (e: Exception) { emptyList() }
     }
 
     private fun getRatingsMap(): Map<String, Float> {
+        cachedRatings?.let { return it }
         val json = getPrefs().getString(KEY_RATINGS, null) ?: return emptyMap()
         return try {
             val type = object : TypeToken<Map<String, Float>>() {}.type
-            gson.fromJson(json, type)
+            val result: Map<String, Float> = gson.fromJson(json, type)
+            cachedRatings = result
+            result
         } catch (e: Exception) { emptyMap() }
     }
 
     private fun getRatedMoviesList(): List<Movie> {
+        cachedRatedMovies?.let { return it }
         val json = getPrefs().getString(KEY_RATED_MOVIES_DATA, null) ?: return emptyList()
         return try {
             val type = object : TypeToken<List<Movie>>() {}.type
-            gson.fromJson(json, type)
+            val result: List<Movie> = gson.fromJson(json, type)
+            cachedRatedMovies = result
+            result
         } catch (e: Exception) { emptyList() }
     }
 
@@ -243,12 +272,18 @@ class WatchlistRepository(private val context: Context) {
 
     // --- GESTIÓN DE LISTAS ---
     fun getUserLists(): List<UserList> {
+        cachedLists?.let { return it }
         val json = getPrefs().getString(KEY_CUSTOM_LISTS, null) ?: return emptyList()
         val type = object : TypeToken<List<UserList>>() {}.type
-        return try { gson.fromJson(json, type) } catch (e: Exception) { emptyList() }
+        return try { 
+            val result: List<UserList> = gson.fromJson(json, type)
+            cachedLists = result
+            result
+        } catch (e: Exception) { emptyList() }
     }
 
     private fun saveUserLists(lists: List<UserList>) {
+        cachedLists = lists
         getPrefs().edit().putString(KEY_CUSTOM_LISTS, gson.toJson(lists)).apply()
         saveDataCloud(KEY_CUSTOM_LISTS, lists)
     }

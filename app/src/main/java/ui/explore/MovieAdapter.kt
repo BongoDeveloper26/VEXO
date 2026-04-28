@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -66,16 +67,17 @@ class MovieAdapter(private var movies: List<Movie>, private val isGridView: Bool
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val movie = movies[position]
         val context = holder.itemView.context
+        
+        // El repositorio ahora usa caché en memoria, por lo que estas llamadas son instantáneas
         val isWatched = watchlistRepository?.isWatched(movie.id) ?: false
         val isFav = watchlistRepository?.isFavorite(movie.id) ?: false
 
         if (holder is GridViewHolder) {
             holder.textRating.text = "★ ${String.format("%.1f", movie.rating)}"
             
-            // Optimización de Glide: Usamos thumbnail y caché de disco inteligente
             Glide.with(context)
                 .load(movie.posterPath)
-                .thumbnail(0.1f) // Carga una versión muy pequeña primero
+                .thumbnail(0.1f)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
                 .into(holder.imgPoster)
@@ -103,11 +105,10 @@ class MovieAdapter(private var movies: List<Movie>, private val isGridView: Bool
                 }
             }
             
-            // Optimización de Glide para lista
             Glide.with(context)
                 .load(movie.posterPath)
                 .thumbnail(0.2f)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE) // Caché de la imagen ya procesada
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .into(holder.imgPoster)
         }
 
@@ -117,7 +118,20 @@ class MovieAdapter(private var movies: List<Movie>, private val isGridView: Bool
     override fun getItemCount(): Int = movies.size
 
     fun updateMovies(newMovies: List<Movie>) {
+        val diffCallback = object : DiffUtil.Callback() {
+            override fun getOldListSize(): Int = movies.size
+            override fun getNewListSize(): Int = newMovies.size
+
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return movies[oldItemPosition].id == newMovies[newItemPosition].id
+            }
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return movies[oldItemPosition] == newMovies[newItemPosition]
+            }
+        }
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
         movies = newMovies
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
     }
 }

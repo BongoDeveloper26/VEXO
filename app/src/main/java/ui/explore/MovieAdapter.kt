@@ -68,7 +68,6 @@ class MovieAdapter(private var movies: List<Movie>, private val isGridView: Bool
         val movie = movies[position]
         val context = holder.itemView.context
         
-        // El repositorio ahora usa caché en memoria, por lo que estas llamadas son instantáneas
         val isWatched = watchlistRepository?.isWatched(movie.id) ?: false
         val isFav = watchlistRepository?.isFavorite(movie.id) ?: false
 
@@ -96,10 +95,17 @@ class MovieAdapter(private var movies: List<Movie>, private val isGridView: Bool
                 allGenresMap[id]?.let { name ->
                     val chip = Chip(context).apply {
                         text = name
-                        textSize = 9f
+                        textSize = 8f
                         setChipBackgroundColorResource(R.color.background_app)
                         setTextColor(context.getColor(R.color.text_secondary))
                         chipStrokeWidth = 0f
+                        minHeight = 0
+                        minimumHeight = 0
+                        // Ajustamos la altura directamente en pixels para asegurar compacidad
+                        val density = context.resources.displayMetrics.density
+                        chipMinHeight = 18 * density
+                        setPadding((8 * density).toInt(), 0, (8 * density).toInt(), 0)
+                        isEnabled = false
                     }
                     holder.chipGroup.addView(chip)
                 }

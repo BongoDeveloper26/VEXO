@@ -15,7 +15,6 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.FrameLayout
@@ -498,7 +497,7 @@ class DetailActivity : AppCompatActivity() {
             updateMenuStarsUI(currentRating)
             updateMenuHeartUI()
 
-            // Animación de entrada inicial de estrellas
+            // --- LÓGICA DE VALORACIÓN RÁPIDA CON ANIMACIONES ---
             view.postDelayed({ updateMenuStarsUI(currentRating, true) }, 150)
 
             stars.forEachIndexed { index, img ->
@@ -969,10 +968,8 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun setupTrailerUI(youtubeKey: String) {
-        val layoutTrailer = findViewById<View>(R.id.layoutTrailer)
-        val btnWatch = findViewById<MaterialButton>(R.id.btnWatchTrailer)
-        
-        layoutTrailer.visibility = View.VISIBLE
+        val btnWatch = findViewById<View>(R.id.btnWatchTrailer)
+        btnWatch.visibility = View.VISIBLE
         btnWatch.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=$youtubeKey"))
             startActivity(intent)

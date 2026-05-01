@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.vexo.app.R
 import data.repository.CastDTO
 
@@ -35,13 +36,16 @@ class CastAdapter(
         val profileUrl = if (actor.profile_path != null) {
             "https://image.tmdb.org/t/p/w185${actor.profile_path}"
         } else {
-            null // Forzamos que Glide use el error/placeholder
+            null
         }
 
+        // Optimización de Glide para los actores
         Glide.with(holder.itemView.context)
             .load(profileUrl)
+            .thumbnail(0.1f) // Carga una versión ligera primero para evitar huecos blancos
             .placeholder(R.drawable.vexo_logo)
             .error(R.drawable.vexo_logo)
+            .diskCacheStrategy(DiskCacheStrategy.ALL) // Cachear para que al volver atrás no descargue de nuevo
             .centerCrop()
             .into(holder.imgCast)
 

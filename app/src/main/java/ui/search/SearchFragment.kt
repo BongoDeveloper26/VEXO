@@ -39,13 +39,12 @@ class SearchFragment : Fragment() {
 
     private val repository = TMDBRepository.getInstance()
     private val auth = FirebaseAuth.getInstance()
-    private lateinit var movieAdapter: MovieAdapter
-    private lateinit var personAdapter: PersonSearchAdapter
-    private lateinit var trendingAdapter: MovieHorizontalAdapter
+    private var movieAdapter: MovieAdapter? = null
+    private var personAdapter: PersonSearchAdapter? = null
+    private var trendingAdapter: MovieHorizontalAdapter? = null
     
     private var searchJob: Job? = null
     
-    // Función para obtener el nombre de las preferencias específico del usuario
     private fun getPrefsName(): String {
         val userId = auth.currentUser?.uid ?: "default_user"
         return "search_prefs_$userId"
@@ -79,7 +78,7 @@ class SearchFragment : Fragment() {
         btnBack.visibility = View.GONE
 
         movieAdapter = MovieAdapter(emptyList())
-        movieAdapter.onItemClick = { movie ->
+        movieAdapter?.onItemClick = { movie ->
             saveSearchQuery(movie.title)
             val intent = Intent(requireContext(), DetailActivity::class.java)
             intent.putExtra("movie", movie)
@@ -144,41 +143,45 @@ class SearchFragment : Fragment() {
     private fun performSearch(query: String, view: View) {
         searchJob?.cancel()
         searchJob = lifecycleScope.launch {
-            delay(300)
+            delay(500)
             showLoading(view, true)
             
-            val queryLower = query.lowercase().trim()
-            
-            // CORREGIDO: Ahora usamos searchAll para traer pelis y series
-            val results = repository.searchAll(query).filter { 
-                it.posterPath != null && (it.rating >= 4.0 || it.title.lowercase().trim() == queryLower)
-            }
-            movieAdapter.updateMovies(results)
-            
-            val smartPeopleMap = mutableMapOf<Int, PersonDTO>()
-            repository.searchPeople(query).forEach { p ->
-                smartPeopleMap[p.id] = p
-            }
-            
-            if (results.isNotEmpty()) {
-                results.take(4).forEach { movie ->
-                    // CORREGIDO: Buscamos créditos según si es serie o peli
-                    val credits = if (movie.isTvShow) repository.getTVCredits(movie.id) else repository.getMovieCredits(movie.id)
-                    credits?.cast?.forEach { cast ->
-                        if (cast.character.contains(query, ignoreCase = true) || 
-                            cast.name.contains(query, ignoreCase = true)) {
-                            smartPeopleMap[cast.id] = PersonDTO(cast.id, cast.name, cast.profile_path, cast.character)
+            try {
+                // 1. Buscamos películas y series
+                val results = repository.searchAll(query).filter { it.posterPath != null }
+                movieAdapter?.updateMovies(results)
+                
+                // 2. Restauramos la búsqueda inteligente de personas
+                val smartPeopleMap = mutableMapOf<Int, PersonDTO>()
+                
+                // A) Personas que coinciden directamente con el nombre (Ej: "Bale")
+                repository.searchPeople(query).forEach { p ->
+                    smartPeopleMap[p.id] = p
+                }
+                
+                // B) Personas que interpretaron al personaje buscado (Ej: "Batman")
+                // Limitamos a los primeros 3 resultados para no saturar la red
+                if (results.isNotEmpty()) {
+                    results.take(3).forEach { movie ->
+                        val credits = if (movie.isTvShow) repository.getTVCredits(movie.id) else repository.getMovieCredits(movie.id)
+                        credits?.cast?.forEach { cast ->
+                            if (cast.character.contains(query, ignoreCase = true) || 
+                                cast.name.contains(query, ignoreCase = true)) {
+                                smartPeopleMap[cast.id] = PersonDTO(cast.id, cast.name, cast.profile_path, cast.character)
+                            }
                         }
                     }
                 }
+                
+                val finalPeople = smartPeopleMap.values.toList().sortedByDescending { it.profile_path != null }
+                personAdapter?.updatePeople(finalPeople)
+                
+                showLoading(view, false)
+                view.findViewById<View>(R.id.recyclerSearchResults).visibility = View.VISIBLE
+                view.findViewById<View>(R.id.layoutNoResults).visibility = if (results.isEmpty() && finalPeople.isEmpty()) View.VISIBLE else View.GONE
+            } catch (e: Exception) {
+                showLoading(view, false)
             }
-            
-            val finalPeople = smartPeopleMap.values.toList().sortedByDescending { it.profile_path != null }
-            personAdapter.updatePeople(finalPeople)
-            
-            showLoading(view, false)
-            view.findViewById<View>(R.id.recyclerSearchResults).visibility = View.VISIBLE
-            view.findViewById<View>(R.id.layoutNoResults).visibility = if (results.isEmpty() && finalPeople.isEmpty()) View.VISIBLE else View.GONE
         }
     }
 
@@ -244,6 +247,7 @@ class SearchFragment : Fragment() {
                 this.text = query
                 setTextColor(requireContext().getColor(R.color.text_primary))
                 textSize = 15f
+                maxLines = 1
             }
 
             val deleteBtn = ImageButton(requireContext()).apply {
@@ -266,16 +270,18 @@ class SearchFragment : Fragment() {
     private fun loadTrendingInitial(view: View) {
         val recycler: RecyclerView = view.findViewById(R.id.recyclerInitial)
         lifecycleScope.launch {
-            val trending = repository.getTrendingMovies()
-            trendingAdapter = MovieHorizontalAdapter(trending.filter { it.posterPath != null })
-            trendingAdapter.onItemClick = { movie ->
-                saveSearchQuery(movie.title)
-                val intent = Intent(requireContext(), DetailActivity::class.java)
-                intent.putExtra("movie", movie)
-                startActivity(intent)
-            }
-            recycler.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            recycler.adapter = trendingAdapter
+            try {
+                val trending = repository.getTrendingMovies()
+                trendingAdapter = MovieHorizontalAdapter(trending.filter { it.posterPath != null })
+                trendingAdapter?.onItemClick = { movie ->
+                    saveSearchQuery(movie.title)
+                    val intent = Intent(requireContext(), DetailActivity::class.java)
+                    intent.putExtra("movie", movie)
+                    startActivity(intent)
+                }
+                recycler.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                recycler.adapter = trendingAdapter
+            } catch (e: Exception) { }
         }
     }
 
@@ -289,5 +295,13 @@ class SearchFragment : Fragment() {
         view.findViewById<View>(R.id.layoutInitialState).visibility = View.VISIBLE
         updateHistoryList(view)
         showLoading(view, false)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        searchJob?.cancel()
+        movieAdapter = null
+        personAdapter = null
+        trendingAdapter = null
     }
 }

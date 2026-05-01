@@ -15,6 +15,7 @@ data class VexoList(
     val description: String,
     val imageRes: Int,
     val countText: String, 
+    val totalItems: Int,
     val previewPosters: List<String> = emptyList()
 )
 
@@ -69,15 +70,11 @@ class VexoListAdapter(
                 }
             }
             
-            // Ajustamos el "+" según el tipo de lista para que no mienta con el número de elementos
-            if (list.previewPosters.size >= 4) {
+            // Ajustamos el "+" con la cantidad real de elementos restantes
+            if (list.totalItems > 4) {
                 holder.textMore.visibility = View.VISIBLE
-                val extra = when (list.id) {
-                    "marvel_universe" -> "40+"
-                    "star_wars_universe" -> "25+"
-                    else -> "240+"
-                }
-                holder.textMore.text = "+$extra"
+                val remaining = list.totalItems - 4
+                holder.textMore.text = "+$remaining"
             }
         }
 

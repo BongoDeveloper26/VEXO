@@ -97,20 +97,15 @@ class UserListDetailActivity : AppCompatActivity() {
         val lists = watchlistRepository.getUserLists()
         val currentList = lists.find { it.id == userListId } ?: return
         
-        // Cambiamos el estado
         isLiked = !isLiked
         
-        // Actualizamos el contador acumulable
         if (isLiked) {
             currentList.likes += 1
         } else {
             if (currentList.likes > 0) currentList.likes -= 1
         }
         
-        // Guardamos de forma persistente:
-        // 1. El nuevo total de likes de la lista
         watchlistRepository.updateUserListLikes(currentList.id, currentList.likes)
-        // 2. Que ESTE usuario ya ha dado like a ESTA lista (para que no pueda repetir)
         watchlistRepository.setListLiked(currentList.id, isLiked)
         
         updateLikeUI(currentList.likes)
@@ -162,17 +157,38 @@ class UserListDetailActivity : AppCompatActivity() {
         
         if (currentList != null) {
             findViewById<TextView>(R.id.textUserListNameHeader).text = currentList.name.uppercase()
-            findViewById<TextView>(R.id.textUserListDescription).apply {
-                text = currentList.description ?: ""
-                visibility = if (currentList.description.isNullOrEmpty()) View.GONE else View.VISIBLE
+            
+            val descView = findViewById<TextView>(R.id.textUserListDescription)
+            val btnReadMore = findViewById<TextView>(R.id.btnReadMore)
+            
+            val description = currentList.description ?: ""
+            descView.text = description
+            descView.visibility = if (description.isEmpty()) View.GONE else View.VISIBLE
+
+            // Lógica de "Leer más" con 3 puntitos
+            descView.post {
+                if (descView.lineCount > 3) {
+                    btnReadMore.visibility = View.VISIBLE
+                    descView.maxLines = 3
+                } else {
+                    btnReadMore.visibility = View.GONE
+                }
+            }
+
+            btnReadMore.setOnClickListener {
+                if (descView.maxLines == 3) {
+                    descView.maxLines = Integer.MAX_VALUE
+                    btnReadMore.text = "Leer menos"
+                } else {
+                    descView.maxLines = 3
+                    btnReadMore.text = "..."
+                }
             }
             
-            // Mostrar si es pública o privada
             val infoText = if (currentList.isPublic) "Lista Pública • ${currentList.movies.size} películas" 
                            else "Lista Privada • ${currentList.movies.size} películas"
             findViewById<TextView>(R.id.textListInfo).text = infoText
             
-            // IMPORTANTE: Cargar si el usuario ya le dio like anteriormente
             isLiked = watchlistRepository.isListLiked(currentList.id)
             updateLikeUI(currentList.likes)
             

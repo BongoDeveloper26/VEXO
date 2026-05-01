@@ -19,12 +19,6 @@ class WatchlistRepository(private val context: Context) {
     private val firestore = FirebaseFirestore.getInstance()
     private val gson = Gson()
     
-    // Caché en memoria para evitar lecturas constantes de SharedPreferences y procesado de JSON
-    private var cachedLists: List<UserList>? = null
-    private var cachedRatings: Map<String, Float>? = null
-    private var cachedDiary: List<DiaryEntry>? = null
-    private var cachedRatedMovies: List<Movie>? = null
-
     val userId: String? get() = auth.currentUser?.uid
 
     private fun getUserDoc() = userId?.let { firestore.collection("users").document(it) }
@@ -47,6 +41,19 @@ class WatchlistRepository(private val context: Context) {
         private const val KEY_SEEN_ACHIEVEMENTS = "seen_achievements_count"
         private const val KEY_LIKED_LISTS = "user_liked_lists_ids"
         private const val TAG = "WatchlistRepository"
+
+        // Caché estática compartida entre todas las instancias del repositorio
+        private var cachedLists: List<UserList>? = null
+        private var cachedRatings: Map<String, Float>? = null
+        private var cachedDiary: List<DiaryEntry>? = null
+        private var cachedRatedMovies: List<Movie>? = null
+        
+        fun clearMemoryCache() {
+            cachedLists = null
+            cachedRatings = null
+            cachedDiary = null
+            cachedRatedMovies = null
+        }
     }
 
     // --- SINCRONIZACIÓN CON FIRESTORE ---
@@ -61,7 +68,6 @@ class WatchlistRepository(private val context: Context) {
                     editor.putString(key, jsonValue)
                 }
                 editor.apply()
-                // Limpiar caché al descargar nuevos datos
                 clearMemoryCache()
                 onComplete(true)
             } else {
@@ -70,13 +76,6 @@ class WatchlistRepository(private val context: Context) {
         }.addOnFailureListener {
             onComplete(false)
         }
-    }
-
-    private fun clearMemoryCache() {
-        cachedLists = null
-        cachedRatings = null
-        cachedDiary = null
-        cachedRatedMovies = null
     }
 
     private fun saveDataCloud(key: String, value: Any) {
@@ -173,7 +172,6 @@ class WatchlistRepository(private val context: Context) {
             ))
         }
 
-        // Actualizar caché
         cachedRatings = ratings
         cachedRatedMovies = ratedMovies
         cachedDiary = diary
@@ -354,8 +352,14 @@ class WatchlistRepository(private val context: Context) {
 
     private fun toggleInternalList(movie: Movie, listName: String): Boolean {
         val lists = getUserLists().toMutableList()
-        var targetList = lists.find { it.name == listName } ?: UserList(id = UUID.randomUUID().toString(), name = listName).also { lists.add(it) }
+        var targetIndex = lists.indexOfFirst { it.name == listName }
         
+        if (targetIndex == -1) {
+            lists.add(UserList(id = UUID.randomUUID().toString(), name = listName))
+            targetIndex = lists.size - 1
+        }
+        
+        val targetList = lists[targetIndex]
         val isAdded: Boolean
         if (targetList.movies.any { it.id == movie.id }) {
             targetList.movies.removeAll { it.id == movie.id }

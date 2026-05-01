@@ -107,7 +107,13 @@ interface TMDBApi {
     suspend fun getTVImages(@Path("tv_id") tvId: Int, @Query("api_key") apiKey: String, @Query("include_image_language") languages: String = "en,es,null,fr,de,it,pt"): MovieImagesDTO
 
     @GET("search/multi")
-    suspend fun searchMulti(@Query("api_key") apiKey: String, @Query("query") query: String, @Query("language") language: String): TMDBResponse
+    suspend fun searchMulti(@Query("api_key") apiKey: String, @Query("query") query: String, @Query("language") language: String, @Query("page") page: Int = 1): TMDBResponse
+
+    @GET("search/movie")
+    suspend fun searchMovies(@Query("api_key") apiKey: String, @Query("query") query: String, @Query("language") language: String, @Query("page") page: Int = 1): TMDBResponse
+
+    @GET("search/tv")
+    suspend fun searchTV(@Query("api_key") apiKey: String, @Query("query") query: String, @Query("language") language: String, @Query("page") page: Int = 1): TMDBResponse
 
     @GET("search/person")
     suspend fun searchPeople(@Query("api_key") apiKey: String, @Query("query") query: String, @Query("language") language: String): PersonSearchResponse
@@ -276,8 +282,12 @@ class TMDBRepository {
         try { api.getTopRatedTV(apiKey, getLanguage(), page).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
     }
 
-    suspend fun searchAll(query: String): List<Movie> = try { api.searchMulti(apiKey, query, getLanguage()).results.filter { it.media_type == "movie" || it.media_type == "tv" }.map { it.toMovie() } } catch (e: Exception) { emptyList() }
+    suspend fun searchAll(query: String, page: Int = 1): List<Movie> = try { api.searchMulti(apiKey, query, getLanguage(), page).results.filter { it.media_type == "movie" || it.media_type == "tv" }.map { it.toMovie() } } catch (e: Exception) { emptyList() }
     
+    suspend fun searchMovies(query: String, page: Int = 1): List<Movie> = try { api.searchMovies(apiKey, query, getLanguage(), page).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
+
+    suspend fun searchTV(query: String, page: Int = 1): List<Movie> = try { api.searchTV(apiKey, query, getLanguage(), page).results.map { it.toMovie() } } catch (e: Exception) { emptyList() }
+
     suspend fun searchPeople(query: String): List<PersonDTO> = try { api.searchPeople(apiKey, query, getLanguage()).results } catch (e: Exception) { emptyList() }
     
     suspend fun getMoviesByGenre(genreIds: List<Int>, page: Int = 1, sortBy: String = "vote_average.desc", voteCountGte: Int = 500): List<Movie> = withCache("movies_genre_${genreIds.joinToString(",")}_$page") {

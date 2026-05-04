@@ -126,11 +126,14 @@ class PersonMoviesActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val movies = repository.getMoviesByPerson(personId)
             if (movies.isNotEmpty()) {
-                val filteredMovies = movies.filter { movie ->
-                    movie.posterPath != null && movie.rating >= 6.0
-                }
+                // Filtramos las que no tienen poster y las ordenamos por puntuación (Rating) de mayor a menor
+                val sortedMovies = movies
+                    .filter { it.posterPath != null }
+                    .sortedByDescending { it.rating }
                 
-                val relevantMovies = if (filteredMovies.size > 30) filteredMovies.take(30) else filteredMovies
+                // Mostramos un máximo de 50 elementos para que cargue rápido pero sea representativo
+                val relevantMovies = if (sortedMovies.size > 50) sortedMovies.take(50) else sortedMovies
+                
                 val adapter = MovieAdapter(relevantMovies)
                 adapter.onItemClick = { movie ->
                     val intent = Intent(this@PersonMoviesActivity, DetailActivity::class.java)

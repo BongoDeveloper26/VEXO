@@ -15,7 +15,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- POSTER: Ahora más grande y con mejores bordes -->
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imgPoster"
             android:layout_width="match_parent"
@@ -33,19 +32,25 @@
             android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/imgWatchedBadge"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
-            android:src="@android:drawable/ic_menu_view"
+        <!-- ETIQUETA TIPO: Ahora flota sobre el póster pero abajo, para no añadir altura a la ficha -->
+        <TextView
+            android:id="@+id/textMediaTypeHorizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="6dp"
+            android:background="@drawable/rounded_corners"
+            android:backgroundTint="#CC7C3AED"
+            android:paddingHorizontal="5dp"
+            android:paddingVertical="1dp"
+            android:textColor="@color/white"
+            android:textSize="7sp"
+            android:textStyle="bold"
             android:visibility="gone"
-            app:tint="@color/accent"
             app:layout_constraintBottom_toBottomOf="@id/imgPoster"
-            app:layout_constraintEnd_toEndOf="@id/imgPoster"
-            app:layout_constraintStart_toStartOf="@id/imgPoster"
-            app:layout_constraintTop_toTopOf="@id/imgPoster" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="visible"
+            tools:text="SERIE" />
 
-        <!-- AREA DE TEXTO: Ajustada para el nuevo tamaño -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"

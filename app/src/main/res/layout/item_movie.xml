@@ -80,6 +80,23 @@
                 tools:text="★ 8.5" />
         </LinearLayout>
 
+        <!-- ETIQUETA TIPO (PELÍCULA/SERIE) - AHORA DEBAJO DE LA NOTA -->
+        <TextView
+            android:id="@+id/textMediaType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/rounded_corners"
+            android:backgroundTint="#CC7C3AED"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp"
+            android:textColor="@color/white"
+            android:textSize="9sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@id/layoutRating"
+            app:layout_constraintTop_toBottomOf="@id/layoutRating"
+            tools:text="SERIE" />
+
         <ImageView
             android:id="@+id/imgFavoriteBadge"
             android:layout_width="14dp"
@@ -110,7 +127,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Dune: Part Two" />
 
-        <!-- GÉNEROS: Sin margen superior y espacio vertical cero -->
+        <!-- GÉNEROS -->
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chipGroupItemGenres"
             android:layout_width="0dp"
@@ -122,7 +139,7 @@
             app:layout_constraintStart_toStartOf="@id/textTitle"
             app:layout_constraintTop_toBottomOf="@id/textTitle" />
 
-        <!-- DESCRIPCIÓN: Sin margen superior para pegarse a los géneros -->
+        <!-- DESCRIPCIÓN -->
         <TextView
             android:id="@+id/textDescription"
             android:layout_width="0dp"

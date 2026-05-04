@@ -77,7 +77,8 @@ class SearchFragment : Fragment() {
 
         btnBack.visibility = View.GONE
 
-        movieAdapter = MovieAdapter(emptyList())
+        // Pasamos true para mostrar la etiqueta de tipo solo en el buscador
+        movieAdapter = MovieAdapter(emptyList(), isGridView = false, showMediaType = true)
         movieAdapter?.onItemClick = { movie ->
             saveSearchQuery(movie.title)
             val intent = Intent(requireContext(), DetailActivity::class.java)
@@ -272,7 +273,8 @@ class SearchFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 val trending = repository.getTrendingMovies()
-                trendingAdapter = MovieHorizontalAdapter(trending.filter { it.posterPath != null })
+                // Pasamos true también para las tendencias en el buscador
+                trendingAdapter = MovieHorizontalAdapter(trending.filter { it.posterPath != null }, showMediaType = true)
                 trendingAdapter?.onItemClick = { movie ->
                     saveSearchQuery(movie.title)
                     val intent = Intent(requireContext(), DetailActivity::class.java)

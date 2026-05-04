@@ -13,8 +13,10 @@ import com.vexo.app.R
 import data.model.Movie
 import java.util.Locale
 
-class MovieHorizontalAdapter(private val movies: List<Movie>) :
-    RecyclerView.Adapter<MovieHorizontalAdapter.MovieViewHolder>() {
+class MovieHorizontalAdapter(
+    private val movies: List<Movie>,
+    private val showMediaType: Boolean = false // Flag para controlar visibilidad
+) : RecyclerView.Adapter<MovieHorizontalAdapter.MovieViewHolder>() {
 
     var onItemClick: ((Movie) -> Unit)? = null
 
@@ -22,6 +24,7 @@ class MovieHorizontalAdapter(private val movies: List<Movie>) :
         val imgPoster: ImageView = itemView.findViewById(R.id.imgPoster)
         val textTitle: TextView = itemView.findViewById(R.id.textTitle)
         val textRating: TextView = itemView.findViewById(R.id.textRating)
+        val textMediaType: TextView? = itemView.findViewById(R.id.textMediaTypeHorizontal)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
@@ -37,6 +40,10 @@ class MovieHorizontalAdapter(private val movies: List<Movie>) :
         // Formatear el rating con un decimal
         val formattedRating = String.format(Locale.US, "%.1f", movie.rating)
         holder.textRating.text = "★ $formattedRating"
+
+        // Etiqueta de tipo (Pelicula/Serie) - Solo si el flag está activo
+        holder.textMediaType?.visibility = if (showMediaType) View.VISIBLE else View.GONE
+        holder.textMediaType?.text = if (movie.isTvShow) "SERIE" else "PELÍCULA"
 
         // Optimización de Glide para carga rápida en horizontal
         Glide.with(holder.itemView.context)

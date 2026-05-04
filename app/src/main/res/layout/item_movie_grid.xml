@@ -61,7 +61,7 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="45dp"
             android:background="@drawable/gradient_overlay"
             app:layout_constraintBottom_toBottomOf="@id/imgPosterGrid" />
 
@@ -69,13 +69,31 @@
             android:id="@+id/textRatingGrid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="6dp"
+            android:layout_marginStart="6dp"
             android:textColor="@color/accent"
             android:textSize="10sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/imgPosterGrid"
+            app:layout_constraintBottom_toTopOf="@id/textMediaTypeGrid"
             app:layout_constraintStart_toStartOf="parent"
             tools:text="★ 8.5" />
+
+        <!-- ETIQUETA TIPO - DEBAJO DE LA VALORACIÓN -->
+        <TextView
+            android:id="@+id/textMediaTypeGrid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginBottom="6dp"
+            android:background="@drawable/rounded_corners"
+            android:backgroundTint="#CC7C3AED"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp"
+            android:textColor="@color/white"
+            android:textSize="8sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/imgPosterGrid"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="SERIE" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

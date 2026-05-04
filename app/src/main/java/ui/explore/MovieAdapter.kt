@@ -15,8 +15,11 @@ import com.vexo.app.R
 import data.model.Movie
 import data.repository.WatchlistRepository
 
-class MovieAdapter(private var movies: List<Movie>, private val isGridView: Boolean = false) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MovieAdapter(
+    private var movies: List<Movie>, 
+    private val isGridView: Boolean = false,
+    private val showMediaType: Boolean = false // Nuevo flag para controlar la visibilidad
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var onItemClick: ((Movie) -> Unit)? = null
     private var watchlistRepository: WatchlistRepository? = null
@@ -39,11 +42,13 @@ class MovieAdapter(private var movies: List<Movie>, private val isGridView: Bool
         val watchedOverlay: View? = itemView.findViewById(R.id.viewWatchedOverlay)
         val watchedBadge: ImageView? = itemView.findViewById(R.id.imgWatchedBadge)
         val favBadge: ImageView? = itemView.findViewById(R.id.imgFavoriteBadge)
+        val textMediaType: TextView? = itemView.findViewById(R.id.textMediaType)
     }
 
     class GridViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imgPoster: ImageView = itemView.findViewById(R.id.imgPosterGrid)
         val textRating: TextView = itemView.findViewById(R.id.textRatingGrid)
+        val textMediaType: TextView? = itemView.findViewById(R.id.textMediaTypeGrid)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -74,6 +79,10 @@ class MovieAdapter(private var movies: List<Movie>, private val isGridView: Bool
         if (holder is GridViewHolder) {
             holder.textRating.text = "★ ${String.format("%.1f", movie.rating)}"
             
+            // Solo mostrar si el flag está activo
+            holder.textMediaType?.visibility = if (showMediaType) View.VISIBLE else View.GONE
+            holder.textMediaType?.text = if (movie.isTvShow) "SERIE" else "PELÍCULA"
+            
             Glide.with(context)
                 .load(movie.posterPath)
                 .thumbnail(0.1f)
@@ -90,6 +99,10 @@ class MovieAdapter(private var movies: List<Movie>, private val isGridView: Bool
             holder.watchedBadge?.visibility = if (isWatched) View.VISIBLE else View.GONE
             holder.favBadge?.visibility = if (isFav) View.VISIBLE else View.GONE
 
+            // Solo mostrar si el flag está activo
+            holder.textMediaType?.visibility = if (showMediaType) View.VISIBLE else View.GONE
+            holder.textMediaType?.text = if (movie.isTvShow) "SERIE" else "PELÍCULA"
+
             holder.chipGroup.removeAllViews()
             movie.genreIds.take(2).forEach { id ->
                 allGenresMap[id]?.let { name ->
@@ -101,7 +114,6 @@ class MovieAdapter(private var movies: List<Movie>, private val isGridView: Bool
                         chipStrokeWidth = 0f
                         minHeight = 0
                         minimumHeight = 0
-                        // Ajustamos la altura directamente en pixels para asegurar compacidad
                         val density = context.resources.displayMetrics.density
                         chipMinHeight = 18 * density
                         setPadding((8 * density).toInt(), 0, (8 * density).toInt(), 0)

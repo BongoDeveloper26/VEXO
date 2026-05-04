@@ -6,15 +6,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.chip.ChipGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.chip.ChipGroup
 import com.vexo.app.R
 import data.api.NewsService
+import data.model.NewsArticle
+import data.repository.WatchlistRepository
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -24,10 +29,15 @@ class NewsFragment : Fragment() {
     private lateinit var recyclerNews: RecyclerView
     private lateinit var progressNews: ProgressBar
     private lateinit var chipGroupFilters: ChipGroup
+    private lateinit var swipeRefreshNews: SwipeRefreshLayout
+    private lateinit var searchNews: SearchView
+    private lateinit var layoutEmptyNews: LinearLayout
     private lateinit var newsAdapter: NewsAdapter
+    private lateinit var watchlistRepository: WatchlistRepository
 
-    // Lista de dominios especializados en cine para garantizar calidad
     private val movieDomains = "espinof.com,fotogramas.es,sensacine.com,ecartelera.com,elseptimoarte.net,cinematomania.es,decine21.com,accioncine.es,objetivocine.es"
+    private var currentQuery: String = ""
+    private var isSearching: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_news, container, false)
@@ -36,21 +46,44 @@ class NewsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
+        watchlistRepository = WatchlistRepository(requireContext())
+        
         recyclerNews = view.findViewById(R.id.recyclerNews)
         progressNews = view.findViewById(R.id.progressNews)
         chipGroupFilters = view.findViewById(R.id.chipGroupFilters)
+        swipeRefreshNews = view.findViewById(R.id.swipeRefreshNews)
+        searchNews = view.findViewById(R.id.searchNews)
+        layoutEmptyNews = view.findViewById(R.id.layoutEmptyNews)
         
         setupRecyclerView()
         setupFilters()
+        setupSwipeRefresh()
+        setupSearchView()
         
-        loadNews(getFilterQuery(R.id.chipLatest), isGeneral = true)
+        // Carga inicial
+        currentQuery = getFilterQuery(R.id.chipLatest)
+        loadNews(currentQuery, isGeneral = true)
     }
 
     private fun setupRecyclerView() {
-        newsAdapter = NewsAdapter { article ->
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
-            startActivity(intent)
-        }
+        newsAdapter = NewsAdapter(
+            onItemClick = { article ->
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
+                startActivity(intent)
+            },
+            onShareClick = { article ->
+                shareArticle(article)
+            },
+            onBookmarkClick = { article, save ->
+                watchlistRepository.toggleSaveNews(article)
+                if (chipGroupFilters.checkedChipId == R.id.chipSaved) {
+                    showSavedNews()
+                }
+            },
+            isBookmarked = { article ->
+                watchlistRepository.isNewsSaved(article.url)
+            }
+        )
         recyclerNews.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = newsAdapter
@@ -58,17 +91,78 @@ class NewsFragment : Fragment() {
     }
 
     private fun setupFilters() {
-        chipGroupFilters.setOnCheckedStateChangeListener { group, checkedIds ->
+        chipGroupFilters.setOnCheckedStateChangeListener { _, checkedIds ->
             if (checkedIds.isNotEmpty()) {
                 val chipId = checkedIds.first()
-                val query = getFilterQuery(chipId)
-                loadNews(query, isGeneral = (chipId == R.id.chipLatest))
+                layoutEmptyNews.visibility = View.GONE
+                
+                if (chipId == R.id.chipSaved) {
+                    isSearching = false
+                    searchNews.setQuery("", false)
+                    showSavedNews()
+                } else {
+                    isSearching = false
+                    searchNews.setQuery("", false)
+                    searchNews.clearFocus()
+                    currentQuery = getFilterQuery(chipId)
+                    loadNews(currentQuery, isGeneral = (chipId == R.id.chipLatest))
+                }
             }
         }
     }
 
+    private fun showSavedNews() {
+        val saved = watchlistRepository.getSavedNews()
+        newsAdapter.submitList(saved)
+        if (saved.isEmpty()) {
+            layoutEmptyNews.visibility = View.VISIBLE
+        } else {
+            layoutEmptyNews.visibility = View.GONE
+        }
+        swipeRefreshNews.isRefreshing = false
+        progressNews.visibility = View.GONE
+    }
+
+    private fun setupSwipeRefresh() {
+        swipeRefreshNews.setColorSchemeResources(R.color.primary)
+        swipeRefreshNews.setOnRefreshListener {
+            if (chipGroupFilters.checkedChipId == R.id.chipSaved) {
+                showSavedNews()
+            } else {
+                loadNews(currentQuery, isGeneral = !isSearching && chipGroupFilters.checkedChipId == R.id.chipLatest)
+            }
+        }
+    }
+
+    private fun setupSearchView() {
+        searchNews.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (!query.isNullOrBlank()) {
+                    isSearching = true
+                    currentQuery = query
+                    loadNews(query, isGeneral = false)
+                    searchNews.clearFocus()
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText.isNullOrBlank() && isSearching) {
+                    isSearching = false
+                    val checkedId = chipGroupFilters.checkedChipId
+                    if (checkedId == R.id.chipSaved) {
+                        showSavedNews()
+                    } else {
+                        currentQuery = getFilterQuery(checkedId)
+                        loadNews(currentQuery, isGeneral = (checkedId == R.id.chipLatest))
+                    }
+                }
+                return true
+            }
+        })
+    }
+
     private fun getFilterQuery(chipId: Int): String {
-        // Exclusiones agresivas para eliminar ruido tecnológico y de ofertas
         val noiseExclusion = " -bolsa -acciones -política -economía -sucesos -videojuegos -gaming -smartphone -móvil -tecnología -fútbol -deporte -oferta -barato -amazon -unboxing -gadget -pc -laptop -iphone -samsung -android"
         
         return when (chipId) {
@@ -81,7 +175,8 @@ class NewsFragment : Fragment() {
     }
 
     private fun loadNews(query: String, isGeneral: Boolean) {
-        progressNews.visibility = View.VISIBLE
+        if (!swipeRefreshNews.isRefreshing) progressNews.visibility = View.VISIBLE
+        layoutEmptyNews.visibility = View.GONE
         
         val retrofit = Retrofit.Builder()
             .baseUrl("https://newsapi.org/v2/")
@@ -92,7 +187,6 @@ class NewsFragment : Fragment() {
         
         lifecycleScope.launch {
             try {
-                // Si no es general, restringimos a dominios de cine y buscamos solo en el título
                 val searchScope = if (isGeneral) null else "title"
                 val domains = if (isGeneral) null else movieDomains
                 val sortBy = if (isGeneral) "publishedAt" else "relevancy"
@@ -106,25 +200,27 @@ class NewsFragment : Fragment() {
                 
                 if (response.isSuccessful) {
                     val articles = response.body()?.articles?.filter { 
-                        it.urlToImage != null && 
-                        !it.title.contains("[Removed]") &&
-                        // Filtro de seguridad adicional para asegurar relevancia temática
+                        it.urlToImage != null && !it.title.contains("[Removed]") &&
                         isValidMovieContent(it.title, it.description ?: "")
                     } ?: emptyList()
                     
                     newsAdapter.submitList(articles)
                     
-                    if (articles.isEmpty() && !isGeneral) {
-                        // Si no hay resultados con dominios específicos, intentamos búsqueda amplia pero en título
-                        loadNews(query, isGeneral = true) 
+                    if (articles.isEmpty()) {
+                        if (!isGeneral && !isSearching) {
+                            loadNews(query, isGeneral = true)
+                        } else {
+                            layoutEmptyNews.visibility = View.VISIBLE
+                        }
                     }
                 } else {
-                    Toast.makeText(requireContext(), "Error al conectar con el servidor", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Error al cargar noticias", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Error de red", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Sin conexión", Toast.LENGTH_SHORT).show()
             } finally {
                 progressNews.visibility = View.GONE
+                swipeRefreshNews.isRefreshing = false
             }
         }
     }
@@ -132,11 +228,18 @@ class NewsFragment : Fragment() {
     private fun isValidMovieContent(title: String, description: String): Boolean {
         val keywords = listOf("cine", "película", "estreno", "actor", "actriz", "director", "serie", "tráiler", "hollywood", "filme", "reparto", "taquilla", "oscar", "goya")
         val content = (title + description).lowercase()
-        
-        // Evitar explícitamente contenido que hable de móviles u ofertas comerciales
-        val blacklisted = listOf("smartphone", "oferta", "descuento", "chollos", "móvil", "móviles", "fútbol", "fichajes")
+        val blacklisted = listOf("smartphone", "oferta", "descuento", "chollos", "móvil", "fútbol", "fichajes")
         if (blacklisted.any { content.contains(it) }) return false
-
         return keywords.any { content.contains(it) }
+    }
+
+    private fun shareArticle(article: NewsArticle) {
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, article.title)
+            putExtra(Intent.EXTRA_TEXT, "${article.title}\n\nLéelo en Vexo: ${article.url}")
+        }
+        startActivity(Intent.createChooser(shareIntent, "Compartir noticia"))
     }
 }

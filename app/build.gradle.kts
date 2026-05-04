@@ -77,6 +77,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation("androidx.fragment:fragment-ktx:1.8.5")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")

@@ -10,6 +10,7 @@ import com.google.gson.reflect.TypeToken
 import data.model.Movie
 import data.model.UserList
 import data.model.DiaryEntry
+import data.model.NewsArticle
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,6 +34,7 @@ class WatchlistRepository(private val context: Context) {
         private const val KEY_RATED_MOVIES_DATA = "user_rated_movies_data"
         private const val KEY_CUSTOM_LISTS = "user_custom_lists"
         private const val KEY_DIARY = "user_diary"
+        private const val KEY_SAVED_NEWS = "user_saved_news"
         private const val KEY_PROFILE_IMAGE = "user_profile_image"
         private const val KEY_HEADER_BACKGROUND = "user_header_background"
         private const val KEY_HEADER_TRANSPARENT = "user_header_transparent"
@@ -42,22 +44,22 @@ class WatchlistRepository(private val context: Context) {
         private const val KEY_LIKED_LISTS = "user_liked_lists_ids"
         private const val TAG = "WatchlistRepository"
 
-        // Caché estática compartida entre todas las instancias del repositorio
         private var cachedLists: List<UserList>? = null
         private var cachedRatings: Map<String, Float>? = null
         private var cachedDiary: List<DiaryEntry>? = null
         private var cachedRatedMovies: List<Movie>? = null
+        private var cachedSavedNews: List<NewsArticle>? = null
         
         fun clearMemoryCache() {
             cachedLists = null
             cachedRatings = null
             cachedDiary = null
             cachedRatedMovies = null
+            cachedSavedNews = null
         }
     }
 
-    // --- SINCRONIZACIÓN CON FIRESTORE ---
-
+    // --- SINCRONIZACIÓN ---
     fun downloadCloudData(onComplete: (Boolean) -> Unit = {}) {
         val userDoc = getUserDoc() ?: return
         userDoc.get().addOnSuccessListener { document ->
@@ -82,6 +84,41 @@ class WatchlistRepository(private val context: Context) {
         val userDoc = getUserDoc() ?: return
         userDoc.set(mapOf(key to value), SetOptions.merge())
             .addOnFailureListener { e -> Log.e(TAG, "Error guardando $key en nube", e) }
+    }
+
+    // --- NOTICIAS GUARDADAS ---
+    fun getSavedNews(): List<NewsArticle> {
+        cachedSavedNews?.let { return it }
+        val json = getPrefs().getString(KEY_SAVED_NEWS, null) ?: return emptyList()
+        return try {
+            val type = object : TypeToken<List<NewsArticle>>() {}.type
+            val result: List<NewsArticle> = gson.fromJson(json, type)
+            cachedSavedNews = result
+            result
+        } catch (e: Exception) { emptyList() }
+    }
+
+    fun toggleSaveNews(article: NewsArticle): Boolean {
+        val saved = getSavedNews().toMutableList()
+        val index = saved.indexOfFirst { it.url == article.url }
+        val isNowSaved: Boolean
+        
+        if (index != -1) {
+            saved.removeAt(index)
+            isNowSaved = false
+        } else {
+            saved.add(0, article)
+            isNowSaved = true
+        }
+        
+        cachedSavedNews = saved
+        getPrefs().edit().putString(KEY_SAVED_NEWS, gson.toJson(saved)).apply()
+        saveDataCloud(KEY_SAVED_NEWS, saved)
+        return isNowSaved
+    }
+
+    fun isNewsSaved(url: String): Boolean {
+        return getSavedNews().any { it.url == url }
     }
 
     // --- LIKES DE LISTAS ---

@@ -154,6 +154,36 @@
                         android:paddingBottom="20dp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layoutConfirmPassword"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="Repetir Contraseña"
+                    app:boxBackgroundColor="@color/login_input_bg"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="1dp"
+                    app:hintTextColor="@color/login_primary"
+                    app:passwordToggleEnabled="true"
+                    app:passwordToggleTint="@color/login_text_secondary"
+                    app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
+                    app:startIconTint="@color/login_text_secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etConfirmPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:textColor="@color/login_text_primary"
+                        android:paddingTop="20dp"
+                        android:paddingBottom="20dp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton

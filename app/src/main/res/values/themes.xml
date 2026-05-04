@@ -59,7 +59,15 @@
         <item name="bottomSheetStyle">@style/BottomSheetStyleWrapper</item>
     </style>
 
+
     <style name="BottomSheetStyleWrapper" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <!-- Estilo para el texto de los Tabs del buscador -->
+    <style name="SearchTabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 </resources>

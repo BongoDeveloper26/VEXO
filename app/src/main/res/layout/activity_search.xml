@@ -64,10 +64,11 @@
         app:tabIndicatorFullWidth="false"
         app:tabSelectedTextColor="@color/primary"
         app:tabTextColor="@color/text_secondary"
+        app:tabTextAppearance="@style/SearchTabTextAppearance"
         app:tabRippleColor="@null"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/layoutSearchContainer">
-        <com.google.android.material.tabs.TabItem android:text="PELÍCULAS" />
+        <com.google.android.material.tabs.TabItem android:text="PELÍCULAS Y SERIES" />
         <com.google.android.material.tabs.TabItem android:text="ACTORES" />
     </com.google.android.material.tabs.TabLayout>
 
@@ -76,7 +77,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingBottom="100dp"
+        android:paddingBottom="160dp"
         app:layout_constraintTop_toBottomOf="@id/tabLayoutSearch"
         app:layout_constraintBottom_toBottomOf="parent">
 

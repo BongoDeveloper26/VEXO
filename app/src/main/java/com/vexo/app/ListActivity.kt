@@ -71,7 +71,7 @@ class ListActivity : AppCompatActivity() {
         VexoList(
             "star_wars_universe",
             "STAR WARS",
-            "Hace mucho tiempo, en una galaxia muy, muy lejana... La leyenda de los Skywalker, las crónicas de los cazarrecompensas y los secretos milenarios de la Fuerza se reúnen en esta colección exhaustiva. Revive la trilogía original que lo cambió todo, las precuelas que expandieron el mito, las secuelas y todas las series que exploran los rincones más oscuros y brillantes de este universo infinito. Ya seas un Caballero Jedi o un Lord Sith, esta es la lista definitiva que estabas buscando. ¡Que la Fuerza te acompañe en este viaje estelar a través de las estrellas y el tiempo!",
+            "Hace mucho tiempo, en una galaxia muy, muy lejana... La leyenda de los Skywalker, las crónicas de los cazarrecompensas y los secretos milenarios de la Fuerza se reúnen in esta colección exhaustiva. Revive la trilogía original que lo cambió todo, las precuelas que expandieron el mito, las secuelas y todas las series que exploran los rincones más oscuros y brillantes de este universo infinito. Ya seas un Caballero Jedi o un Lord Sith, esta es la lista definitiva que estabas buscando. ¡Que la Fuerza te acompañe en este viaje estelar a través de las estrellas y el tiempo!",
             R.drawable.vexo_logo,
             "SAGA GALÁCTICA",
             35,
@@ -108,6 +108,34 @@ class ListActivity : AppCompatActivity() {
                 "https://image.tmdb.org/t/p/w500/hXp97fBfVp6GvSREfI0O5pX4vB3.jpg", // Wick 2
                 "https://image.tmdb.org/t/p/w500/ziEuG1SXiE0rS646ioA6Kyv31Yp.jpg", // Wick 3
                 "https://image.tmdb.org/t/p/w500/892v9pX5f2f5S5G87G9vGf56zP1.jpg"  // Wick 4
+            )
+        ),
+        VexoList(
+            "batman_universe",
+            "BATMAN UNIVERSE",
+            "Explora la leyenda del Caballero Oscuro. Desde los clásicos de Tim Burton y la aclamada trilogía de Christopher Nolan hasta las versiones más recientes y las series animadas icónicas. Gotham te espera en esta colección definitiva del mejor detective del mundo.",
+            R.drawable.vexo_logo,
+            "SAGA DEL MURCIÉLAGO",
+            45,
+            listOf(
+                "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDp92SKyYw9Statusm.jpg", // The Dark Knight
+                "https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50r9T25BQVt.jpg", // The Batman
+                "https://image.tmdb.org/t/p/w500/86999bmO7KG7of8mU99p97f9C6L.jpg", // Batman Begins
+                "https://image.tmdb.org/t/p/w500/cij4mdf2KyHcI9Scl02Zp3llU9K.jpg"  // Batman 1989
+            )
+        ),
+        VexoList(
+            "classic_movies",
+            "GRANDES CLÁSICOS",
+            "Viaja a la era dorada del cine con nuestra selección de los grandes clásicos. Obras maestras que sentaron las bases del séptimo arte y que siguen siendo imprescindibles hoy en día. Desde el suspense de Hitchcock hasta los dramas épicos que definieron generaciones, esta lista es un tributo a la historia del cine que todo amante de las buenas historias debe conocer.",
+            R.drawable.vexo_logo,
+            "ELITE CINÉFILA",
+            50,
+            listOf(
+                "https://image.tmdb.org/t/p/w500/3bhkrjSTWv4ayisdqAs6arW0Lja.jpg", // The Godfather
+                "https://image.tmdb.org/t/p/w500/ow3wq89wMvEbRjsSrtuIhpi9pXy.jpg", // 12 Angry Men
+                "https://image.tmdb.org/t/p/w500/sF1U4EU7YlvbweXXsu9OEOO6sxu.jpg", // Schindler's List
+                "https://image.tmdb.org/t/p/w500/yz49qPthYSms6T1I9mviT0St9FU.jpg"  // Psycho
             )
         )
     )

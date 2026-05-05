@@ -41,6 +41,7 @@ class VexoListDetailActivity : AppCompatActivity() {
             "harry_potter" -> loadHarryPotterSaga()
             "john_wick_universe" -> loadJohnWickUniverse()
             "batman_universe" -> loadBatmanUniverse()
+            "classic_movies" -> loadClassicMovies()
             else -> loadTop250Movies()
         }
     }
@@ -238,6 +239,40 @@ class VexoListDetailActivity : AppCompatActivity() {
 
                 movieAdapter.updateMovies(finalResult)
                 findViewById<TextView>(R.id.textListInfo).text = "BATMAN UNIVERSE • ${finalResult.size} ELEMENTOS"
+            } catch (e: Exception) { 
+                e.printStackTrace() 
+            } finally { 
+                progress.visibility = View.GONE 
+            }
+        }
+    }
+
+    private fun loadClassicMovies() {
+        val progress = findViewById<ProgressBar>(R.id.progressUserList)
+        progress.visibility = View.VISIBLE
+        lifecycleScope.launch {
+            try {
+                val allContent = mutableListOf<Movie>()
+                // Descubrimos películas con alta puntuación anteriores a 1980
+                val deferred = (1..5).map { page -> 
+                    async { 
+                        repository.discoverMovies(
+                            yearEnd = 1979, 
+                            minRating = 7.5f, 
+                            sortBy = "vote_average.desc", 
+                            page = page
+                        ) 
+                    } 
+                }
+                deferred.awaitAll().forEach { allContent.addAll(it) }
+
+                val finalResult = allContent
+                    .distinctBy { it.id }
+                    .filter { it.posterPath != null }
+                    .sortedByDescending { it.rating }
+
+                movieAdapter.updateMovies(finalResult)
+                findViewById<TextView>(R.id.textListInfo).text = "GRANDES CLÁSICOS • ${finalResult.size} ELEMENTOS"
             } catch (e: Exception) { 
                 e.printStackTrace() 
             } finally { 

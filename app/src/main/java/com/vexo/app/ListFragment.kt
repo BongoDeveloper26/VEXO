@@ -123,6 +123,20 @@ class ListFragment : Fragment() {
                 "https://image.tmdb.org/t/p/w500/86999bmO7KG7of8mU99p97f9C6L.jpg", // Batman Begins
                 "https://image.tmdb.org/t/p/w500/cij4mdf2KyHcI9Scl02Zp3llU9K.jpg"  // Batman 1989
             )
+        ),
+        VexoList(
+            id = "classic_movies",
+            name = "LAS MEJORES PELÍCULAS CLÁSICAS",
+            description = "Viaja a la era dorada del cine con nuestra selección de las mejores películas clásicas. Obras maestras que sentaron las bases del séptimo arte y que siguen siendo imprescindibles hoy en día. Desde el suspense de Hitchcock hasta los dramas épicos que definieron generaciones, esta lista es un tributo a la historia del cine que todo amante de las buenas historias debe conocer.",
+            imageRes = R.drawable.vexo_logo,
+            countText = "ELITE CINÉFILA",
+            totalItems = 50,
+            previewPosters = listOf(
+                "https://image.tmdb.org/t/p/w500/3bhkrjSTWv4ayisdqAs6arW0Lja.jpg", // The Godfather
+                "https://image.tmdb.org/t/p/w500/ow3wq89wMvEbRjsSrtuIhpi9pXy.jpg", // 12 Angry Men
+                "https://image.tmdb.org/t/p/w500/sF1U4EU7YlvbweXXsu9OEOO6sxu.jpg", // Schindler's List
+                "https://image.tmdb.org/t/p/w500/yz49qPthYSms6T1I9mviT0St9FU.jpg"  // Psycho
+            )
         )
     )
 

@@ -138,11 +138,40 @@ class DetailActivity : AppCompatActivity() {
         val entry = watchlistRepository.getDiary().find { it.movieId == movieId }
         val layoutReview = findViewById<View>(R.id.layoutUserReviewDetail)
         val textReview = findViewById<TextView>(R.id.textUserReviewValue)
+        val btnReadMore = findViewById<TextView>(R.id.btnReadMoreReview)
         
         if (entry != null && (entry.rating > 0 || !entry.review.isNullOrEmpty())) {
             layoutReview.visibility = View.VISIBLE
             textReview.text = if (!entry.review.isNullOrEmpty()) "${entry.review}" else getString(R.string.rated_content)
             
+            // Estado inicial: colapsado a 5 líneas
+            textReview.maxLines = 5
+            btnReadMore.visibility = View.GONE
+            btnReadMore.text = "Leer más"
+            
+            // Comprobamos si el texto excede las 5 líneas para mostrar el botón
+            if (!entry.review.isNullOrEmpty()) {
+                textReview.post {
+                    val layout = textReview.layout
+                    if (layout != null) {
+                        val lines = layout.lineCount
+                        if (lines > 5 || layout.getEllipsisCount(lines - 1) > 0) {
+                            btnReadMore.visibility = View.VISIBLE
+                        }
+                    }
+                }
+            }
+
+            btnReadMore.setOnClickListener {
+                if (textReview.maxLines == 5) {
+                    textReview.maxLines = Int.MAX_VALUE
+                    btnReadMore.text = "Leer menos"
+                } else {
+                    textReview.maxLines = 5
+                    btnReadMore.text = "Leer más"
+                }
+            }
+
             // Actualizar las estrellas dentro de la tarjeta de reseña
             val reviewStars = listOf<ImageView>(
                 findViewById(R.id.revStar1), findViewById(R.id.revStar2),

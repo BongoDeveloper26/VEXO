@@ -776,9 +776,23 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="@color/text_primary"
-                            android:textSize="15sp"
+                            android:textSize="12sp"
                             android:lineSpacingExtra="4dp"
+                            android:maxLines="5"
+                            android:ellipsize="end"
                             tools:text="Esta película es una obra maestra de la cinematografía moderna..." />
+
+                        <TextView
+                            android:id="@+id/btnReadMoreReview"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Leer más"
+                            android:textColor="@color/primary"
+                            android:textStyle="bold"
+                            android:textSize="12sp"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
 
                     </LinearLayout>
                 </RelativeLayout>

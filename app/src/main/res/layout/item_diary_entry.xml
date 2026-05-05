@@ -121,7 +121,7 @@
 
             </LinearLayout>
 
-            <!-- LA RESEÑA DEL USUARIO -->
+            <!-- LA RESEÑA DEL USUARIO (Tamaño reducido y más líneas) -->
             <TextView
                 android:id="@+id/textDiaryReview"
                 android:layout_width="0dp"
@@ -130,17 +130,17 @@
                 android:layout_marginTop="6dp"
                 android:layout_marginEnd="4dp"
                 android:textColor="@color/text_secondary"
-                android:textSize="13sp"
+                android:textSize="11sp"
                 android:fontFamily="sans-serif"
                 android:fontStyle="italic"
-                android:maxLines="6"
+                android:maxLines="10"
                 android:ellipsize="end"
                 android:visibility="gone"
                 app:layout_constraintStart_toEndOf="@id/imgDiaryPoster"
                 app:layout_constraintTop_toBottomOf="@id/layoutRatingRow"
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:visibility="visible"
-                tools:text="Esta película es una obra maestra del cine contemporáneo, la dirección es impecable y las actuaciones son de otro nivel..." />
+                tools:text="Esta película es una obra maestra del cine contemporáneo..." />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

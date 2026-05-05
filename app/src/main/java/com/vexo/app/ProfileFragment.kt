@@ -38,6 +38,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import data.model.Movie
+import data.model.DiaryEntry
 import data.repository.TMDBRepository
 import data.repository.WatchlistRepository
 import kotlinx.coroutines.delay
@@ -441,7 +442,7 @@ class ProfileFragment : Fragment() {
         
         val options = listOf(
             BackgroundOption(null, "Predeterminado", 0),
-            BackgroundOption("fondo_vexocine", "VEXO Cine", R.drawable.fondo_vexocine),
+            BackgroundOption("fondo_vexocine" , "VEXO Cine", R.drawable.fondo_vexocine),
             BackgroundOption("fondo_futurista", "Futurista", R.drawable.fondo_futurista),
             BackgroundOption("fondo_espacio", "Espacio", R.drawable.fondo_espacio),
             BackgroundOption("fondo_salacine", "Sala Cine", R.drawable.fondo_salacine),
@@ -593,12 +594,7 @@ class ProfileFragment : Fragment() {
             reviewAdapter = DiaryAdapter(reviewEntries, showTimeline = false, isFavorite = { movieId ->
                 watchlistRepository.isFavorite(movieId)
             }) { entry ->
-                val movieToOpen = entry.movie ?: watchlistRepository.getAllRatedMovies().find { it.id == entry.movieId }
-                if (movieToOpen != null) {
-                    val intent = Intent(requireContext(), DetailActivity::class.java)
-                    intent.putExtra("movie", movieToOpen)
-                    startActivity(intent)
-                }
+                showReviewOptions(entry)
             }
             updateAdapterThemes()
             view.findViewById<RecyclerView>(R.id.recyclerProfileReviews).adapter = reviewAdapter
@@ -615,18 +611,76 @@ class ProfileFragment : Fragment() {
             diaryAdapter = DiaryAdapter(diaryEntries, showTimeline = true, isFavorite = { movieId ->
                 watchlistRepository.isFavorite(movieId)
             }) { entry ->
-                val movieToOpen = entry.movie ?: watchlistRepository.getAllRatedMovies().find { it.id == entry.movieId }
-                if (movieToOpen != null) {
-                    val intent = Intent(requireContext(), DetailActivity::class.java)
-                    intent.putExtra("movie", movieToOpen)
-                    startActivity(intent)
-                }
+                showReviewOptions(entry)
             }
             updateAdapterThemes()
             view.findViewById<RecyclerView>(R.id.recyclerDiary).adapter = diaryAdapter
         } else {
             layoutDiary.visibility = View.GONE
         }
+    }
+
+    private fun showReviewOptions(entry: DiaryEntry) {
+        val dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
+        val menuView = layoutInflater.inflate(R.layout.layout_diary_options, null)
+        
+        menuView.findViewById<TextView>(R.id.diaryMenuTitle).text = entry.movieTitle
+        
+        menuView.findViewById<View>(R.id.btnDiaryViewDetails).setOnClickListener {
+            dialog.dismiss()
+            val movieToOpen = entry.movie ?: watchlistRepository.getAllRatedMovies().find { it.id == entry.movieId }
+            if (movieToOpen != null) {
+                val intent = Intent(requireContext(), DetailActivity::class.java)
+                intent.putExtra("movie", movieToOpen)
+                startActivity(intent)
+            }
+        }
+        
+        menuView.findViewById<View>(R.id.btnDiaryViewReview).setOnClickListener {
+            dialog.dismiss()
+            if (!entry.review.isNullOrEmpty()) {
+                showElegantReviewDialog(entry)
+            } else {
+                Toast.makeText(requireContext(), "No hay reseña escrita", Toast.LENGTH_SHORT).show()
+            }
+        }
+        
+        dialog.setContentView(menuView)
+        dialog.show()
+    }
+
+    private fun showElegantReviewDialog(entry: DiaryEntry) {
+        val dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
+        val view = layoutInflater.inflate(R.layout.layout_dialog_view_review, null)
+        
+        view.findViewById<TextView>(R.id.textReviewDialogTitle).text = entry.movieTitle
+        view.findViewById<TextView>(R.id.textReviewDialogDate).text = entry.date
+        view.findViewById<TextView>(R.id.textReviewDialogContent).text = entry.review
+        
+        val imgPoster = view.findViewById<ImageView>(R.id.imgReviewDialogPoster)
+        Glide.with(this).load(entry.moviePosterPath).centerCrop().into(imgPoster)
+        
+        val starsContainer = view.findViewById<LinearLayout>(R.id.layoutReviewDialogStars)
+        starsContainer.removeAllViews()
+        repeat(5) { index ->
+            val star = ImageView(requireContext()).apply {
+                layoutParams = LinearLayout.LayoutParams(40, 40).apply { marginEnd = 4 }
+                if (index < entry.rating) {
+                    setImageResource(android.R.drawable.btn_star_big_on)
+                    imageTintList = ColorStateList.valueOf(requireContext().getColor(R.color.primary))
+                } else {
+                    setImageResource(android.R.drawable.btn_star_big_off)
+                    imageTintList = ColorStateList.valueOf(requireContext().getColor(R.color.text_secondary))
+                    alpha = 0.3f
+                }
+            }
+            starsContainer.addView(star)
+        }
+        
+        view.findViewById<View>(R.id.btnReviewDialogClose).setOnClickListener { dialog.dismiss() }
+        
+        dialog.setContentView(view)
+        dialog.show()
     }
 
     private fun updateAdapterThemes() {

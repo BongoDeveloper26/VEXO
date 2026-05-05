@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="42dp"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="@color/background_app">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Gradiente de fondo sutil -->
+        <View
+            android:id="@+id/headerGradient"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:background="@drawable/gradient_primary_to_transparent"
+            android:alpha="0.12"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/dragHandle"
+            android:layout_width="38dp"
+            android:layout_height="4dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_handle_modern"
+            android:backgroundTint="#25000000"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Póster Flotante Premium -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardPosterReview"
+            android:layout_width="100dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="36dp"
+            android:layout_marginStart="24dp"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="16dp"
+            app:strokeWidth="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dragHandle">
+
+            <ImageView
+                android:id="@+id/imgReviewDialogPoster"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                tools:src="@tools:sample/backgrounds/scenic" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Cabecera de información -->
+        <TextView
+            android:id="@+id/textReviewDialogTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="24dp"
+            android:fontFamily="sans-serif-black"
+            android:textColor="@color/text_primary"
+            android:textSize="24sp"
+            android:letterSpacing="-0.03"
+            android:lineSpacingMultiplier="0.9"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cardPosterReview"
+            app:layout_constraintTop_toTopOf="@id/cardPosterReview"
+            tools:text="Dune: Part Two" />
+
+        <LinearLayout
+            android:id="@+id/layoutReviewDialogStars"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="@id/textReviewDialogTitle"
+            app:layout_constraintTop_toBottomOf="@id/textReviewDialogTitle" />
+
+        <TextView
+            android:id="@+id/textReviewDialogDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textColor="@color/primary"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.1"
+            android:alpha="0.8"
+            app:layout_constraintStart_toStartOf="@id/textReviewDialogTitle"
+            app:layout_constraintTop_toBottomOf="@id/layoutReviewDialogStars"
+            tools:text="28 DE FEBRERO, 2024" />
+
+        <!-- Contenedor de Comentario: Rediseñado para Scroll perfecto -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardTextContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="22dp"
+            android:layout_marginTop="28dp"
+            app:cardCornerRadius="32dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/surface_app"
+            app:strokeWidth="1dp"
+            app:strokeColor="#05FFFFFF"
+            app:layout_constraintTop_toBottomOf="@id/cardPosterReview">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.core.widget.NestedScrollView
+                    android:id="@+id/scrollReview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="24dp"
+                    android:layout_marginHorizontal="24dp"
+                    android:maxHeight="280dp"
+                    android:scrollbars="vertical">
+
+                    <TextView
+                        android:id="@+id/textReviewDialogContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp"
+                        android:lineSpacingExtra="5dp"
+                        android:fontFamily="sans-serif-medium"
+                        android:alpha="0.85"
+                        tools:text="Texto de la reseña que ahora es mucho más pequeño y manejable..." />
+
+                </androidx.core.widget.NestedScrollView>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Botón de Cierre Minimalista -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnReviewDialogClose"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginHorizontal="22dp"
+            android:layout_marginTop="28dp"
+            android:layout_marginBottom="32dp"
+            android:text="CERRAR RESEÑA"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.1"
+            app:cornerRadius="22dp"
+            app:backgroundTint="@color/primary"
+            app:elevation="4dp"
+            app:layout_constraintTop_toBottomOf="@id/cardTextContainer"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -1,17 +1,21 @@
 package com.vexo.app
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.vexo.app.R
 import data.model.DiaryEntry
 import data.model.Movie
@@ -83,6 +87,19 @@ class DiaryActivity : AppCompatActivity() {
             showTimeline = !onlyReviews,
             isFavorite = { movieId -> watchlistRepository.isFavorite(movieId) }
         ) { entry ->
+            showReviewOptions(entry)
+        }
+        recycler.adapter = adapter
+    }
+
+    private fun showReviewOptions(entry: DiaryEntry) {
+        val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+        val menuView = layoutInflater.inflate(R.layout.layout_diary_options, null)
+        
+        menuView.findViewById<TextView>(R.id.diaryMenuTitle).text = entry.movieTitle
+        
+        menuView.findViewById<View>(R.id.btnDiaryViewDetails).setOnClickListener {
+            dialog.dismiss()
             val movieToOpen = entry.movie ?: watchlistRepository.getAllRatedMovies().find { it.id == entry.movieId }
             if (movieToOpen != null) {
                 val intent = Intent(this, DetailActivity::class.java)
@@ -90,7 +107,52 @@ class DiaryActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
-        recycler.adapter = adapter
+        
+        menuView.findViewById<View>(R.id.btnDiaryViewReview).setOnClickListener {
+            dialog.dismiss()
+            if (!entry.review.isNullOrEmpty()) {
+                showElegantReviewDialog(entry)
+            } else {
+                Toast.makeText(this, "No hay reseña escrita", Toast.LENGTH_SHORT).show()
+            }
+        }
+        
+        dialog.setContentView(menuView)
+        dialog.show()
+    }
+
+    private fun showElegantReviewDialog(entry: DiaryEntry) {
+        val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+        val view = layoutInflater.inflate(R.layout.layout_dialog_view_review, null)
+        
+        view.findViewById<TextView>(R.id.textReviewDialogTitle).text = entry.movieTitle
+        view.findViewById<TextView>(R.id.textReviewDialogDate).text = entry.date
+        view.findViewById<TextView>(R.id.textReviewDialogContent).text = entry.review
+        
+        val imgPoster = view.findViewById<ImageView>(R.id.imgReviewDialogPoster)
+        Glide.with(this).load(entry.moviePosterPath).centerCrop().into(imgPoster)
+        
+        val starsContainer = view.findViewById<LinearLayout>(R.id.layoutReviewDialogStars)
+        starsContainer.removeAllViews()
+        repeat(5) { index ->
+            val star = ImageView(this).apply {
+                layoutParams = LinearLayout.LayoutParams(40, 40).apply { marginEnd = 4 }
+                if (index < entry.rating) {
+                    setImageResource(android.R.drawable.btn_star_big_on)
+                    imageTintList = ColorStateList.valueOf(getColor(R.color.primary))
+                } else {
+                    setImageResource(android.R.drawable.btn_star_big_off)
+                    imageTintList = ColorStateList.valueOf(getColor(R.color.text_secondary))
+                    alpha = 0.3f
+                }
+            }
+            starsContainer.addView(star)
+        }
+        
+        view.findViewById<View>(R.id.btnReviewDialogClose).setOnClickListener { dialog.dismiss() }
+        
+        dialog.setContentView(view)
+        dialog.show()
     }
 
     private fun applyTheme() {
@@ -103,16 +165,6 @@ class DiaryActivity : AppCompatActivity() {
         val label = findViewById<TextView>(R.id.textDiaryLabel)
         val btnBack = findViewById<ImageButton>(R.id.btnBackDiary)
         
-        // Stats Labels
-        val vistasLabel = findViewById<TextView>(R.id.textVistasLabel)
-        val monthLabel = findViewById<TextView>(R.id.textMonthLabel)
-        val mediaLabel = findViewById<TextView>(R.id.textMediaLabel)
-        
-        // Stats Numbers
-        val textTotalCount = findViewById<TextView>(R.id.textTotalCount)
-        val textMonthCount = findViewById<TextView>(R.id.textMonthCount)
-        val textAvgRating = findViewById<TextView>(R.id.textAvgRating)
-
         val themeConfig = when (bgName) {
             "fondo_vexocine" -> ThemeConfig(R.drawable.fondo_vexocine, "#7C3AED", "#1A1A1A", "#CC1A1A1A", "#407C3AED")
             "fondo_futurista" -> ThemeConfig(R.drawable.fondo_futurista, "#00E5FF", "#1A1A1A", "#CC1A1A1A", "#3300E5FF")
@@ -129,31 +181,14 @@ class DiaryActivity : AppCompatActivity() {
             imgBg?.visibility = View.VISIBLE
             imgBg?.setImageResource(themeConfig.resId)
             imgBg?.alpha = 1.0f 
-            
             overlay?.visibility = View.VISIBLE
             overlay?.setBackgroundColor(Color.parseColor("#99000000")) 
-            
             rootLayout?.setBackgroundColor(Color.TRANSPARENT)
             headerContainer?.setBackgroundColor(Color.TRANSPARENT)
-            
             val accent = Color.parseColor(themeConfig.accent)
             title?.setTextColor(accent)
             label?.setTextColor(accent)
             btnBack?.imageTintList = android.content.res.ColorStateList.valueOf(accent)
-            
-            // Números de estadísticas con el color de acento
-            textTotalCount?.setTextColor(accent)
-            textMonthCount?.setTextColor(accent)
-            textAvgRating?.setTextColor(accent)
-            
-            // Labels stats en blanco/claro para contraste sobre fondo oscuro
-            vistasLabel?.setTextColor(Color.WHITE)
-            monthLabel?.setTextColor(Color.WHITE)
-            mediaLabel?.setTextColor(Color.WHITE)
-            vistasLabel?.alpha = 0.7f
-            monthLabel?.alpha = 0.7f
-            mediaLabel?.alpha = 0.7f
-
             adapter?.updateTheme(true, accent, Color.parseColor(themeConfig.cardBg), Color.parseColor(themeConfig.stroke))
             window.statusBarColor = Color.parseColor(themeConfig.background)
         } else {
@@ -161,22 +196,11 @@ class DiaryActivity : AppCompatActivity() {
             overlay?.visibility = View.GONE
             rootLayout?.setBackgroundColor(ContextCompat.getColor(this, R.color.background_app))
             headerContainer?.setBackgroundResource(R.color.surface_app)
-            
             val primary = ContextCompat.getColor(this, R.color.primary)
             val textPrimary = ContextCompat.getColor(this, R.color.text_primary)
-            
             title?.setTextColor(textPrimary)
             label?.setTextColor(primary)
             btnBack?.imageTintList = android.content.res.ColorStateList.valueOf(primary)
-            
-            textTotalCount?.setTextColor(textPrimary)
-            textMonthCount?.setTextColor(textPrimary)
-            textAvgRating?.setTextColor(ContextCompat.getColor(this, R.color.accent))
-            
-            vistasLabel?.setTextColor(ContextCompat.getColor(this, R.color.text_secondary))
-            monthLabel?.setTextColor(ContextCompat.getColor(this, R.color.text_secondary))
-            mediaLabel?.setTextColor(ContextCompat.getColor(this, R.color.text_secondary))
-            
             adapter?.updateTheme(false)
             window.statusBarColor = ContextCompat.getColor(this, R.color.background_app)
         }

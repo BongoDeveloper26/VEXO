@@ -147,13 +147,13 @@
             app:boxStrokeWidth="0dp"
             app:boxStrokeWidthFocused="1dp"
             app:counterEnabled="true"
-            app:counterMaxLength="300"
+            app:counterMaxLength="1000"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editReview"
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
+                android:layout_height="150dp"
                 android:gravity="top"
                 android:paddingTop="20dp"
                 android:paddingBottom="12dp"
@@ -161,8 +161,8 @@
                 android:textColor="@color/text_primary"
                 android:textSize="15sp"
                 android:scrollbars="vertical"
-                android:maxLines="6"
-                android:maxLength="300" />
+                android:maxLines="10"
+                android:maxLength="1000" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

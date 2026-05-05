@@ -197,6 +197,10 @@ class WatchlistRepository(private val context: Context) {
             ratings[movie.id.toString()] = rating
             ratedMovies.removeAll { it.id == movie.id }
             ratedMovies.add(0, movie)
+            
+            // Eliminar entrada previa para evitar duplicados al actualizar
+            diary.removeAll { it.movieId == movie.id }
+            
             val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
             diary.add(0, DiaryEntry(
                 movieId = movie.id,

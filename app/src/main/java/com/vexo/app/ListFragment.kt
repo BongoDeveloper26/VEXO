@@ -50,7 +50,7 @@ class ListFragment : Fragment() {
             previewPosters = listOf(
                 "https://image.tmdb.org/t/p/w500/ztkUQvBZ77Z7iB1u66NuJvSTN7h.jpg",
                 "https://image.tmdb.org/t/p/w500/7WsyChvLEz79BMo33owrR7Z9XnS.jpg",
-                "https://image.tmdb.org/t/p/w500/reksS7S7S7S7S7S7S7S7S.jpg",
+                "https://image.tmdb.org/t/p/w500/reksS7S7S7S7S7S7S7S.jpg",
                 "https://image.tmdb.org/t/p/w500/69Uqt7vSbeFwb1L3rsLbt64H64o.jpg"
             )
         ),
@@ -87,7 +87,7 @@ class ListFragment : Fragment() {
             name = "HARRY POTTER",
             description = "Sumérgete en el universo cinematográfico más mágico de todos los tiempos. Desde el primer viaje en el Expreso de Hogwarts hasta la épica batalla final contra el que no debe ser nombrado, pasando por las asombrosas criaturas de Newt Scamander. Revive la historia que cautivó a generaciones con esta colección definitiva que incluye las 8 películas originales de Harry Potter y la trilogía completa de Animales Fantásticos. ¡Prepara tu varita, ponte tu túnica y deja que la magia te envuelva en este maratón inolvidable que te hará creer en lo imposible una vez más!",
             imageRes = R.drawable.vexo_logo,
-            countText = "11 PELÍCULAS",
+            countText = "SAGA MÁGICA",
             totalItems = 11,
             previewPosters = listOf(
                 "https://image.tmdb.org/t/p/w500/wuMc08IPisT7Y9PqXn97Xn3BbsC.jpg", // Philosopher's Stone
@@ -99,15 +99,29 @@ class ListFragment : Fragment() {
         VexoList(
             id = "john_wick_universe",
             name = "JOHN WICK UNIVERSE",
-            description = "Entra en el submundo criminal donde las reglas lo son todo y la elegancia se mezcla con la violencia más pura. Sigue la odisea de John Wick, el hombre que una vez fue el asesino más temido y que ahora busca venganza y redención. Esta colección incluye la tetralogía completa que redefinió el cine de acción moderno y la serie 'The Continental', que explora los orígenes del hotel que sirve de santuario para los asesinos más peligrosos del mundo. ¡Prepárate para la acción táctica definitiva!",
+            description = "Entra en el submundo criminal donde las reglas lo son todo y la elegancia se mezcla con la violencia más pura. Sigue la odisea de John Wick, el hombre que una vez fue el asesino más temido y que ahora busca venganza y redención. Esta colección incluye la saga completa que redefinió el cine de acción moderno, siguiendo los pasos de Baba Yaga en su búsqueda de libertad. ¡Prepárate para la acción táctica definitiva!",
             imageRes = R.drawable.vexo_logo,
-            countText = "5 ELEMENTOS",
-            totalItems = 5,
+            countText = "SAGA DE ASESINOS",
+            totalItems = 12,
             previewPosters = listOf(
                 "https://image.tmdb.org/t/p/w500/867S1EBZg99mno8pWo9srIq669G.jpg", // Wick 1
                 "https://image.tmdb.org/t/p/w500/hXp97fBfVp6GvSREfI0O5pX4vB3.jpg", // Wick 2
                 "https://image.tmdb.org/t/p/w500/ziEuG1SXiE0rS646ioA6Kyv31Yp.jpg", // Wick 3
                 "https://image.tmdb.org/t/p/w500/892v9pX5f2f5S5G87G9vGf56zP1.jpg"  // Wick 4
+            )
+        ),
+        VexoList(
+            id = "batman_universe",
+            name = "BATMAN UNIVERSE",
+            description = "Explora la leyenda del Caballero Oscuro. Desde los clásicos de Tim Burton y la aclamada trilogía de Christopher Nolan hasta las versiones más recientes y las series animadas icónicas. Gotham te espera en esta colección definitiva del mejor detective del mundo.",
+            imageRes = R.drawable.vexo_logo,
+            countText = "SAGA DEL MURCIÉLAGO",
+            totalItems = 45,
+            previewPosters = listOf(
+                "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDp92SKyYw9Statusm.jpg", // The Dark Knight
+                "https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50r9T25BQVt.jpg", // The Batman
+                "https://image.tmdb.org/t/p/w500/86999bmO7KG7of8mU99p97f9C6L.jpg", // Batman Begins
+                "https://image.tmdb.org/t/p/w500/cij4mdf2KyHcI9Scl02Zp3llU9K.jpg"  // Batman 1989
             )
         )
     )

@@ -43,12 +43,14 @@ class MovieAdapter(
         val watchedBadge: ImageView? = itemView.findViewById(R.id.imgWatchedBadge)
         val favBadge: ImageView? = itemView.findViewById(R.id.imgFavoriteBadge)
         val textMediaType: TextView? = itemView.findViewById(R.id.textMediaType)
+        val textDate: TextView? = itemView.findViewById(R.id.textDate)
     }
 
     class GridViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imgPoster: ImageView = itemView.findViewById(R.id.imgPosterGrid)
         val textRating: TextView = itemView.findViewById(R.id.textRatingGrid)
         val textMediaType: TextView? = itemView.findViewById(R.id.textMediaTypeGrid)
+        val textDate: TextView? = itemView.findViewById(R.id.textDateGrid)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -79,6 +81,11 @@ class MovieAdapter(
         if (holder is GridViewHolder) {
             holder.textRating.text = "★ ${String.format("%.1f", movie.rating)}"
             
+            // Mostrar fecha arriba a la izquierda
+            val year = movie.getReleaseYear()
+            holder.textDate?.text = year
+            holder.textDate?.visibility = if (year.isNotEmpty()) View.VISIBLE else View.GONE
+            
             // Solo mostrar si el flag está activo
             holder.textMediaType?.visibility = if (showMediaType) View.VISIBLE else View.GONE
             holder.textMediaType?.text = if (movie.isTvShow) "SERIE" else "PELÍCULA"
@@ -94,6 +101,11 @@ class MovieAdapter(
             holder.textTitle.text = movie.title
             holder.textRating.text = "★ ${String.format("%.1f", movie.rating)}"
             holder.textDescription?.text = movie.overview
+            
+            // Mostrar fecha arriba a la izquierda del poster
+            val year = movie.getReleaseYear()
+            holder.textDate?.text = year
+            holder.textDate?.visibility = if (year.isNotEmpty()) View.VISIBLE else View.GONE
             
             holder.watchedOverlay?.visibility = if (isWatched) View.VISIBLE else View.GONE
             holder.watchedBadge?.visibility = if (isWatched) View.VISIBLE else View.GONE

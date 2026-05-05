@@ -27,6 +27,23 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@android:drawable/ic_menu_gallery" />
 
+        <!-- FECHA (ARRIBA IZQUIERDA) -->
+        <TextView
+            android:id="@+id/textDateGrid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="6dp"
+            android:background="@drawable/rounded_corners"
+            android:backgroundTint="#AA000000"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="1dp"
+            android:textColor="@color/white"
+            android:textSize="8sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="2024" />
+
         <!-- Overlay para películas vistas -->
         <View
             android:id="@+id/viewWatchedOverlayGrid"

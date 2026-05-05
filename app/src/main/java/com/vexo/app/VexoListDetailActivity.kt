@@ -40,6 +40,7 @@ class VexoListDetailActivity : AppCompatActivity() {
             "star_wars_universe" -> loadStarWarsUniverse()
             "harry_potter" -> loadHarryPotterSaga()
             "john_wick_universe" -> loadJohnWickUniverse()
+            "batman_universe" -> loadBatmanUniverse()
             else -> loadTop250Movies()
         }
     }
@@ -183,23 +184,60 @@ class VexoListDetailActivity : AppCompatActivity() {
                 // 1. Saga principal (John Wick 1, 2, 3 y 4) vía Colección
                 val wickCol = async { repository.getCollectionMovies(297753) }
                 
-                // 2. Ballerina (Spin-off)
-                val ballerina = async { repository.searchMovies("John Wick Ballerina", 1) }
-                
-                // 3. The Continental (Serie)
-                val continental = async { repository.searchTV("The Continental", 1) }
+                // 2. Películas adicionales y Spin-offs (como Ballerina)
+                val searchWick = async { repository.searchMovies("John Wick", 1) }
 
                 allContent.addAll(wickCol.await())
-                allContent.addAll(ballerina.await().filter { it.title.contains("Ballerina", true) })
-                allContent.addAll(continental.await().filter { it.title.contains("Continental", true) })
+                allContent.addAll(searchWick.await())
 
+                // Filtramos para asegurar que son de la saga, quitamos series y las que no tengan portada
                 val finalResult = allContent
                     .distinctBy { it.id }
-                    .filter { !it.title.isNullOrEmpty() }
+                    .filter { movie -> 
+                        !movie.title.isNullOrEmpty() && 
+                        !movie.posterPath.isNullOrEmpty() &&
+                        (movie.title.contains("John Wick", true) || movie.title.contains("Ballerina", true)) &&
+                        !movie.isTvShow // Quitamos series (como The Continental si apareciera)
+                    }
                     .sortedBy { it.releaseDate }
 
                 movieAdapter.updateMovies(finalResult)
                 findViewById<TextView>(R.id.textListInfo).text = "JOHN WICK UNIVERSE • ${finalResult.size} ELEMENTOS"
+            } catch (e: Exception) { 
+                e.printStackTrace() 
+            } finally { 
+                progress.visibility = View.GONE 
+            }
+        }
+    }
+
+    private fun loadBatmanUniverse() {
+        val progress = findViewById<ProgressBar>(R.id.progressUserList)
+        progress.visibility = View.VISIBLE
+        lifecycleScope.launch {
+            try {
+                val allContent = mutableListOf<Movie>()
+                
+                // Buscamos películas y series de Batman (varias páginas)
+                val movies1 = async { repository.searchMovies("Batman", 1) }
+                val movies2 = async { repository.searchMovies("Batman", 2) }
+                val tv1 = async { repository.searchTV("Batman", 1) }
+
+                allContent.addAll(movies1.await())
+                allContent.addAll(movies2.await())
+                allContent.addAll(tv1.await())
+
+                val finalResult = allContent
+                    .distinctBy { it.id }
+                    .filter { movie -> 
+                        !movie.title.isNullOrEmpty() && 
+                        !movie.posterPath.isNullOrEmpty() &&
+                        (movie.title.contains("Batman", true) || movie.title.contains("The Dark Knight", true))
+                    }
+                    .sortedByDescending { it.releaseDate }
+
+                movieAdapter.updateMovies(finalResult)
+                findViewById<TextView>(R.id.textListInfo).text = "BATMAN UNIVERSE • ${finalResult.size} ELEMENTOS"
             } catch (e: Exception) { 
                 e.printStackTrace() 
             } finally { 

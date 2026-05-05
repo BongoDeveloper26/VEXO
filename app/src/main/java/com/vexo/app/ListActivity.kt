@@ -99,7 +99,7 @@ class ListActivity : AppCompatActivity() {
         VexoList(
             "john_wick_universe",
             "JOHN WICK UNIVERSE",
-            "Entra en el submundo criminal donde las reglas lo son todo y la elegancia se mezcla con la violencia más pura. Sigue la odisea de John Wick, el hombre que una vez fue el asesino más temido y que ahora busca venganza y redención. Esta colección incluye la tetralogía completa que redefinió el cine de acción moderno y la serie 'The Continental', que explora los orígenes del hotel que sirve de santuario para los asesinos más peligrosos del mundo. ¡Prepárate para la acción táctica definitiva!",
+            "Entra en el submundo criminal donde las reglas lo son todo y la elegancia se mezcla con la violencia más pura. Sigue la odisea de John Wick, el hombre que una vez fue el asesino más temido y que ahora busca venganza y redención. Esta colección incluye la tetralogía completa que redefinió el cine de acción moderno y la serie 'The Continental', que exploran los orígenes del hotel que sirve de santuario para los asesinos más peligrosos del mundo. ¡Prepárate para la acción táctica definitiva!",
             R.drawable.vexo_logo,
             "5 ELEMENTOS",
             5,
@@ -248,7 +248,6 @@ class UserListAdapter(
         val img1: ImageView = v.findViewById(R.id.imgPreview1)
         val img2: ImageView = v.findViewById(R.id.imgPreview2)
         val img3: ImageView = v.findViewById(R.id.imgPreview3)
-        val img4: ImageView = v.findViewById(R.id.imgPreview4)
         val textMore: TextView = v.findViewById(R.id.textMoreMovies)
     }
 
@@ -262,7 +261,7 @@ class UserListAdapter(
         h.description.visibility = if (!l.description.isNullOrEmpty()) View.VISIBLE else View.GONE
         h.count.text = "${l.movies.size} ELEMENTOS"
 
-        val imgs = listOf(h.img1, h.img2, h.img3, h.img4)
+        val imgs = listOf(h.img1, h.img2, h.img3)
         imgs.forEach { it.visibility = View.GONE; it.setPadding(0, 0, 0, 0); it.imageTintList = null }
         h.textMore.visibility = View.GONE
         
@@ -272,13 +271,13 @@ class UserListAdapter(
             h.img1.setPadding(12, 12, 12, 12)
             h.img1.imageTintList = android.content.res.ColorStateList.valueOf(h.itemView.context.getColor(R.color.text_secondary))
         } else {
-            l.movies.take(4).forEachIndexed { i, m ->
+            l.movies.take(3).forEachIndexed { i, m ->
                 imgs[i].visibility = View.VISIBLE
                 val posterUrl = "https://image.tmdb.org/t/p/w500${m.posterPath}"
                 Glide.with(h.itemView.context).load(posterUrl).centerCrop().into(imgs[i])
             }
         }
-        if (l.movies.size > 4) { h.textMore.visibility = View.VISIBLE; h.textMore.text = "+${l.movies.size-4}" }
+        if (l.movies.size > 3) { h.textMore.visibility = View.VISIBLE; h.textMore.text = "+${l.movies.size-3}" }
         h.itemView.setOnClickListener { onListClick(l) }
     }
 

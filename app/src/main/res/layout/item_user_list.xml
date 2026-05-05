@@ -63,7 +63,7 @@
         <LinearLayout
             android:id="@+id/layoutPreviewMovies"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="125dp"
             android:layout_marginTop="12dp"
             android:orientation="horizontal"
             android:gravity="center_vertical"
@@ -71,9 +71,9 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imgPreview1"
-                android:layout_width="68dp"
+                android:layout_width="80dp"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="6dp"
+                android:layout_marginEnd="8dp"
                 android:scaleType="centerCrop"
                 app:shapeAppearanceOverlay="@style/RoundedImageView"
                 android:visibility="gone"
@@ -82,9 +82,9 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imgPreview2"
-                android:layout_width="68dp"
+                android:layout_width="80dp"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="6dp"
+                android:layout_marginEnd="8dp"
                 android:scaleType="centerCrop"
                 app:shapeAppearanceOverlay="@style/RoundedImageView"
                 android:visibility="gone"
@@ -93,20 +93,9 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imgPreview3"
-                android:layout_width="68dp"
+                android:layout_width="80dp"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="6dp"
-                android:scaleType="centerCrop"
-                app:shapeAppearanceOverlay="@style/RoundedImageView"
-                android:visibility="gone"
-                tools:visibility="visible"
-                tools:src="@android:drawable/ic_menu_gallery" />
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/imgPreview4"
-                android:layout_width="68dp"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="6dp"
+                android:layout_marginEnd="8dp"
                 android:scaleType="centerCrop"
                 app:shapeAppearanceOverlay="@style/RoundedImageView"
                 android:visibility="gone"
@@ -118,11 +107,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:text="+2"
                 android:textColor="@color/text_secondary"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                android:visibility="gone" />
+                android:maxLines="1"
+                android:singleLine="true"
+                android:includeFontPadding="false"
+                android:visibility="gone"
+                tools:visibility="visible"
+                tools:text="+12" />
 
         </LinearLayout>
 

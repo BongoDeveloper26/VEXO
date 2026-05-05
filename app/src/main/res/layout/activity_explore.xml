@@ -15,12 +15,12 @@
         android:background="@drawable/gradient_header_explore"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Header con Logo Vexo y botones - Ajustado para estar más arriba -->
+    <!-- Header con Logo Vexo y botones - Ajustado para estar un pelín más bajo -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="20dp"
+        android:paddingTop="26dp"
         android:paddingBottom="0dp"
         android:paddingHorizontal="20dp"
         app:layout_constraintTop_toTopOf="parent">

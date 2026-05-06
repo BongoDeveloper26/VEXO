@@ -6,8 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="20dp"
-    android:paddingBottom="12dp">
+    android:paddingTop="12dp"
+    android:paddingBottom="4dp">
 
     <!-- Cabecera de Categoría Premium -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="20dp"
-        android:layout_marginBottom="14dp">
+        android:layout_marginBottom="8dp">
 
         <!-- Barra lateral de acento moderno -->
         <View
@@ -105,7 +105,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="12dp"
         android:layout_marginHorizontal="24dp"
         android:background="#15000000" />
 

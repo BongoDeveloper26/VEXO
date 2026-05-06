@@ -29,7 +29,10 @@ class MainActivity : AppCompatActivity() {
 
         watchlistRepository = WatchlistRepository(this)
         
-        setupFragments()
+        if (savedInstanceState == null) {
+            setupFragments()
+        }
+        
         setupBottomNavigation()
         handleDeepLink(intent)
     }
@@ -46,6 +49,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupBottomNavigation() {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+        
+        // Forzamos la selección visual inicial de Explorar
+        bottomNav.selectedItemId = R.id.nav_explore
         
         bottomNav.setOnItemSelectedListener { item ->
             val targetFragment = when (item.itemId) {

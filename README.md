@@ -187,80 +187,101 @@ Cada usuario dispone de:
 
 ---
 
-# Capturas de la aplicación
+# 📱 Capturas de la aplicación
 
-## Pantalla principal
+## 🏠 Menú principal
 
 <p align="center">
-  <img src="screenshots/home.png" width="250"/>
+  <img src="screenshots/home_menu_movies.png" width="220"/>
+  <img src="screenshots/discover_menu.png" width="220"/>
+  <img src="screenshots/profile_menu.png" width="220"/>
 </p>
 
 ---
 
-## Discover
+## 🎯 Sistema Discover
 
 <p align="center">
-  <img src="screenshots/discover.png" width="250"/>
-  <img src="screenshots/discover_filters.png" width="250"/>
+  <img src="screenshots/discover_filter.png" width="220"/>
+  <img src="screenshots/discover_menu.png" width="220"/>
 </p>
 
 ---
 
-## Ficha de contenido
+## 🎬 Ficha de películas y series
 
 <p align="center">
-  <img src="screenshots/detail.png" width="250"/>
+  <img src="screenshots/movie_file.png" width="220"/>
+  <img src="screenshots/movie_file_v2.png" width="220"/>
+  <img src="screenshots/movie_file_v3.png" width="220"/>
 </p>
 
 ---
 
-## Buscador
+## 📰 Noticias audiovisuales
 
 <p align="center">
-  <img src="screenshots/search.png" width="250"/>
+  <img src="screenshots/movie_news.png" width="220"/>
 </p>
 
 ---
 
-## Perfil de usuario
+## 📚 Sistema de listas
 
 <p align="center">
-  <img src="screenshots/profile.png" width="250"/>
+  <img src="screenshots/lists.png" width="220"/>
+  <img src="screenshots/library_lists.png" width="220"/>
+  <img src="screenshots/new_lists.png" width="220"/>
+  <img src="screenshots/other_lists.png" width="220"/>
+  <img src="screenshots/features_list.png" width="220"/>
 </p>
 
 ---
 
-## Reseñas y diario
+## 🔎 Buscador y resultados
 
 <p align="center">
-  <img src="screenshots/diary.png" width="250"/>
+  <img src="screenshots/seeker.png" width="220"/>
+  <img src="screenshots/seeker_results_movies.png" width="220"/>
+  <img src="screenshots/seeker_results_actors.png" width="220"/>
 </p>
 
 ---
 
-## Sistema de logros
+## 👤 Perfil de usuario
 
 <p align="center">
-  <img src="screenshots/achievements.png" width="250"/>
+  <img src="screenshots/profile_file.png" width="220"/>
+  <img src="screenshots/profile_management.png" width="220"/>
+  <img src="screenshots/profile_menu.png" width="220"/>
 </p>
 
 ---
 
-## Sistema de listas
+## 🎨 Personalización de perfil
 
 <p align="center">
-  <img src="screenshots/lists.png" width="250"/>
+  <img src="screenshots/profile_personalize.png" width="220"/>
+  <img src="screenshots/profile_configuration.png" width="220"/>
 </p>
 
 ---
 
-## Noticias
+## 📝 Diario y reseñas
 
 <p align="center">
-  <img src="screenshots/news.png" width="250"/>
+  <img src="screenshots/profile_diary.png" width="220"/>
+  <img src="screenshots/profile_reviews.png" width="220"/>
+  <img src="screenshots/profile_reviews_v2.png" width="220"/>
 </p>
 
 ---
+
+## 🏆 Sistema de logros
+
+<p align="center">
+  <img src="screenshots/achievements.png" width="220"/>
+</p>
 
 # Problemas encontrados durante el desarrollo
 

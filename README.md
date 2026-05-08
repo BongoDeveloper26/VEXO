@@ -192,9 +192,9 @@ Cada usuario dispone de:
 ## 🏠 Menú principal
 
 <p align="center">
-  <img src="screenshots/home_menu_movies.png" width="220"/>
-  <img src="screenshots/discover_menu.png" width="220"/>
-  <img src="screenshots/profile_menu.png" width="220"/>
+  <img src="Capturas%20Vexo/home_menu_movies.png" width="220"/>
+  <img src="Capturas%20Vexo/discover_menu.png" width="220"/>
+  <img src="Capturas%20Vexo/profile_menu.png" width="220"/>
 </p>
 
 ---
@@ -202,8 +202,8 @@ Cada usuario dispone de:
 ## 🎯 Sistema Discover
 
 <p align="center">
-  <img src="screenshots/discover_filter.png" width="220"/>
-  <img src="screenshots/discover_menu.png" width="220"/>
+  <img src="Capturas%20Vexo/discover_filter.png" width="220"/>
+  <img src="Capturas%20Vexo/discover_menu.png" width="220"/>
 </p>
 
 ---
@@ -211,9 +211,9 @@ Cada usuario dispone de:
 ## 🎬 Ficha de películas y series
 
 <p align="center">
-  <img src="screenshots/movie_file.png" width="220"/>
-  <img src="screenshots/movie_file_v2.png" width="220"/>
-  <img src="screenshots/movie_file_v3.png" width="220"/>
+  <img src="Capturas%20Vexo/movie_file.png" width="220"/>
+  <img src="Capturas%20Vexo/movie_file_v2.png" width="220"/>
+  <img src="Capturas%20Vexo/movie_file_v3.png" width="220"/>
 </p>
 
 ---
@@ -221,7 +221,7 @@ Cada usuario dispone de:
 ## 📰 Noticias audiovisuales
 
 <p align="center">
-  <img src="screenshots/movie_news.png" width="220"/>
+  <img src="Capturas%20Vexo/movie_news.png" width="220"/>
 </p>
 
 ---
@@ -229,11 +229,11 @@ Cada usuario dispone de:
 ## 📚 Sistema de listas
 
 <p align="center">
-  <img src="screenshots/lists.png" width="220"/>
-  <img src="screenshots/library_lists.png" width="220"/>
-  <img src="screenshots/new_lists.png" width="220"/>
-  <img src="screenshots/other_lists.png" width="220"/>
-  <img src="screenshots/features_list.png" width="220"/>
+  <img src="Capturas%20Vexo/lists.png" width="220"/>
+  <img src="Capturas%20Vexo/library_lists.png" width="220"/>
+  <img src="Capturas%20Vexo/new_lists.png" width="220"/>
+  <img src="Capturas%20Vexo/other_lists.png" width="220"/>
+  <img src="Capturas%20Vexo/features_list.png" width="220"/>
 </p>
 
 ---
@@ -241,9 +241,9 @@ Cada usuario dispone de:
 ## 🔎 Buscador y resultados
 
 <p align="center">
-  <img src="screenshots/seeker.png" width="220"/>
-  <img src="screenshots/seeker_results_movies.png" width="220"/>
-  <img src="screenshots/seeker_results_actors.png" width="220"/>
+  <img src="Capturas%20Vexo/seeker.png" width="220"/>
+  <img src="Capturas%20Vexo/seeker_results_movies.png" width="220"/>
+  <img src="Capturas%20Vexo/seeker_results_actors.png" width="220"/>
 </p>
 
 ---
@@ -251,9 +251,9 @@ Cada usuario dispone de:
 ## 👤 Perfil de usuario
 
 <p align="center">
-  <img src="screenshots/profile_file.png" width="220"/>
-  <img src="screenshots/profile_management.png" width="220"/>
-  <img src="screenshots/profile_menu.png" width="220"/>
+  <img src="Capturas%20Vexo/profile_file.png" width="220"/>
+  <img src="Capturas%20Vexo/profile_managment.png" width="220"/>
+  <img src="Capturas%20Vexo/profile_menu.png" width="220"/>
 </p>
 
 ---
@@ -261,8 +261,8 @@ Cada usuario dispone de:
 ## 🎨 Personalización de perfil
 
 <p align="center">
-  <img src="screenshots/profile_personalize.png" width="220"/>
-  <img src="screenshots/profile_configuration.png" width="220"/>
+  <img src="Capturas%20Vexo/profile_personalize.png" width="220"/>
+  <img src="Capturas%20Vexo/profile_configuration.png" width="220"/>
 </p>
 
 ---
@@ -270,9 +270,9 @@ Cada usuario dispone de:
 ## 📝 Diario y reseñas
 
 <p align="center">
-  <img src="screenshots/profile_diary.png" width="220"/>
-  <img src="screenshots/profile_reviews.png" width="220"/>
-  <img src="screenshots/profile_reviews_v2.png" width="220"/>
+  <img src="Capturas%20Vexo/profile_diary.png" width="220"/>
+  <img src="Capturas%20Vexo/profile_reviews.png" width="220"/>
+  <img src="Capturas%20Vexo/profile_reviews_v2.png" width="220"/>
 </p>
 
 ---
@@ -280,9 +280,8 @@ Cada usuario dispone de:
 ## 🏆 Sistema de logros
 
 <p align="center">
-  <img src="screenshots/achievements.png" width="220"/>
+  <img src="Capturas%20Vexo/achievements.png" width="220"/>
 </p>
-
 # Problemas encontrados durante el desarrollo
 
 Durante el desarrollo aparecieron distintos retos técnicos:

@@ -202,7 +202,7 @@ Pantallas de acceso y registro de usuarios donde se permite iniciar sesión medi
 
 <p align="center">
   <img src="screenshot/home_menu_movies.png.jfif" width="220"/>
-  <img src="screenshot/home_menu_series.png.jfif" width="220"/>
+  <img src="screenshot/home_menu_series.jfif" width="220"/>
 </p>
 
 Pantallas principales de navegación donde se muestran películas y series destacadas organizadas por categorías. El usuario puede acceder rápidamente a contenido en tendencia, recomendaciones y apartados personalizados desde el menú inferior.

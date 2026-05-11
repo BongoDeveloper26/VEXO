@@ -166,7 +166,7 @@ La aplicación utiliza:
 
 ---
 
-# 🔥Backend y persistencia
+# Backend y persistencia
 
 VEXO utiliza Firebase para:
 
@@ -193,8 +193,6 @@ Cada usuario dispone de:
 
 <p align="center">
   <img src="screenshot/home_menu_movies.png.jfif" width="220"/>
-  <img src="screenshot/discover_menu.png.jfif" width="220"/>
-  <img src="screenshot/profile_menu.png.jfif" width="220"/>
 </p>
 
 ---

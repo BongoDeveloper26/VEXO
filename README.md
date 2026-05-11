@@ -244,14 +244,14 @@ Vista detallada de películas donde se muestra información ampliada como sinops
 Pantallas dedicadas a series de televisión donde se pueden consultar temporadas, episodios, descripción completa y puntuaciones. Además, se muestran imágenes promocionales y contenido relacionado.
 
 <p align="center">
-  <img src="screenshot/feutures_posters.png" width="220"/>
-  <img src="screenshot/feutures_reviews.png" width="220"/>
+  <img src="screenshot/feutures_posters.jfif" width="220"/>
+  <img src="screenshot/feutures_reviews.jfif" width="220"/>
 </p>
 
 Pantallas relacionadas con funcionalidades destacadas de la aplicación, mostrando publicaciones visuales, pósters personalizados y contenido compartido por los usuarios.
 
 <p align="center">
-  <img src="screenshot/feutures_series_movies.png" width="220"/>
+  <img src="screenshot/feutures_series_movies.jfif" width="220"/>
 </p>
 ---
 

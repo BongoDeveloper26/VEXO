@@ -298,6 +298,8 @@ Sistema de creación de nuevas colecciones personalizadas y exploración de list
 
 Opciones avanzadas de gestión de listas, incluyendo configuración de privacidad, edición y acciones rápidas sobre colecciones creadas.
 
+---
+
 ## Buscador y resultados
 
 <p align="center">

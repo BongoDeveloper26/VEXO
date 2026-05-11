@@ -70,7 +70,7 @@ Además, la aplicación incorpora listas oficiales generadas por VEXO para facil
 
 ---
 
-## Modo Discover
+## DISCOVER
 
 Una de las funcionalidades más importantes del proyecto.
 
@@ -209,7 +209,7 @@ Pantallas principales de navegación donde se muestran películas y series desta
 
 ---
 
-## Sistema Discover
+## DISCOVER
 
 <p align="center">
   <img src="screenshot/discover_filter.png.jfif" width="220"/>

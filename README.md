@@ -192,8 +192,8 @@ Cada usuario dispone de:
 ## 🔐 Sistema de autenticación
 
 <p align="center">
-  <img src="screenshot/loggin.png.jfif" width="220"/>
-  <img src="screenshot/loggin_v2.png.jfif" width="220"/>
+  <img src="screenshot/loggin.png" width="220"/>
+  <img src="screenshot/loggin_v2.png" width="220"/>
 </p>
 
 ---
@@ -230,8 +230,8 @@ Cada usuario dispone de:
 ## 📺 Ficha de series
 
 <p align="center">
-  <img src="screenshot/serie_profile.png.jfif" width="220"/>
-  <img src="screenshot/serie_profile_v2.png.jfif" width="220"/>
+  <img src="screenshot/serie_profile.png" width="220"/>
+  <img src="screenshot/serie_profile_v2.png" width="220"/>
 </p>
 
 ---

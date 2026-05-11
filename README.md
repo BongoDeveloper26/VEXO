@@ -321,6 +321,18 @@ Apartado de noticias donde se recopilan artículos relacionados con estrenos, ac
 
 Perfil personal del usuario donde se muestran estadísticas, actividad reciente, contenido guardado y accesos rápidos a funcionalidades como listas, logros, compartir su cuenta con sus contactos o configuración de cuenta.
 
+## Diario y reseñas
+
+<p align="center">
+  <img src="screenshot/profile_diary.png.jfif" width="220"/>
+  <img src="screenshot/profile_reviews.png.jfif" width="220"/>
+  <img src="screenshot/profile_reviews_v2.png.jfif" width="220"/>
+</p>
+
+Sistema de diario personal y reseñas donde el usuario puede registrar películas y series vistas, añadir valoraciones y escribir opiniones sobre el contenido consumido.
+
+---
+
 ## Gestión de perfil del usuario
 
 <p align="center">
@@ -354,18 +366,6 @@ Apartado de logros y progresión donde se desbloquean recompensas visuales segú
 </p>
 
 Configuración del perfil del usuario donde puede ver los datos de su perfil, cambiar idioma entre el Español e Inglés y un apartado para averiguar un poco más sobre la pasión y el amor que le he puesto a este proyecto.
-
----
-
-## Diario y reseñas
-
-<p align="center">
-  <img src="screenshot/profile_diary.png.jfif" width="220"/>
-  <img src="screenshot/profile_reviews.png.jfif" width="220"/>
-  <img src="screenshot/profile_reviews_v2.png.jfif" width="220"/>
-</p>
-
-Sistema de diario personal y reseñas donde el usuario puede registrar películas y series vistas, añadir valoraciones y escribir opiniones sobre el contenido consumido.
 
 ---
 

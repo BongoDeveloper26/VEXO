@@ -315,8 +315,6 @@ Motor de búsqueda integrado que permite localizar películas, series y actores.
 <p align="center">
   <img src="screenshot/profile_menu.png.jfif" width="220"/>
   <img src="screenshot/profile_managment.png.jfif" width="220"/>
-  <img src="screenshot/profile_file.png.jfif" width="220"/>
-  <img src="screenshot/profile_configuration.png.jfif" width="220"/>
 </p>
 
 Perfil personal del usuario donde se muestran estadísticas, actividad reciente, contenido guardado y accesos rápidos a funcionalidades como listas, logros o configuración de cuenta.
@@ -337,6 +335,15 @@ Pantallas de configuración y personalización visual donde el usuario puede mod
 </p>
 
 Apartado de logros y progresión donde se desbloquean recompensas visuales según la actividad del usuario dentro de la aplicación, fomentando la interacción y la gamificación.
+
+## Opciones del perfil de usuario
+
+<p align="center">
+  <img src="screenshot/profile_configuration.png.jfif" width="220"/>
+  <img src="screenshot/profile_file.png.jfif" width="220"/>
+</p>
+
+Configuración del perfil del usuario donde pede 
 
 ---
 

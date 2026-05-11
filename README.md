@@ -187,7 +187,7 @@ Cada usuario dispone de:
 
 ---
 
-## 🔐 Sistema de autenticación
+## Sistema de autenticación
 
 <p align="center">
   <img src="screenshot/loggin.png" width="220"/>
@@ -198,20 +198,18 @@ Pantallas de acceso y registro de usuarios donde se permite iniciar sesión medi
 
 ---
 
-## 🏠 Menú principal
+## Menú principal
 
 <p align="center">
   <img src="screenshot/home_menu_movies.png.jfif" width="220"/>
-  <img src="screenshot/home_menu_series.png" width="220"/>
-  <img src="screenshot/discover_menu.png.jfif" width="220"/>
-  <img src="screenshot/profile_menu.png.jfif" width="220"/>
+  <img src="screenshot/home_menu_series.jfif" width="220"/>
 </p>
 
 Pantallas principales de navegación donde se muestran películas y series destacadas organizadas por categorías. El usuario puede acceder rápidamente a contenido en tendencia, recomendaciones y apartados personalizados desde el menú inferior.
 
 ---
 
-## 🎯 Sistema Discover
+## Sistema Discover
 
 <p align="center">
   <img src="screenshot/discover_filter.png.jfif" width="220"/>
@@ -222,7 +220,7 @@ Sistema de descubrimiento basado en recomendaciones rápidas mediante swipe. El 
 
 ---
 
-## 🎬 Ficha de películas
+## Ficha de películas
 
 <p align="center">
   <img src="screenshot/movie_file.png.jfif" width="220"/>
@@ -234,7 +232,7 @@ Vista detallada de películas donde se muestra información ampliada como sinops
 
 ---
 
-## 📺 Ficha de series
+## Ficha de series
 
 <p align="center">
   <img src="screenshot/serie_profile.png" width="220"/>
@@ -245,7 +243,7 @@ Pantallas dedicadas a series de televisión donde se pueden consultar temporadas
 
 ---
 
-## 📰 Noticias audiovisuales
+## Noticias audiovisuales
 
 <p align="center">
   <img src="screenshot/movie_news.png.jfif" width="220"/>
@@ -255,7 +253,7 @@ Apartado de noticias donde se recopilan artículos relacionados con estrenos, ac
 
 ---
 
-## 📚 Sistema de listas
+## Sistema de listas
 
 <p align="center">
   <img src="screenshot/lists.png.jfif" width="220"/>
@@ -269,7 +267,7 @@ Sistema de organización mediante listas personalizadas donde el usuario puede c
 
 ---
 
-## 🔎 Buscador y resultados
+## Buscador y resultados
 
 <p align="center">
   <img src="screenshot/seeker.png.jfif" width="220"/>
@@ -281,7 +279,7 @@ Motor de búsqueda integrado que permite localizar películas, series y actores.
 
 ---
 
-## 👤 Perfil de usuario
+## Perfil de usuario
 
 <p align="center">
   <img src="screenshot/profile_file.png.jfif" width="220"/>
@@ -293,7 +291,7 @@ Perfil personal del usuario donde se muestran estadísticas, actividad reciente,
 
 ---
 
-## 🎨 Personalización de perfil
+## Personalización de perfil
 
 <p align="center">
   <img src="screenshot/profile_personalize.png.jfif" width="220"/>
@@ -304,7 +302,7 @@ Pantallas de configuración y personalización visual donde el usuario puede mod
 
 ---
 
-## 📝 Diario y reseñas
+## Diario y reseñas
 
 <p align="center">
   <img src="screenshot/profile_diary.png.jfif" width="220"/>
@@ -316,7 +314,7 @@ Sistema de diario personal y reseñas donde el usuario puede registrar película
 
 ---
 
-## 🏆 Sistema de logros
+## Sistema de logros
 
 <p align="center">
   <img src="screenshot/achievements.png.jfif" width="220"/>

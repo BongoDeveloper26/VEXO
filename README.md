@@ -187,7 +187,7 @@ Cada usuario dispone de:
 
 ---
 
-## Sistema de autenticación
+## Loggin
 
 <p align="center">
   <img src="screenshot/loggin.png" width="220"/>
@@ -209,7 +209,7 @@ Pantallas principales de navegación donde se muestran películas y series desta
 
 ---
 
-## Sistema Discover
+## DISCOVER
 
 <p align="center">
   <img src="screenshot/discover_filter.png.jfif" width="220"/>
@@ -256,6 +256,18 @@ Pantallas que comparten tanto las fichas de series como de peliculas, donde se p
 
 ---
 
+## Buscador y resultados
+
+<p align="center">
+  <img src="screenshot/seeker.png.jfif" width="220"/>
+  <img src="screenshot/seeker_results_movies.png.jfif" width="220"/>
+  <img src="screenshot/seeker_results_actors.png.jfif" width="220"/>
+</p>
+
+Motor de búsqueda integrado que permite localizar películas, series y actores. Los resultados se muestran organizados visualmente mediante tarjetas con imágenes, títulos y contenido relacionado.
+
+---
+
 ## Sistema de listas
 
 ### Listas personalizadas y biblioteca
@@ -285,18 +297,6 @@ Sistema de creación de nuevas colecciones personalizadas y exploración de list
 </p>
 
 Opciones avanzadas de gestión de listas, incluyendo configuración de privacidad, edición y acciones rápidas sobre colecciones creadas.
-
----
-
-## Buscador y resultados
-
-<p align="center">
-  <img src="screenshot/seeker.png.jfif" width="220"/>
-  <img src="screenshot/seeker_results_movies.png.jfif" width="220"/>
-  <img src="screenshot/seeker_results_actors.png.jfif" width="220"/>
-</p>
-
-Motor de búsqueda integrado que permite localizar películas, series y actores. Los resultados se muestran organizados visualmente mediante tarjetas con imágenes, títulos y contenido relacionado.
 
 ---
 

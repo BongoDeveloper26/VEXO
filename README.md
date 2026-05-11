@@ -256,6 +256,7 @@ Caracteristicas que tienen tanto las fichas de series como de peliculas, donde s
 
 Pantallas que comparten tanto las fichas de series como de peliculas, donde se pueden ver los posters y tanto valorar como escribir una reseña personal.
 
+---
 
 ## Noticias audiovisuales
 

@@ -189,7 +189,7 @@ Cada usuario dispone de:
 
 # Capturas de la aplicación
 
-## Sistema de autenticación
+## Loggin
 
 <p align="center">
   <img src="screenshot/loggin.png" width="220"/>
@@ -202,13 +202,12 @@ Cada usuario dispone de:
 
 <p align="center">
   <img src="screenshot/home_menu_movies.png.jfif" width="220"/>
-  <img src="screenshot/discover_menu.png.jfif" width="220"/>
-  <img src="screenshot/profile_menu.png.jfif" width="220"/>
+  <img src="screenshot/home_menu_series.png" width="220"/>
 </p>
 
 ---
 
-## Sistema Discover
+## DISCOVER
 
 <p align="center">
   <img src="screenshot/discover_filter.png.jfif" width="220"/>

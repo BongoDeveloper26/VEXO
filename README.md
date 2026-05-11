@@ -187,73 +187,86 @@ Cada usuario dispone de:
 
 ---
 
-## Sistema de autenticación
+# 📱 Capturas de la aplicación
+
+## 🔐 Sistema de autenticación
 
 <p align="center">
   <img src="screenshot/loggin.png" width="220"/>
   <img src="screenshot/loggin_v2.png" width="220"/>
 </p>
 
-Pantallas de acceso y registro de usuarios donde se permite iniciar sesión mediante correo electrónico y contraseña. También se incluye la posibilidad de crear una nueva cuenta directamente desde la aplicación.
+Pantallas de acceso y registro de usuarios mediante autenticación integrada con Firebase Authentication. El usuario puede iniciar sesión o crear una cuenta directamente desde la aplicación.
 
 ---
 
-## Menú principal
+## 🏠 Menú principal
 
 <p align="center">
   <img src="screenshot/home_menu_movies.png.jfif" width="220"/>
-  <img src="screenshot/home_menu_series.jfif" width="220"/>
+  <img src="screenshot/home_menu_series.png" width="220"/>
 </p>
 
-Pantallas principales de navegación donde se muestran películas y series destacadas organizadas por categorías. El usuario puede acceder rápidamente a contenido en tendencia, recomendaciones y apartados personalizados desde el menú inferior.
+Pantallas principales de navegación donde se muestran películas y series destacadas organizadas por categorías y tendencias.
+
+<p align="center">
+  <img src="screenshot/discover_menu.png.jfif" width="220"/>
+  <img src="screenshot/profile_menu.png.jfif" width="220"/>
+</p>
+
+Acceso rápido a recomendaciones personalizadas y al perfil del usuario mediante el menú inferior de navegación.
 
 ---
 
-## DISCOVER
+## 🎯 Sistema Discover
 
 <p align="center">
   <img src="screenshot/discover_filter.png.jfif" width="220"/>
-  <img src="screenshot/discover_menu.png.jfif" width="220"/>
 </p>
 
-Sistema de descubrimiento basado en recomendaciones rápidas mediante swipe. El usuario puede aplicar filtros avanzados como género, plataforma, duración o valoración para obtener sugerencias más personalizadas.
+Sistema de filtros avanzados donde el usuario puede seleccionar géneros, duración, valoración o plataforma para personalizar recomendaciones.
 
 ---
 
-## Ficha de películas
+## 🎬 Ficha de películas
 
 <p align="center">
   <img src="screenshot/movie_file.png.jfif" width="220"/>
   <img src="screenshot/movie_file_v2.png.jfif" width="220"/>
+</p>
+
+Pantallas principales de información de películas con sinopsis, plataformas disponibles, valoraciones y contenido relacionado.
+
+<p align="center">
   <img src="screenshot/movie_file_v3.png.jfif" width="220"/>
 </p>
 
-Vista detallada de películas donde se muestra información ampliada como sinopsis, plataformas disponibles, reparto, valoraciones, duración y recomendaciones relacionadas. También se incluyen acciones rápidas para guardar contenido o marcarlo como visto.
+Vista ampliada con detalles adicionales como reparto, puntuaciones y acciones rápidas para guardar contenido o marcarlo como visto.
 
 ---
 
-## Ficha de series
+## 📺 Ficha de series
 
 <p align="center">
   <img src="screenshot/serie_profile.png" width="220"/>
   <img src="screenshot/serie_profile_v2.png" width="220"/>
 </p>
 
-Pantallas dedicadas a series de televisión donde se pueden consultar temporadas, episodios, descripción completa y puntuaciones. Además, se muestran imágenes promocionales y contenido relacionado.
+Pantallas dedicadas a series de televisión donde se muestran temporadas, episodios, imágenes promocionales y valoraciones.
 
 ---
 
-## Noticias audiovisuales
+## 📰 Noticias audiovisuales
 
 <p align="center">
   <img src="screenshot/movie_news.png.jfif" width="220"/>
 </p>
 
-Apartado de noticias donde se recopilan artículos relacionados con estrenos, actualidad cinematográfica y novedades del sector audiovisual utilizando información obtenida desde NewsAPI.
+Apartado de noticias actualizado dinámicamente mediante NewsAPI con información relacionada con estrenos y actualidad audiovisual.
 
 ---
 
-## Sistema de listas
+## 📚 Sistema de listas
 
 ### Listas personalizadas y biblioteca
 
@@ -262,7 +275,7 @@ Apartado de noticias donde se recopilan artículos relacionados con estrenos, ac
   <img src="screenshot/library_lists.png.jfif" width="260"/>
 </p>
 
-Pantallas principales del sistema de listas donde el usuario puede consultar sus colecciones personales y acceder a listas destacadas.
+Pantallas principales del sistema de listas donde el usuario puede consultar sus colecciones personales y listas destacadas.
 
 ---
 
@@ -273,72 +286,106 @@ Pantallas principales del sistema de listas donde el usuario puede consultar sus
   <img src="screenshot/other_lists.png.jfif" width="260"/>
 </p>
 
-Sistema de creación de nuevas colecciones personalizadas y exploración de listas públicas organizadas por temáticas.
+Sistema de creación de nuevas colecciones personalizadas y exploración de listas públicas organizadas por categorías.
 
 ---
 
 ### Gestión de listas
 
 <p align="center">
-  <img src="screenshot/feutures_list.png.jfif" width="260"/>
+  <img src="screenshot/feutures_list.png" width="260"/>
 </p>
 
-Opciones avanzadas de gestión de listas, incluyendo configuración de privacidad, edición y acciones rápidas sobre colecciones creadas.
-
-## Buscador y resultados
-
-<p align="center">
-  <img src="screenshot/seeker.png.jfif" width="220"/>
-  <img src="screenshot/seeker_results_movies.png.jfif" width="220"/>
-  <img src="screenshot/seeker_results_actors.png.jfif" width="220"/>
-</p>
-
-Motor de búsqueda integrado que permite localizar películas, series y actores. Los resultados se muestran organizados visualmente mediante tarjetas con imágenes, títulos y contenido relacionado.
+Opciones avanzadas de gestión de listas, incluyendo privacidad, edición y acciones rápidas sobre colecciones creadas.
 
 ---
 
-## Perfil de usuario
+## ⭐ Funcionalidades destacadas
+
+<p align="center">
+  <img src="screenshot/feutures_posters.png" width="220"/>
+  <img src="screenshot/feutures_reviews.png" width="220"/>
+</p>
+
+Secciones destacadas relacionadas con pósters personalizados y publicaciones de reseñas realizadas por los usuarios.
+
+<p align="center">
+  <img src="screenshot/feutures_series_movies.png" width="220"/>
+</p>
+
+Vista dedicada a funcionalidades especiales relacionadas con recomendaciones de películas y series.
+
+---
+
+## 🔎 Buscador y resultados
+
+<p align="center">
+  <img src="screenshot/seeker.png" width="220"/>
+  <img src="screenshot/seeker_results_movies.png" width="220"/>
+</p>
+
+Motor de búsqueda integrado para localizar películas y series mediante resultados visuales organizados por tarjetas.
+
+<p align="center">
+  <img src="screenshot/seeker_results_actors.png" width="220"/>
+</p>
+
+Resultados relacionados con actores y contenido asociado obtenido desde las APIs externas integradas.
+
+---
+
+## 👤 Perfil de usuario
 
 <p align="center">
   <img src="screenshot/profile_file.png.jfif" width="220"/>
-  <img src="screenshot/profile_managment.png.jfif" width="220"/>
+  <img src="screenshot/profile_managment.png" width="220"/>
+</p>
+
+Perfil principal del usuario con acceso a estadísticas personales, actividad reciente y contenido guardado.
+
+<p align="center">
   <img src="screenshot/profile_menu.png.jfif" width="220"/>
 </p>
 
-Perfil personal del usuario donde se muestran estadísticas, actividad reciente, contenido guardado y accesos rápidos a funcionalidades como listas, logros o configuración de cuenta.
+Panel principal de navegación del perfil con acceso rápido a listas, logros, diario y configuración.
 
 ---
 
-## Personalización de perfil
+## 🎨 Personalización de perfil
 
 <p align="center">
-  <img src="screenshot/profile_personalize.png.jfif" width="220"/>
-  <img src="screenshot/profile_configuration.png.jfif" width="220"/>
+  <img src="screenshot/profile_personalize.png" width="220"/>
+  <img src="screenshot/profile_configuration.png" width="220"/>
 </p>
 
-Pantallas de configuración y personalización visual donde el usuario puede modificar colores, apariencia del perfil y diferentes preferencias relacionadas con la experiencia de uso.
+Opciones de configuración y personalización visual donde el usuario puede modificar la apariencia y preferencias de uso.
 
 ---
 
-## Diario y reseñas
+## 📝 Diario y reseñas
 
 <p align="center">
-  <img src="screenshot/profile_diary.png.jfif" width="220"/>
-  <img src="screenshot/profile_reviews.png.jfif" width="220"/>
-  <img src="screenshot/profile_reviews_v2.png.jfif" width="220"/>
+  <img src="screenshot/profile_diary.png" width="220"/>
+  <img src="screenshot/profile_reviews.png" width="220"/>
 </p>
 
-Sistema de diario personal y reseñas donde el usuario puede registrar películas y series vistas, añadir valoraciones y escribir opiniones sobre el contenido consumido.
+Sistema de diario audiovisual donde el usuario puede registrar películas y series vistas junto con valoraciones personales.
+
+<p align="center">
+  <img src="screenshot/profile_reviews_v2.png" width="220"/>
+</p>
+
+Vista detallada de reseñas publicadas por el usuario con puntuaciones y comentarios personalizados.
 
 ---
 
-## Sistema de logros
+## 🏆 Sistema de logros
 
 <p align="center">
   <img src="screenshot/achievements.png.jfif" width="220"/>
 </p>
 
-Apartado de logros y progresión donde se desbloquean recompensas visuales según la actividad del usuario dentro de la aplicación, fomentando la interacción y la gamificación.
+Sistema de logros y gamificación diseñado para recompensar la actividad y el uso continuado de la aplicación.
 
 # Problemas encontrados durante el desarrollo
 

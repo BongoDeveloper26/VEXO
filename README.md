@@ -354,6 +354,9 @@ Sistema de diario personal y reseñas donde el usuario puede registrar película
 </p>
 
 Apartado de logros y progresión donde se desbloquean recompensas visuales según la actividad del usuario dentro de la aplicación, fomentando la interacción y la gamificación.
+
+---
+
 # Problemas encontrados durante el desarrollo
 
 Durante el desarrollo aparecieron distintos retos técnicos:

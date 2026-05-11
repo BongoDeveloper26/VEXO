@@ -202,7 +202,7 @@ Cada usuario dispone de:
 
 <p align="center">
   <img src="screenshot/home_menu_movies.png.jfif" width="220"/>
-  <img src="screenshot/home_menu_series.png.jfif" width="220"/>
+  <img src="screenshot/home_menu_series.jfif" width="220"/>
 </p>
 
 ---

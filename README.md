@@ -1,4 +1,4 @@
-# VEXO 🎬📱
+# VEXO 
 ### Aplicación Android para descubrir, gestionar y decidir qué ver en películas y series
 
 VEXO es una aplicación móvil desarrollada para Android cuyo objetivo es ayudar al usuario a descubrir, organizar y gestionar contenido audiovisual de forma rápida, visual y personalizada.
@@ -7,7 +7,7 @@ La aplicación integra múltiples fuentes externas de información como **TMDB**
 
 ---
 
-# 📖 Descripción del proyecto
+# Descripción del proyecto
 
 Actualmente existen numerosas plataformas de streaming y una enorme cantidad de contenido audiovisual disponible, lo que provoca que muchos usuarios:
 
@@ -29,9 +29,9 @@ VEXO nace como una solución a este problema, ofreciendo:
 
 ---
 
-# ✨ Características principales
+# Características principales
 
-## 🔍 Exploración de películas y series
+## Exploración de películas y series
 
 La aplicación permite consultar:
 
@@ -55,7 +55,7 @@ Incluye información detallada como:
 
 ---
 
-## ❤️ Sistema de favoritos y listas
+## Sistema de favoritos y listas
 
 Los usuarios pueden:
 
@@ -70,7 +70,7 @@ Además, la aplicación incorpora listas oficiales generadas por VEXO para facil
 
 ---
 
-## 🎯 Modo Discover
+## Modo Discover
 
 Una de las funcionalidades más importantes del proyecto.
 
@@ -93,7 +93,7 @@ El sistema permite aplicar filtros avanzados:
 
 ---
 
-## 📰 Noticias del sector audiovisual
+## Noticias del sector audiovisual
 
 VEXO incorpora una sección de noticias actualizadas relacionadas con:
 
@@ -106,7 +106,7 @@ Las noticias se obtienen mediante integración con **NewsAPI**.
 
 ---
 
-## 👤 Perfil personalizable
+## Perfil personalizable
 
 Cada usuario dispone de:
 
@@ -123,7 +123,7 @@ La aplicación incorpora elementos de gamificación para aumentar la interacció
 
 ---
 
-# 🛠️ Tecnologías utilizadas
+# Tecnologías utilizadas
 
 | Tecnología | Uso |
 |---|---|
@@ -141,7 +141,7 @@ La aplicación incorpora elementos de gamificación para aumentar la interacció
 
 ---
 
-# 🧱 Arquitectura
+# Arquitectura
 
 El proyecto sigue una arquitectura orientada a **MVVM (Model - View - ViewModel)**, utilizando repositorios para centralizar el acceso a datos y separar responsabilidades dentro de la aplicación.
 
@@ -166,7 +166,7 @@ La aplicación utiliza:
 
 ---
 
-# 🔥 Backend y persistencia
+# 🔥Backend y persistencia
 
 VEXO utiliza Firebase para:
 
@@ -187,9 +187,9 @@ Cada usuario dispone de:
 
 ---
 
-# 📱 Capturas de la aplicación
+# Capturas de la aplicación
 
-## 🏠 Menú principal
+## Menú principal
 
 <p align="center">
   <img src="screenshot/home_menu_movies.png.jfif" width="220"/>
@@ -199,7 +199,7 @@ Cada usuario dispone de:
 
 ---
 
-## 🎯 Sistema Discover
+## Sistema Discover
 
 <p align="center">
   <img src="screenshot/discover_filter.png.jfif" width="220"/>
@@ -208,7 +208,7 @@ Cada usuario dispone de:
 
 ---
 
-## 🎬 Ficha de películas y series
+## Ficha de películas y series
 
 <p align="center">
   <img src="screenshot/movie_file.png.jfif" width="220"/>
@@ -218,7 +218,7 @@ Cada usuario dispone de:
 
 ---
 
-## 📰 Noticias audiovisuales
+## Noticias audiovisuales
 
 <p align="center">
   <img src="screenshot/movie_news.png.jfif" width="220"/>
@@ -226,7 +226,7 @@ Cada usuario dispone de:
 
 ---
 
-## 📚 Sistema de listas
+## Sistema de listas
 
 <p align="center">
   <img src="screenshot/lists.png.jfif" width="220"/>
@@ -238,7 +238,7 @@ Cada usuario dispone de:
 
 ---
 
-## 🔎 Buscador y resultados
+## Buscador y resultados
 
 <p align="center">
   <img src="screenshot/seeker.png.jfif" width="220"/>
@@ -248,7 +248,7 @@ Cada usuario dispone de:
 
 ---
 
-## 👤 Perfil de usuario
+## Perfil de usuario
 
 <p align="center">
   <img src="screenshot/profile_file.png.jfif" width="220"/>
@@ -258,7 +258,7 @@ Cada usuario dispone de:
 
 ---
 
-## 🎨 Personalización de perfil
+## Personalización de perfil
 
 <p align="center">
   <img src="screenshot/profile_personalize.png.jfif" width="220"/>
@@ -267,7 +267,7 @@ Cada usuario dispone de:
 
 ---
 
-## 📝 Diario y reseñas
+## Diario y reseñas
 
 <p align="center">
   <img src="screenshot/profile_diary.png.jfif" width="220"/>
@@ -277,14 +277,14 @@ Cada usuario dispone de:
 
 ---
 
-## 🏆 Sistema de logros
+## Sistema de logros
 
 <p align="center">
   <img src="screenshot/achievements.png.jfif" width="220"/>
 </p>
 ---
 
-# ⚠️ Problemas encontrados durante el desarrollo
+# Problemas encontrados durante el desarrollo
 
 Durante el desarrollo aparecieron distintos retos técnicos:
 
@@ -297,17 +297,6 @@ Durante el desarrollo aparecieron distintos retos técnicos:
 | Gestión del ciclo de vida | Operaciones ligadas al lifecycle |
 
 ---
-
-# 💰 Valoración económica
-
-El proyecto se desarrolló durante aproximadamente:
-
-- **4 meses**
-- entre **300 y 400 horas de trabajo**
-
-Coste estimado en entorno profesional:
-
-- entre **3.000 € y 4.000 €**
 
 ## Estimación de costes
 
@@ -322,7 +311,7 @@ Coste estimado en entorno profesional:
 
 ---
 
-# 🚀 Futuras mejoras
+# Futuras mejoras
 
 El proyecto está planteado para evolucionar hacia una aplicación más completa.
 
@@ -341,7 +330,7 @@ Posibles mejoras futuras:
 
 ---
 
-# 📊 Viabilidad del proyecto
+# Viabilidad del proyecto
 
 VEXO presenta:
 
@@ -360,7 +349,7 @@ El proyecto contempla modelos de:
 
 ---
 
-# 📥 Instalación
+# Instalación
 
 ```bash
 git clone https://github.com/BongoDeveloper26/VEXO
@@ -381,15 +370,7 @@ Configurar:
 
 ---
 
-# 🔗 Repositorio
-
-```text
-https://github.com/BongoDeveloper26/VEXO
-```
-
----
-
-# 👨‍💻 Autor
+# Autor
 
 **Alejandro del Valle López**  
 Desarrollo de Aplicaciones Multiplataforma  

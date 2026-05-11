@@ -223,7 +223,7 @@ Sistema de descubrimiento basado en recomendaciones rápidas mediante swipe. El 
 ## Ficha de películas
 
 <p align="center">
-  <img src="screenshot/movie_file.png.jfif" width="220"/>
+  <img src="screenshot/movie_file.png.jfif" width="220"/><br><br>
   <img src="screenshot/movie_file_v2.png.jfif" width="220"/><br><br>
   <img src="screenshot/movie_file_v3.png.jfif" width="220"/><br><br>
 </p>

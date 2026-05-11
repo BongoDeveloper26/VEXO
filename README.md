@@ -314,6 +314,7 @@ Apartado de noticias donde se recopilan artículos relacionados con estrenos, ac
 
 <p align="center">
   <img src="screenshot/profile_menu.png.jfif" width="220"/><br><br>
+  <img src="screenshot/profile_menu_2.0.jfif" width="220"/>
   <img src="screenshot/profile_menu_v2.jfif" width="220"/><br><br>
   <img src="screenshot/profile_menu_v3.jfif" width="220"/><br><br>
   <img src="screenshot/profile_menu_v4.jfif" width="220"/>

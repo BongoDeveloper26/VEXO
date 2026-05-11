@@ -317,7 +317,7 @@ Motor de búsqueda integrado que permite localizar películas, series y actores.
   <img src="screenshot/profile_managment.png.jfif" width="220"/>
 </p>
 
-Perfil personal del usuario donde se muestran estadísticas, actividad reciente, contenido guardado y accesos rápidos a funcionalidades como listas, logros o configuración de cuenta.
+Perfil personal del usuario donde se muestran estadísticas, actividad reciente, contenido guardado y accesos rápidos a funcionalidades como listas, logros, compartir su cuenta con sus contactos o configuración de cuenta.
 
 
 ## Personalización de perfil
@@ -326,7 +326,7 @@ Perfil personal del usuario donde se muestran estadísticas, actividad reciente,
   <img src="screenshot/profile_personalize.png.jfif" width="220"/>
 </p>
 
-Pantallas de configuración y personalización visual donde el usuario puede modificar colores, apariencia del perfil y diferentes preferencias relacionadas con la experiencia de uso.
+Pantallas de configuración y personalización visual donde el usuario puede modificar los colores de cabecera, elegir si quiere la cabecera transparente o no y diferentes fondos tématicos de tanto el mundo del séptimo arte como otros tématicos, pudiendo elegir hasta 8 fondos originales para su perfil difente siendo: Un fondo original de Vexo, retrofuturista, del inmenso espacio, con instrumentos de una sala de cine, ambietado en un cine clásico, vaporwave, una playa paradiseaca y uno más urbano de callejones con graffitis de peliculas y series.
 
 ## Sistema de logros
 
@@ -343,7 +343,7 @@ Apartado de logros y progresión donde se desbloquean recompensas visuales segú
   <img src="screenshot/profile_file.png.jfif" width="220"/>
 </p>
 
-Configuración del perfil del usuario donde pede 
+Configuración del perfil del usuario donde puede ver los datos de su perfil, cambiar idioma entre el Español e Inglés y un apartado para averiguar un poco más sobre la pasión y el amor que le he puesto a este proyecto.
 
 ---
 

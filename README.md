@@ -256,16 +256,6 @@ Pantallas que comparten tanto las fichas de series como de peliculas, donde se p
 
 ---
 
-## Noticias audiovisuales
-
-<p align="center">
-  <img src="screenshot/movie_news.png.jfif" width="220"/>
-</p>
-
-Apartado de noticias donde se recopilan artículos relacionados con estrenos, actualidad cinematográfica y novedades del sector audiovisual utilizando información obtenida desde NewsAPI.
-
----
-
 ## Sistema de listas
 
 ### Listas personalizadas y biblioteca
@@ -307,6 +297,16 @@ Opciones avanzadas de gestión de listas, incluyendo configuración de privacida
 </p>
 
 Motor de búsqueda integrado que permite localizar películas, series y actores. Los resultados se muestran organizados visualmente mediante tarjetas con imágenes, títulos y contenido relacionado.
+
+---
+
+## Noticias audiovisuales
+
+<p align="center">
+  <img src="screenshot/movie_news.png.jfif" width="220"/>
+</p>
+
+Apartado de noticias donde se recopilan artículos relacionados con estrenos, actualidad cinematográfica y novedades del sector audiovisual utilizando información obtenida desde NewsAPI.
 
 ---
 

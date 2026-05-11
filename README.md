@@ -314,11 +314,21 @@ Motor de búsqueda integrado que permite localizar películas, series y actores.
 
 <p align="center">
   <img src="screenshot/profile_menu.png.jfif" width="220"/>
+  <img src="screenshot/profile_menu_v2.jfif" width="220"/>
+  <img src="screenshot/profile_menu_v3.jfif" width="220"/>
+  <img src="screenshot/profile_menu_v4.jfif" width="220"/>
   <img src="screenshot/profile_managment.png.jfif" width="220"/>
 </p>
 
 Perfil personal del usuario donde se muestran estadísticas, actividad reciente, contenido guardado y accesos rápidos a funcionalidades como listas, logros, compartir su cuenta con sus contactos o configuración de cuenta.
 
+## Gestión de perfil del usuario
+
+<p align="center">
+  <img src="screenshot/profile_managment.png.jfif" width="220"/>
+</p>
+
+Menú despegable, donde el usuario, puede elegir las diferentes ocpiones para gestionar su perfil de usuario personal.
 
 ## Personalización de perfil
 

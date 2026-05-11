@@ -255,17 +255,35 @@ Apartado de noticias donde se recopilan artículos relacionados con estrenos, ac
 
 ## Sistema de listas
 
+### Listas personalizadas y biblioteca
+
 <p align="center">
-  <img src="screenshot/lists.png.jfif" width="220"/>
-  <img src="screenshot/library_lists.png.jfif" width="220"/>
-  <img src="screenshot/new_lists.png.jfif" width="220"/>
-  <img src="screenshot/other_lists.png.jfif" width="220"/>
-  <img src="screenshot/feutures_list.png.jfif" width="220"/>
+  <img src="screenshot/lists.png.jfif" width="260"/>
+  <img src="screenshot/library_lists.png.jfif" width="260"/>
 </p>
 
-Sistema de organización mediante listas personalizadas donde el usuario puede crear colecciones propias, consultar listas destacadas y acceder a contenido agrupado según diferentes categorías y temáticas.
+Pantallas principales del sistema de listas donde el usuario puede consultar sus colecciones personales y acceder a listas destacadas.
 
 ---
+
+### Creación y exploración de listas
+
+<p align="center">
+  <img src="screenshot/new_lists.png.jfif" width="260"/>
+  <img src="screenshot/other_lists.png.jfif" width="260"/>
+</p>
+
+Sistema de creación de nuevas colecciones personalizadas y exploración de listas públicas organizadas por temáticas.
+
+---
+
+### Gestión de listas
+
+<p align="center">
+  <img src="screenshot/feutures_list.png.jfif" width="260"/>
+</p>
+
+Opciones avanzadas de gestión de listas, incluyendo configuración de privacidad, edición y acciones rápidas sobre colecciones creadas.
 
 ## Buscador y resultados
 

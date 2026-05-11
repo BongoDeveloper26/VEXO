@@ -314,8 +314,8 @@ Motor de búsqueda integrado que permite localizar películas, series y actores.
 
 <p align="center">
   <img src="screenshot/profile_menu.png.jfif" width="220"/>
-  <img src="screenshot/profile_file.png.jfif" width="220"/>
   <img src="screenshot/profile_managment.png.jfif" width="220"/>
+  <img src="screenshot/profile_file.png.jfif" width="220"/>
   <img src="screenshot/profile_configuration.png.jfif" width="220"/>
 </p>
 
@@ -330,6 +330,14 @@ Perfil personal del usuario donde se muestran estadísticas, actividad reciente,
 
 Pantallas de configuración y personalización visual donde el usuario puede modificar colores, apariencia del perfil y diferentes preferencias relacionadas con la experiencia de uso.
 
+## Sistema de logros
+
+<p align="center">
+  <img src="screenshot/achievements.png.jfif" width="220"/>
+</p>
+
+Apartado de logros y progresión donde se desbloquean recompensas visuales según la actividad del usuario dentro de la aplicación, fomentando la interacción y la gamificación.
+
 ---
 
 ## Diario y reseñas
@@ -341,16 +349,6 @@ Pantallas de configuración y personalización visual donde el usuario puede mod
 </p>
 
 Sistema de diario personal y reseñas donde el usuario puede registrar películas y series vistas, añadir valoraciones y escribir opiniones sobre el contenido consumido.
-
----
-
-## Sistema de logros
-
-<p align="center">
-  <img src="screenshot/achievements.png.jfif" width="220"/>
-</p>
-
-Apartado de logros y progresión donde se desbloquean recompensas visuales según la actividad del usuario dentro de la aplicación, fomentando la interacción y la gamificación.
 
 ---
 

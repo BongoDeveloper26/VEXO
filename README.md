@@ -224,8 +224,8 @@ Sistema de descubrimiento basado en recomendaciones rápidas mediante swipe. El 
 
 <p align="center">
   <img src="screenshot/movie_file.png.jfif" width="220"/>
-  <img src="screenshot/movie_file_v2.png.jfif" width="220"/>
-  <img src="screenshot/movie_file_v3.png.jfif" width="220"/>
+  <img src="screenshot/movie_file_v2.png.jfif" width="220"/><br><br>
+  <img src="screenshot/movie_file_v3.png.jfif" width="220"/><br><br>
 </p>
 
 Vista detallada de películas donde se muestra información ampliada como sinopsis, plataformas disponibles, reparto, valoraciones, duración y recomendaciones relacionadas. También se incluyen acciones rápidas para guardar contenido o marcarlo como visto.

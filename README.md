@@ -244,15 +244,18 @@ Vista detallada de películas donde se muestra información ampliada como sinops
 Pantallas dedicadas a series de televisión donde se pueden consultar temporadas, episodios, descripción completa y puntuaciones. Además, se muestran imágenes promocionales y contenido relacionado.
 
 <p align="center">
+  <img src="screenshot/feutures_series_movies_png.jfif" width="220"/>
+</p>
+
+Caracteristicas que tienen tanto las fichas de series como de peliculas, donde se puede valorarla nada más entrar o elegiir entre diferentes opciones como escribir una reseña, añadirla a tus listas, destacar en tu vitrina personal, marcar como vista o ver todos los posters de la misma.
+
+<p align="center">
   <img src="screenshot/feutures_posters.jfif" width="220"/>
   <img src="screenshot/feutures_reviews.jfif" width="220"/>
 </p>
 
-Pantallas relacionadas con funcionalidades destacadas de la aplicación, mostrando publicaciones visuales, pósters personalizados y contenido compartido por los usuarios.
+Pantallas que comparten tanto las fichas de series como de peliculas, donde se pueden ver los posters y tanto valorar como escribir una reseña personal.
 
-<p align="center">
-  <img src="screenshot/feutures_series_movies_png.jfif" width="220"/>
-</p>
 
 ## 📰 Noticias audiovisuales
 

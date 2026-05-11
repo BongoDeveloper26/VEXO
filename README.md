@@ -189,6 +189,15 @@ Cada usuario dispone de:
 
 # 📱 Capturas de la aplicación
 
+## 🔐 Sistema de autenticación
+
+<p align="center">
+  <img src="screenshot/loggin.png.jfif" width="220"/>
+  <img src="screenshot/loggin_v2.png.jfif" width="220"/>
+</p>
+
+---
+
 ## 🏠 Menú principal
 
 <p align="center">
@@ -208,12 +217,21 @@ Cada usuario dispone de:
 
 ---
 
-## 🎬 Ficha de películas y series
+## 🎬 Ficha de películas 
 
 <p align="center">
   <img src="screenshot/movie_file.png.jfif" width="220"/>
   <img src="screenshot/movie_file_v2.png.jfif" width="220"/>
   <img src="screenshot/movie_file_v3.png.jfif" width="220"/>
+</p>
+
+---
+
+## 📺 Ficha de series
+
+<p align="center">
+  <img src="screenshot/serie_profile.png.jfif" width="220"/>
+  <img src="screenshot/serie_profile_v2.png.jfif" width="220"/>
 </p>
 
 ---

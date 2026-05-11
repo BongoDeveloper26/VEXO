@@ -187,9 +187,9 @@ Cada usuario dispone de:
 
 ---
 
-# 📱 Capturas de la aplicación
+# Capturas de la aplicación
 
-## 🔐 Sistema de autenticación
+## Sistema de autenticación
 
 <p align="center">
   <img src="screenshot/loggin.png" width="220"/>
@@ -198,7 +198,7 @@ Cada usuario dispone de:
 
 ---
 
-## 🏠 Menú principal
+## Menú principal
 
 <p align="center">
   <img src="screenshot/home_menu_movies.png.jfif" width="220"/>
@@ -208,7 +208,7 @@ Cada usuario dispone de:
 
 ---
 
-## 🎯 Sistema Discover
+## Sistema Discover
 
 <p align="center">
   <img src="screenshot/discover_filter.png.jfif" width="220"/>
@@ -217,7 +217,7 @@ Cada usuario dispone de:
 
 ---
 
-## 🎬 Ficha de películas 
+## Ficha de películas 
 
 <p align="center">
   <img src="screenshot/movie_file.png.jfif" width="220"/>
@@ -227,7 +227,7 @@ Cada usuario dispone de:
 
 ---
 
-## 📺 Ficha de series
+## Ficha de series
 
 <p align="center">
   <img src="screenshot/serie_profile.png" width="220"/>
@@ -236,7 +236,7 @@ Cada usuario dispone de:
 
 ---
 
-## 📰 Noticias audiovisuales
+## Noticias audiovisuales
 
 <p align="center">
   <img src="screenshot/movie_news.png.jfif" width="220"/>
@@ -244,7 +244,7 @@ Cada usuario dispone de:
 
 ---
 
-## 📚 Sistema de listas
+## Sistema de listas
 
 <p align="center">
   <img src="screenshot/lists.png.jfif" width="220"/>
@@ -256,7 +256,7 @@ Cada usuario dispone de:
 
 ---
 
-## 🔎 Buscador y resultados
+## Buscador y resultados
 
 <p align="center">
   <img src="screenshot/seeker.png.jfif" width="220"/>
@@ -266,7 +266,7 @@ Cada usuario dispone de:
 
 ---
 
-## 👤 Perfil de usuario
+## Perfil de usuario
 
 <p align="center">
   <img src="screenshot/profile_file.png.jfif" width="220"/>
@@ -276,7 +276,7 @@ Cada usuario dispone de:
 
 ---
 
-## 🎨 Personalización de perfil
+## Personalización de perfil
 
 <p align="center">
   <img src="screenshot/profile_personalize.png.jfif" width="220"/>
@@ -285,7 +285,7 @@ Cada usuario dispone de:
 
 ---
 
-## 📝 Diario y reseñas
+## Diario y reseñas
 
 <p align="center">
   <img src="screenshot/profile_diary.png.jfif" width="220"/>
@@ -295,7 +295,7 @@ Cada usuario dispone de:
 
 ---
 
-## 🏆 Sistema de logros
+## Sistema de logros
 
 <p align="center">
   <img src="screenshot/achievements.png.jfif" width="220"/>

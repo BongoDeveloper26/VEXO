@@ -251,9 +251,8 @@ Pantallas dedicadas a series de televisión donde se pueden consultar temporadas
 Pantallas relacionadas con funcionalidades destacadas de la aplicación, mostrando publicaciones visuales, pósters personalizados y contenido compartido por los usuarios.
 
 <p align="center">
-   <img src="screenshot/feutures_series_movies.png.jfif" width="220"/>
+  <img src="screenshot/feutures_series_movies.png" width="220"/>
 </p>
----
 
 ## 📰 Noticias audiovisuales
 

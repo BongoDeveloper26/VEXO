@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="screenshot/banner_vexo.jfif"/>
+  <img src="screenshot/banner_vexo.jfif" width="900"/>
 </p>
 
 ### Aplicación Android para descubrir, gestionar y decidir qué ver en películas y series

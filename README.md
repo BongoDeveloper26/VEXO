@@ -190,6 +190,13 @@ Cada usuario dispone de:
 
 ---
 
+# Landing Page oficial
+
+VEXO dispone de una landing page propia desarrollada para presentar la aplicación, centralizar información del proyecto y permitir la descarga directa de la APK.
+
+**Acceder a la landing page:**  
+file:///C:/Users/alejandro.delvalle/Desktop/LandingPage/index.html
+
 ## Login
 
 <p align="center">

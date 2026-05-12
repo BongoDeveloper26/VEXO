@@ -225,6 +225,9 @@ Sistema de descubrimiento basado en recomendaciones rápidas mediante swipe. El 
 <p align="center">
   <img src="screenshot/movie_file.png.jfif" width="220"/><br><br>
   <img src="screenshot/movie_file_v2.png.jfif" width="220"/><br><br>
+  <img src="screenshot/profile_detail.jfif" width="220"/>
+  <img src="screenshot/profile_genres.jfif" width="220"/>
+  <img src="screenshot/profile_team.jfif" width="220"/>
   <img src="screenshot/movie_file_v3.png.jfif" width="220"/><br><br>
   <img src="screenshot/where_to_watch.jfif" width="220"/>
 </p>
@@ -353,9 +356,6 @@ Sistema de diario personal y reseñas donde el usuario puede registrar película
 
 <p align="center">
   <img src="screenshot/profile_managment.png.jfif" width="220"/>
-  <img src="screenshot/profile_detail.jfif" width="220"/>
-  <img src="screenshot/profile_genres.jfif" width="220"/>
-  <img src="screenshot/profile_team.jfif" width="220"/>
 </p>
 
 Menú de gestión del perfil desde el que el usuario puede acceder a sus datos personales, configurar preferencias, consultar géneros destacados y visualizar información relacionada con el equipo o la identidad del proyecto.

@@ -224,13 +224,13 @@ Sistema de descubrimiento basado en recomendaciones rápidas mediante swipe. El 
 
 <p align="center">
   <img src="screenshot/movie_file.png.jfif" width="220"/><br><br>
-  <img src="screenshot/movie_file_v4.jfif" width="220"/><br><br>
+  <img src="screenshot/movie_file_v4.jfif" width="220"/>
+  <img src="screenshot/where_to_watch.jfif" width="220"/><br><br>
   <img src="screenshot/movie_file_v2.png.jfif" width="220"/>
   <img src="screenshot/profile_team.jfif" width="220"/>
   <img src="screenshot/profile_genres.jfif" width="220"/>
   <img src="screenshot/profile_detail.jfif" width="220"/><br><br>
   <img src="screenshot/movie_file_v3.png.jfif" width="220"/><br><br>
-  <img src="screenshot/where_to_watch.jfif" width="220"/>
 </p>
 
 Vista detallada de películas donde se muestra información ampliada como sinopsis, plataformas disponibles, reparto, valoraciones, duración y recomendaciones relacionadas. También se incluye una pantalla específica para consultar dónde ver el contenido.

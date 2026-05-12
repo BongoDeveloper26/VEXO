@@ -1,4 +1,7 @@
-# VEXO 
+<p align="center">
+  <img src="screenshot/banner_vexo.jfif"/>
+</p>
+
 ### Aplicación Android para descubrir, gestionar y decidir qué ver en películas y series
 
 VEXO es una aplicación móvil desarrollada para Android cuyo objetivo es ayudar al usuario a descubrir, organizar y gestionar contenido audiovisual de forma rápida, visual y personalizada.

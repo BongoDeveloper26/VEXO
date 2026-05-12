@@ -262,11 +262,14 @@ Pantallas que comparten tanto las fichas de series como de peliculas, donde se p
 <p align="center">
   <img src="screenshot/seeker.png.jfif" width="220"/>
   <img src="screenshot/seeker_results_movies.png.jfif" width="220"/>
-  <img src="screenshot/seeker_results_actors.png.jfif" width="220"/>
-  <img src="screenshot/profile_actor.jfif" width="220"/>
 </p>
 
 Motor de búsqueda integrado que permite localizar películas, series y actores. En el caso de los actores, se muestra una ficha específica con su información y contenidos relacionados.
+
+<img src="screenshot/seeker_results_actors.png.jfif" width="220"/>
+<img src="screenshot/profile_actor.jfif" width="220"/>
+
+También, se puede buscar actores/actrices donde se enseñara información acerca de su vida como su filmografía.
 
 ---
 

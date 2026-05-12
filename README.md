@@ -394,58 +394,6 @@ Configuración del perfil del usuario donde puede ver los datos de su perfil, ca
 
 ---
 
-# Problemas encontrados durante el desarrollo
-
-Durante el desarrollo aparecieron distintos retos técnicos:
-
-| Problema | Solución |
-|---|---|
-| Gestión de múltiples APIs | Normalización de datos |
-| Rendimiento de imágenes | Implementación de Glide |
-| Gestión de asincronía | Corrutinas y lifecycleScope |
-| Compatibilidad Android | Pruebas en distintos dispositivos |
-| Gestión del ciclo de vida | Operaciones ligadas al lifecycle |
-
----
-
-# Futuras mejoras
-
-El proyecto está planteado para evolucionar hacia una aplicación más completa.
-
-Posibles mejoras futuras:
-
-- arquitectura MVVM completa,
-- inteligencia artificial para recomendaciones,
-- notificaciones push,
-- sistema social,
-- rankings,
-- comunidad,
-- optimización offline,
-- internacionalización,
-- gamificación avanzada,
-- publicación en Google Play.
-
----
-
-# Viabilidad del proyecto
-
-VEXO presenta:
-
-- viabilidad técnica,
-- bajo coste inicial,
-- arquitectura escalable,
-- potencial de crecimiento,
-- y posibilidades reales de monetización.
-
-El proyecto contempla modelos de:
-
-- publicidad,
-- personalización premium,
-- afiliación con plataformas streaming,
-- recomendaciones patrocinadas.
-
----
-
 # Instalación
 
 ```bash

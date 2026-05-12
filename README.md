@@ -408,19 +408,6 @@ Durante el desarrollo aparecieron distintos retos técnicos:
 
 ---
 
-## Estimación de costes
-
-| Concepto | Coste estimado |
-|---|---|
-| Desarrollo | 3.000 € – 4.000 € |
-| Firebase | 0 € (plan gratuito) |
-| APIs externas | 0 € |
-| Cuenta Google Play | 25 € |
-| Hosting Landing Page | 20 € – 60 € anuales |
-| Mantenimiento | 15% – 20% anual |
-
----
-
 # Futuras mejoras
 
 El proyecto está planteado para evolucionar hacia una aplicación más completa.

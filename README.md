@@ -365,7 +365,8 @@ Menú de gestión del perfil desde el que el usuario puede acceder a sus datos p
 ## Personalización de perfil
 
 <p align="center">
-  <img src="screenshot/profile_managment.png.jfif" width="220"/>
+  <img src="screenshot/profile_personalize.png.jfif" width="220"/>
+  <img src="screenshot/profile_personalize_v2.jfif" width="220"/>
 </p>
 
 Pantallas de configuración y personalización visual donde el usuario puede modificar los colores de cabecera, elegir si quiere la cabecera transparente o no y diferentes fondos tématicos de tanto el mundo del séptimo arte como otros tématicos, pudiendo elegir hasta 8 fondos originales para su perfil difente siendo: Un fondo original de Vexo, retrofuturista, del inmenso espacio, con instrumentos de una sala de cine, ambietado en un cine clásico, vaporwave, una playa paradiseaca y uno más urbano de callejones con graffitis de peliculas y series.

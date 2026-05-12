@@ -70,7 +70,7 @@ Además, la aplicación incorpora listas oficiales generadas por VEXO para facil
 
 ---
 
-## DISCOVER
+## Discover
 
 Una de las funcionalidades más importantes del proyecto.
 
@@ -187,7 +187,7 @@ Cada usuario dispone de:
 
 ---
 
-## Loggin
+## Login
 
 <p align="center">
   <img src="screenshot/loggin.png" width="220"/>
@@ -209,7 +209,7 @@ Pantallas principales de navegación donde se muestran películas y series desta
 
 ---
 
-## DISCOVER
+## Discover
 
 <p align="center">
   <img src="screenshot/discover_filter.png.jfif" width="220"/>

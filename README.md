@@ -225,9 +225,9 @@ Sistema de descubrimiento basado en recomendaciones rápidas mediante swipe. El 
 <p align="center">
   <img src="screenshot/movie_file.png.jfif" width="220"/><br><br>
   <img src="screenshot/movie_file_v2.png.jfif" width="220"/>
-  <img src="screenshot/profile_detail.jfif" width="220"/>
+  <img src="screenshot/profile_team.jfif" width="220"/>
   <img src="screenshot/profile_genres.jfif" width="220"/>
-  <img src="screenshot/profile_team.jfif" width="220"/><br><br>
+  <img src="screenshot/profile_detail.jfif" width="220"/><br><br>
   <img src="screenshot/movie_file_v3.png.jfif" width="220"/><br><br>
   <img src="screenshot/where_to_watch.jfif" width="220"/>
 </p>

@@ -277,27 +277,12 @@ También, se puede buscar actores/actrices donde se enseñara información acerc
 
 ## Sistema de listas
 
-### Creación y exploración de listas
-
-<p align="center">
-  <img src="screenshot/new_lists.png.jfif" width="260"/>
-  <img src="screenshot/other_lists.png.jfif" width="260"/>
-</p>
-
-<p align="center">
-  <img src="screenshot/other_lists_v2.jfif" width="260"/>
-</p>
-
-Sistema de creación de nuevas colecciones personalizadas y exploración de listas públicas organizadas por temáticas, incluyendo listas destacadas creadas por la propia aplicación.
-
----
-
 
 ### Biblioteca y creación de listas
 
 <p align="center">
   <img src="screenshot/library_lists.jfif" width="260"/>
-  <img src="screenshot/new_lists.png.jfif" width="260"/>
+  <img src="screenshot/new_lists.jfif" width="260"/>
 </p>
 
 Sistema de almacenamiento de listas personales y la posbilidad de crear las listas que quiera el usuario para guardar sus peliculas y series.
@@ -310,6 +295,19 @@ Sistema de almacenamiento de listas personales y la posbilidad de crear las list
 </p>
 
 Opciones avanzadas de gestión de listas, incluyendo configuración de privacidad, edición y acciones rápidas sobre colecciones creadas.
+
+### Creación y exploración de listas
+
+<p align="center">
+  <img src="screenshot/new_lists.png.jfif" width="260"/>
+  <img src="screenshot/other_lists.png.jfif" width="260"/>
+</p>
+
+<p align="center">
+  <img src="screenshot/other_lists_v2.jfif" width="260"/>
+</p>
+
+Sistema de creación de nuevas colecciones personalizadas y exploración de listas públicas organizadas por temáticas, incluyendo listas destacadas creadas por la propia aplicación.
 
 ---
 

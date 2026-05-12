@@ -300,14 +300,16 @@ Opciones avanzadas de gestión de listas, incluyendo configuración de privacida
 
 <p align="center">
   <img src="screenshot/new_lists.png.jfif" width="260"/>
-  <img src="screenshot/other_lists.png.jfif" width="260"/>
 </p>
 
+Sistema de creación de nuevas colecciones personalizadas.
+
 <p align="center">
+  <img src="screenshot/other_lists.png.jfif" width="260"/>
   <img src="screenshot/other_lists_v2.jfif" width="260"/>
 </p>
 
-Sistema de creación de nuevas colecciones personalizadas y exploración de listas públicas organizadas por temáticas, incluyendo listas destacadas creadas por la propia aplicación.
+Colección de listas dentro de la plataforma para que el usuario tenga unas listas de referencias de contenido más común, como las mejores/series de la historia, el universo cinematografico de Marvel, Star Wars, todas las peliculas y series de Batman...
 
 ---
 

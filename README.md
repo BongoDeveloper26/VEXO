@@ -266,8 +266,10 @@ Pantallas que comparten tanto las fichas de series como de peliculas, donde se p
 
 Motor de búsqueda integrado que permite localizar películas, series y actores. En el caso de los actores, se muestra una ficha específica con su información y contenidos relacionados.
 
-<img src="screenshot/seeker_results_actors.png.jfif" width="220"/>
+<p align="center">
+ <img src="screenshot/seeker_results_actors.png.jfif" width="220"/>
 <img src="screenshot/profile_actor.jfif" width="220"/>
+</p>
 
 También, se puede buscar actores/actrices donde se enseñara información acerca de su vida como su filmografía.
 
@@ -291,14 +293,14 @@ Sistema de creación de nuevas colecciones personalizadas y exploración de list
 ---
 
 
-### Creación y exploración de listas
+### Biblioteca y creación de listas
 
 <p align="center">
+  <img src="screenshot/library_lists.jfif" width="260"/>
   <img src="screenshot/new_lists.png.jfif" width="260"/>
-  <img src="screenshot/other_lists.png.jfif" width="260"/>
 </p>
 
-Sistema de creación de nuevas colecciones personalizadas y exploración de listas públicas organizadas por temáticas.
+Sistema de almacenamiento de listas personales y la posbilidad de crear las listas que quiera el usuario para guardar sus peliculas y series.
 
 
 ### Gestión de listas
@@ -319,7 +321,7 @@ Opciones avanzadas de gestión de listas, incluyendo configuración de privacida
   <img src="screenshot/movie_news_v3.jfif" width="220"/>
 </p>
 
-Apartado de noticias donde se recopilan artículos relacionados con estrenos, actualidad cinematográfica y novedades del sector audiovisual utilizando información obtenida desde NewsAPI.
+Apartado de noticias donde se recopilan artículos relacionados con estrenos, un sistema para guardar noticias que quiera el usuario dentro de la propia aplicación y novedades del sector audiovisual utilizando información obtenida desde NewsAPI.
 
 ---
 

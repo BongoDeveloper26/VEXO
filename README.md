@@ -232,7 +232,7 @@ Sistema de descubrimiento basado en recomendaciones rápidas mediante swipe. El 
   <img src="screenshot/movie_file_v2.png.jfif" width="220"/>
   <img src="screenshot/profile_team.jfif" width="220"/>
   <img src="screenshot/profile_genres.jfif" width="220"/>
-  <img src="screenshot/profile_detail.jfif" width="220"/>
+  <img src="screenshot/profile_detail.jfif" width="220"/><br><br>
   <img src="screenshot/movie_file_v3.png.jfif" width="220"/><br><br>
 </p>
 

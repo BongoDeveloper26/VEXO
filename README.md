@@ -281,8 +281,8 @@ También, se puede buscar actores/actrices donde se enseñara información acerc
 ### Biblioteca y creación de listas
 
 <p align="center">
-  <img src="screenshot/library_lists.jfif" width="260"/>
-  <img src="screenshot/new_lists.jfif" width="260"/>
+  <img src="screenshot/library_lists.png.jfif" width="260"/>
+  <img src="screenshot/new_lists.png.jfif" width="260"/>
 </p>
 
 Sistema de almacenamiento de listas personales y la posbilidad de crear las listas que quiera el usuario para guardar sus peliculas y series.

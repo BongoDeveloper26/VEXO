@@ -226,7 +226,7 @@ Sistema de descubrimiento basado en recomendaciones rápidas mediante swipe. El 
   <img src="screenshot/movie_file.png.jfif" width="220"/><br><br>
   <img src="screenshot/movie_file_v2.png.jfif" width="220"/><br><br>
   <img src="screenshot/movie_file_v3.png.jfif" width="220"/><br><br>
-  <img src="screenshot/where_to_watch.png" width="220"/>
+  <img src="screenshot/where_to_watch.jfif" width="220"/>
 </p>
 
 Vista detallada de películas donde se muestra información ampliada como sinopsis, plataformas disponibles, reparto, valoraciones, duración y recomendaciones relacionadas. También se incluye una pantalla específica para consultar dónde ver el contenido.
@@ -263,7 +263,7 @@ Pantallas que comparten tanto las fichas de series como de peliculas, donde se p
   <img src="screenshot/seeker.png.jfif" width="220"/>
   <img src="screenshot/seeker_results_movies.png.jfif" width="220"/>
   <img src="screenshot/seeker_results_actors.png.jfif" width="220"/>
-  <img src="screenshot/profile_actor.png" width="220"/>
+  <img src="screenshot/profile_actor.jfif" width="220"/>
 </p>
 
 Motor de búsqueda integrado que permite localizar películas, series y actores. En el caso de los actores, se muestra una ficha específica con su información y contenidos relacionados.
@@ -280,7 +280,7 @@ Motor de búsqueda integrado que permite localizar películas, series y actores.
 </p>
 
 <p align="center">
-  <img src="screenshot/other_lists_v2.png" width="260"/>
+  <img src="screenshot/other_lists_v2.jfif" width="260"/>
 </p>
 
 Sistema de creación de nuevas colecciones personalizadas y exploración de listas públicas organizadas por temáticas, incluyendo listas destacadas creadas por la propia aplicación.
@@ -312,8 +312,8 @@ Opciones avanzadas de gestión de listas, incluyendo configuración de privacida
 
 <p align="center">
   <img src="screenshot/movie_news.png.jfif" width="220"/>
-  <img src="screenshot/movie_news_v2.png" width="220"/>
-  <img src="screenshot/movie_news_v3.png" width="220"/>
+  <img src="screenshot/movie_news_v2.jfif" width="220"/>
+  <img src="screenshot/movie_news_v3.jfif" width="220"/>
 </p>
 
 Apartado de noticias donde se recopilan artículos relacionados con estrenos, actualidad cinematográfica y novedades del sector audiovisual utilizando información obtenida desde NewsAPI.
@@ -359,8 +359,10 @@ Menú de gestión del perfil desde el que el usuario puede acceder a sus datos p
 ## Personalización de perfil
 
 <p align="center">
-  <img src="screenshot/profile_personalize.png.jfif" width="220"/>
-  <img src="screenshot/profile_personalize_v2.jfif" width="220"/>
+  <img src="screenshot/profile_managment.png.jfif" width="220"/>
+  <img src="screenshot/profile_detail.jfif" width="220"/>
+  <img src="screenshot/profile_genres.jfif" width="220"/>
+  <img src="screenshot/profile_team.jfif" width="220"/>
 </p>
 
 Pantallas de configuración y personalización visual donde el usuario puede modificar los colores de cabecera, elegir si quiere la cabecera transparente o no y diferentes fondos tématicos de tanto el mundo del séptimo arte como otros tématicos, pudiendo elegir hasta 8 fondos originales para su perfil difente siendo: Un fondo original de Vexo, retrofuturista, del inmenso espacio, con instrumentos de una sala de cine, ambietado en un cine clásico, vaporwave, una playa paradiseaca y uno más urbano de callejones con graffitis de peliculas y series.
@@ -369,8 +371,8 @@ Pantallas de configuración y personalización visual donde el usuario puede mod
 
 <p align="center">
   <img src="screenshot/achievements.png.jfif" width="220"/>
-  <img src="screenshot/achievements_v2.png" width="220"/>
-  <img src="screenshot/achievements_v3.png" width="220"/>
+  <img src="screenshot/achievements_v2.jfif" width="220"/>
+  <img src="screenshot/achievements_v3.jfif" width="220"/>
 </p>
 
 Apartado de logros y progresión donde se desbloquean recompensas visuales según la actividad del usuario dentro de la aplicación, fomentando la interacción y la gamificación.

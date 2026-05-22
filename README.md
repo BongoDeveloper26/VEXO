@@ -15,6 +15,8 @@ La aplicación integra múltiples fuentes externas de información como **TMDB**
 - [Página web](https://BongoDeveloper26.github.io/VEXO/)
 - [LinkedIn](https://www.linkedin.com/in/TU-USUARIO/)
 
+---
+
 # Descripción del proyecto
 
 Actualmente existen numerosas plataformas de streaming y una enorme cantidad de contenido audiovisual disponible, lo que provoca que muchos usuarios:

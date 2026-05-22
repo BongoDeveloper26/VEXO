@@ -13,7 +13,7 @@ La aplicación integra múltiples fuentes externas de información como **TMDB**
 ## Enlaces
 
 - [Página web](https://BongoDeveloper26.github.io/VEXO/)
-- [LinkedIn](https://www.linkedin.com/in/TU-USUARIO/)
+- [LinkedIn](https://www.linkedin.com/in/alejandro-del-valle-lopez-993370334)
 
 ---
 

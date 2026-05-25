@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vexo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f6efff;
+      --bg-2:#efe2ff;
+      --surface:rgba(255,255,255,.72);
+      --surface-strong:#ffffff;
+      --text:#23164a;
+      --muted:#776d9a;
+      --line:rgba(90,58,160,.12);
+      --primary:#7a3cff;
+      --primary-2:#b15cff;
+      --primary-3:#4d1bb8;
+      --shadow:0 16px 40px rgba(88,50,175,.14);
+      --shadow-lg:0 30px 70px rgba(73,36,160,.24);
+      --radius-xl:36px;
+      --radius-lg:28px;
+      --radius-md:20px;
+      --max:1120px;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(177,92,255,.22), transparent 28%),
+        radial-gradient(circle at 100% 10%, rgba(122,60,255,.18), transparent 20%),
+        linear-gradient(180deg,#f8f3ff 0%,#f3eaff 35%,#ffffff 100%);
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);
+      background-size:40px 40px;
+      opacity:.25;
+      pointer-events:none;
+      z-index:-1;
+    }
+
+    img{display:block;max-width:100%}
+    a{text-decoration:none;color:inherit}
+    .container{width:min(var(--max),calc(100% - 32px));margin:0 auto}
+
+    .glass{
+      background:var(--surface);
+      border:1px solid rgba(255,255,255,.55);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+
+    .nav{
+      position:sticky;
+      top:0;
+      z-index:50;
+      padding:14px 0;
+      background:linear-gradient(180deg, rgba(248,243,255,.9), rgba(248,243,255,.45));
+      backdrop-filter:blur(16px);
+      border-bottom:1px solid rgba(110,75,190,.08);
+    }
+
+    .nav-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      font-weight:900;
+      font-size:1.5rem;
+      letter-spacing:-.04em;
+    }
+
+    .brand img{
+      width:48px;
+      height:48px;
+      object-fit:contain;
+      border-radius:18px;
+      box-shadow:0 10px 22px rgba(66, 31, 138, .16);
+      background:#0f0820;
+    }
+
+    .nav-links{
+      display:flex;
+      gap:26px;
+      align-items:center;
+      color:var(--muted);
+      font-weight:600;
+    }
+
+    .nav-links a{
+      position:relative;
+      transition:.25s ease;
+    }
+
+    .nav-links a::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:0;
+      height:3px;
+      border-radius:999px;
+      background:linear-gradient(90deg,var(--primary),var(--primary-2));
+      transition:.25s ease;
+    }
+
+    .nav-links a:hover{color:var(--text)}
+    .nav-links a:hover::after{width:100%}
+
+    .nav-cta{
+      padding:14px 20px;
+      border-radius:999px;
+      background:linear-gradient(135deg,var(--primary),var(--primary-3));
+      color:white;
+      font-weight:800;
+      box-shadow:0 14px 30px rgba(94,51,194,.26);
+      transition:.25s ease;
+    }
+
+    .nav-cta:hover,
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 18px 36px rgba(94,51,194,.32)}
+
+    .hero{
+  padding:34px 0 28px;
+  min-height:calc(100vh - 72px);
+  display:flex;
+  align-items:center;
+}
+
+.hero-grid{
+  display:grid;
+  grid-template-columns:0.95fr 1.05fr;
+  gap:56px;
+  align-items:center;
+}
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius:999px;
+      font-weight:700;
+      font-size:.92rem;
+      color:var(--primary-3);
+      margin-bottom:18px;
+    }
+
+    .eyebrow::before{
+      content:"";
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:linear-gradient(135deg,var(--primary),var(--primary-2));
+      box-shadow:0 0 0 6px rgba(122,60,255,.12);
+    }
+
+
+    .hero h1{
+  font-size:clamp(3.2rem,4.2vw,4.8rem);
+  line-height:.92;
+  letter-spacing:-.075em;
+  max-width:9.5ch;
+  margin-bottom:18px;
+}
+
+    .hero-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+      margin-top:24px;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:14px 20px;
+      border-radius:999px;
+      font-weight:800;
+      transition:.25s ease;
+    }
+
+    .btn-primary{
+      background:linear-gradient(135deg,var(--primary),var(--primary-3));
+      color:white;
+      box-shadow:0 16px 30px rgba(94,51,194,.24);
+    }
+
+    .btn-secondary{
+      color:var(--text);
+      border:1px solid var(--line);
+    }
+
+    .btn-secondary:hover{transform:translateY(-2px);background:white}
+
+    .hero-stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+      margin-top:28px;
+    }
+
+    .stat{
+  padding:14px;
+  border-radius:22px;
+}
+
+    .stat strong{
+  display:block;
+  font-size:1.18rem;
+  letter-spacing:-.05em;
+  margin-bottom:4px;
+}
+
+    .stat span{
+  color:var(--muted);
+  font-size:.84rem;
+  line-height:1.3;
+}
+
+
+    .hero-visual{
+  position:relative;
+  min-height:500px;
+  perspective:1200px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+    .floating-card{
+      position:absolute;
+      border-radius:34px;
+      overflow:hidden;
+      box-shadow:var(--shadow-lg);
+      border:1px solid rgba(255,255,255,.5);
+      animation:float 7s ease-in-out infinite;
+      background:white;
+    }
+
+    .floating-card img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+   .card-a{
+  width:275px;
+  height:555px;
+  top:18px;
+  left:240px;
+  transform:rotate(5deg);
+  animation-delay:.2s;
+  z-index:3;
+}
+
+.card-b{
+  width:270px;
+  height:545px;
+  top:34px;
+  left:25px;
+  transform:rotate(-7deg);
+  animation-delay:1.4s;
+  z-index:2;
+}
+
+.card-c{
+  width:265px;
+  height:535px;
+  top:38px;
+  left:460px;
+  transform:rotate(7deg);
+  animation-delay:2.5s;
+  z-index:1;
+}
+
+
+    .card-badge{
+      position:absolute;
+      left:18px;
+      top:18px;
+      z-index:2;
+      color:white;
+      background:rgba(30,15,60,.5);
+      border:1px solid rgba(255,255,255,.2);
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:.82rem;
+      font-weight:800;
+      backdrop-filter:blur(10px);
+    }
+
+    .hero-glow{
+      position:absolute;
+      inset:auto 0 0 auto;
+      width:340px;
+      height:340px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(122,60,255,.26) 0%, rgba(122,60,255,0) 70%);
+      filter:blur(18px);
+      z-index:0;
+    }
+
+    .section{padding:86px 0;position:relative}
+
+    .section-head{
+      max-width:760px;
+      margin-bottom:34px;
+    }
+
+    .section-kicker{
+      font-size:.84rem;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      font-weight:800;
+      color:var(--primary);
+      margin-bottom:12px;
+    }
+
+    .section-head h2{
+      font-size:clamp(2.2rem,4vw,4rem);
+      line-height:.92;
+      letter-spacing:-.06em;
+      margin-bottom:12px;
+    }
+
+    .section-head p{
+      color:var(--muted);
+      font-size:1.02rem;
+      max-width:65ch;
+    }
+
+    .features{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+  margin-top:42px;
+}
+
+.feature{
+  position:relative;
+  overflow:hidden;
+  min-height:245px;
+  padding:34px 30px 30px;
+  border-radius:34px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.58));
+  border:1px solid rgba(255,255,255,.72);
+  box-shadow:
+    0 24px 58px rgba(80,45,170,.14),
+    inset 0 1px 0 rgba(255,255,255,.9);
+  transition:.3s ease;
+}
+
+.feature::before{
+  content:"";
+  position:absolute;
+  width:150px;
+  height:150px;
+  right:-55px;
+  top:-55px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(122,60,255,.24), transparent 70%);
+}
+
+.feature::after{
+  content:"";
+  position:absolute;
+  inset:auto 28px 0 28px;
+  height:4px;
+  border-radius:999px 999px 0 0;
+  background:linear-gradient(90deg,var(--primary),var(--primary-2));
+  opacity:.75;
+}
+
+.feature:hover{
+  transform:translateY(-10px);
+  box-shadow:
+    0 34px 72px rgba(80,45,170,.22),
+    inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+.feature-icon{
+  position:relative;
+  width:62px;
+  height:62px;
+  border-radius:20px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,var(--primary),var(--primary-3));
+  color:white;
+  font-weight:900;
+  font-size:1.05rem;
+  margin-bottom:28px;
+  box-shadow:
+    0 18px 32px rgba(92,47,194,.28),
+    inset 0 1px 0 rgba(255,255,255,.22);
+}
+
+.feature h3{
+  position:relative;
+  font-size:1.35rem;
+  line-height:1.05;
+  letter-spacing:-.045em;
+  margin-bottom:12px;
+}
+
+.feature p{
+  position:relative;
+  color:var(--muted);
+  font-size:.98rem;
+  line-height:1.48;
+  font-weight:500;
+}
+
+/* esto lo dejas tal cual */
+.gallery-grid{
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:20px;
+  align-items:stretch;
+}
+
+    .gallery-main,
+.gallery-side,
+.profile-block,
+.showcase,
+.final-cta{
+  border-radius:34px;
+  overflow:hidden;
+  position:relative;
+}
+
+/* Mantienes altura general */
+.gallery-main,
+.profile-block,
+.showcase{
+  min-height:630px;
+}
+
+/* 👉 Sobrescribes SOLO la imagen grande */
+.gallery-main{
+  min-height:420px;   /* aquí reduces tamaño */
+}
+
+.gallery-side{
+  display:grid;
+  gap:20px;
+  grid-template-rows:1fr 1fr;
+  background:transparent;
+  box-shadow:none;
+  border:none;
+}
+
+/* 👉 Mantienes comportamiento normal para el resto */
+.profile-block img,
+.showcase img,
+.gallery-side img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:top;
+}
+
+/* 👉 SOLO la imagen grande cambia */
+.gallery-main img{
+  width:100%;
+  height:100%;
+  object-fit:contain;      /* evita zoom excesivo */
+  object-position:center;
+  background:#efe2ff;
+}
+
+    .overlay{
+      position:absolute;
+      inset:auto 0 0 0;
+      padding:28px;
+      background:linear-gradient(180deg, rgba(20,8,44,0), rgba(20,8,44,.82));
+      color:white;
+    }
+
+    .overlay h3{
+      font-size:2rem;
+      line-height:.95;
+      letter-spacing:-.05em;
+      margin-bottom:8px;
+    }
+
+    .overlay p{
+      color:rgba(255,255,255,.8);
+      max-width:44ch;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:20px;
+      align-items:stretch;
+    }
+
+    .content-card{
+      padding:30px;
+      border-radius:32px;
+    }
+
+    .content-card h3{
+      font-size:2rem;
+      line-height:.95;
+      letter-spacing:-.05em;
+      margin-bottom:12px;
+      max-width:12ch;
+    }
+
+    .content-card p{
+      color:var(--muted);
+      margin-bottom:22px;
+      max-width:52ch;
+    }
+
+    .bullet-list{
+      display:grid;
+      gap:14px;
+    }
+
+    .bullet{
+      display:grid;
+      grid-template-columns:44px 1fr;
+      gap:14px;
+      align-items:start;
+      padding:14px;
+      border-radius:22px;
+      background:rgba(255,255,255,.66);
+      border:1px solid rgba(90,58,160,.08);
+    }
+
+    .bullet-num{
+      width:44px;height:44px;border-radius:14px;
+      display:grid;place-items:center;
+      font-weight:900;color:white;
+      background:linear-gradient(135deg,var(--primary),var(--primary-3));
+    }
+
+    .bullet strong{display:block;margin-bottom:4px}
+    .bullet span{color:var(--muted);font-size:.95rem}
+
+    .showcase .overlay{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .mini-chip{
+      display:inline-flex;
+      align-items:center;
+      width:fit-content;
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.18);
+      font-size:.84rem;
+      font-weight:800;
+      backdrop-filter:blur(12px);
+    }
+
+    .final-cta{
+      padding:34px;
+      background:linear-gradient(135deg,#26104f 0%,#6d35e5 52%,#ab63ff 100%);
+      color:white;
+      box-shadow:var(--shadow-lg);
+    }
+
+    .final-cta h2{
+      font-size:clamp(2.1rem,4vw,3.8rem);
+      line-height:.92;
+      letter-spacing:-.06em;
+      margin-bottom:12px;
+      max-width:12ch;
+    }
+
+    .final-cta p{
+      color:rgba(255,255,255,.82);
+      max-width:58ch;
+      margin-bottom:24px;
+    }
+
+    .final-actions{display:flex;gap:14px;flex-wrap:wrap}
+
+    .final-actions .btn-secondary{
+      background:rgba(255,255,255,.12);
+      color:white;
+      border-color:rgba(255,255,255,.18);
+    }
+
+    footer{padding:28px 0 36px;color:var(--muted)}
+    .footer-inner{
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+      border-top:1px solid rgba(90,58,160,.1);
+      padding-top:20px;
+    }
+
+    .reveal{
+      opacity:0;
+      transform:translateY(30px);
+      transition:opacity .7s ease, transform .7s ease;
+    }
+
+    .reveal.visible{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    @keyframes float{
+      0%,100%{transform:translateY(0) rotate(var(--rot,0deg))}
+      50%{transform:translateY(-14px) rotate(var(--rot,0deg))}
+    }
+
+    .card-a{--rot:6deg}
+.card-b{--rot:-7deg}
+.card-c{--rot:7deg}
+
+    @media (max-width:1080px){
+  .hero-grid,
+  .gallery-grid,
+  .grid-2,
+  .features{
+    grid-template-columns:1fr;
+  }
+
+  .hero{
+    min-height:auto;
+    padding:48px 0 36px;
+  }
+
+  .hero-visual{
+    min-height:640px;
+  }
+
+  .nav-links{
+    display:none;
+  }
+
+  .hero h1{
+    max-width:none;
+    font-size:clamp(2.8rem,8vw,4.8rem);
+  }
+
+  .hero-stats{
+    grid-template-columns:1fr;
+  }
+}
+
+@media (max-width:760px){
+  .hero{
+    padding-top:36px;
+  }
+
+  .hero-visual{
+    min-height:auto;
+    display:grid;
+    gap:18px;
+  }
+
+  .floating-card{
+    position:relative;
+    inset:auto!important;
+    transform:none!important;
+    width:100%!important;
+    height:auto!important;
+    animation:none;
+  }
+
+  .card-a,
+  .card-b,
+  .card-c{
+    aspect-ratio:9/16;
+  }
+
+  .hero h1{
+    font-size:clamp(2.5rem,13vw,4rem);
+    line-height:.95;
+  }
+
+  .hero p{
+    font-size:.98rem;
+  }
+
+  .gallery-main,
+  .profile-block,
+  .showcase{
+    min-height:400px;
+  }
+
+  .gallery-side{
+    grid-template-rows:none;
+  }
+
+  .brand img{
+    width:48px;
+    height:48px;
+  }
+
+  .brand{
+    font-size:1.3rem;
+  }
+
+  .nav-cta{
+    padding:12px 16px;
+  }
+
+  .final-cta,
+  .content-card,
+  .feature{
+    border-radius:26px;
+  }
+}
+    .gallery-grid-2x2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.gallery-item{
+  border-radius:34px;
+  overflow:hidden;
+  min-height:120px;
+}
+
+.gallery-item img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-inner">
+  <a href="#inicio" class="brand">
+    <img src="screenshot/banner_vexo.png" alt="Logo de Vexo">
+    <span>Vexo</span>
+  </a>
+
+  <nav class="nav-links">
+    <a href="#funciones">Funciones</a>
+    <a href="#pantallas">Pantallas</a>
+    <a href="#personalizacion">Personalización</a>
+    <a href="#descubrir">Descubrir</a>
+  </nav>
+
+  <div style="display:flex; gap:12px;">
+    <a href="#pantallas" class="nav-cta">Ver experiencia</a>
+    
+    <a href="screenshot/vexo.apk" class="nav-cta" style="background:linear-gradient(135deg,#b15cff,#7a3cff);" download>
+      Descargar APK
+    </a>
+  </div>
+</div>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="container hero-grid">
+        <div class="reveal visible">
+          <div class="eyebrow glass">Descubre películas y series sin perder tiempo eligiendo</div>
+          <h1>Tu próxima obsesión audiovisual empieza en Vexo.</h1>
+          <p>
+            Vexo es una app de descubrimiento audiovisual con una experiencia visual inspirada en las plataformas de streaming. Explora tendencias, accede a listas, encuentra películas y series con una interfaz moderna y personaliza el entorno para que la experiencia se sienta realmente tuya.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#pantallas" class="btn btn-primary">Ver pantallas reales</a>
+            <a href="#funciones" class="btn btn-secondary glass">Explorar funciones</a>
+    
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat glass">
+              <strong>Explora</strong>
+              <span>Una home visual y directa, inspirada en el lenguaje de Netflix.</span>
+            </div>
+            <div class="stat glass">
+              <strong>Guarda</strong>
+              <span>Crea listas, sigue colecciones y organiza qué ver después.</span>
+            </div>
+            <div class="stat glass">
+              <strong>Personaliza</strong>
+              <span>Adapta la estética del perfil y del contenido a tu estilo.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual reveal visible">
+          <div class="hero-glow"></div>
+
+          <article class="floating-card card-a">
+            <span class="card-badge">Series en tendencia</span>
+            <img src="screenshot/home_menu_series.png" alt="Pantalla de series de Vexo">
+          </article>
+
+          <article class="floating-card card-b">
+            <span class="card-badge">Biblioteca y listas</span>
+            <img src="screenshot/lists.png" alt="Pantalla de listas de Vexo">
+          </article>
+
+          <article class="floating-card card-c">
+            <span class="card-badge">Discover interactivo</span>
+            <img src="screenshot/discover_menu.png" alt="Pantalla discover de Vexo">
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="funciones">
+      <div class="container">
+        <div class="section-head reveal">
+          <div class="section-kicker">Funciones principales</div>
+          <h2>Una experiencia pensada para descubrir, decidir y volver.</h2>
+          <p>
+            La interfaz de Vexo está construida para reducir la fricción al elegir contenido. Todo está enfocado en que el usuario encuentre algo interesante rápido, lo guarde, lo compare y mantenga una relación continua con la plataforma.
+          </p>
+        </div>
+
+        <div class="features">
+          <article class="feature glass reveal">
+            <div class="feature-icon">01</div>
+            <h3>Exploración visual</h3>
+            <p>
+              Carruseles, bloques destacados, puntuaciones visibles y categorías temáticas para navegar como en una plataforma de streaming.
+            </p>
+          </article>
+
+          <article class="feature glass reveal">
+            <div class="feature-icon">02</div>
+            <h3>Listas y colecciones</h3>
+            <p>
+              El usuario puede acceder a rankings, colecciones de sagas, universos completos y listas propias o compartidas por otros usuarios.
+            </p>
+          </article>
+
+          <article class="feature glass reveal">
+            <div class="feature-icon">03</div>
+            <h3>Perfil personalizable</h3>
+            <p>
+              Temas visuales, cabeceras y fondos de contenido para que la aplicación no se sienta genérica, sino más personal y reconocible.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="pantallas">
+      <div class="container">
+        <div class="section-head reveal">
+          <div class="section-kicker">Pantallas reales</div>
+          <h2>La interfaz de Vexo habla sola.</h2>
+          <p>
+            La landing ya no presenta mockups genéricos. Integra capturas reales de la aplicación para reforzar su identidad visual, mostrar su navegación y transmitir mejor cómo se usa de verdad.
+          </p>
+        </div>
+
+        <div class="gallery-grid-2x2">
+  
+  <article class="gallery-item glass reveal">
+    <img src="screenshot/home_menu_movies.png" alt="">
+  </article>
+
+  <article class="gallery-item glass reveal">
+    <img src="screenshot/home_menu_series.png" alt="">
+  </article>
+
+  <article class="gallery-item glass reveal">
+    <img src="screenshot/lists.png" alt="">
+  </article>
+
+  <article class="gallery-item glass reveal">
+    <img src="screenshot/movie_file.png" alt="">
+  </article>
+
+</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="descubrir">
+      <div class="container grid-2">
+        <article class="content-card glass reveal">
+          <div class="section-kicker">Discover</div>
+          <h3>Un modo de descubrimiento más directo e inmersivo.</h3>
+          <p>
+            La pantalla Discover convierte la búsqueda en una experiencia más dinámica. El usuario ve una ficha grande, visual y destacada, con valoraciones y una acción clara para decidir rápido.
+          </p>
+
+          <div class="bullet-list">
+            <div class="bullet">
+              <div class="bullet-num">1</div>
+              <div>
+                <strong>Interfaz centrada en una sola decisión</strong>
+                <span>El contenido se presenta con fuerza visual para evitar saturación y acelerar la elección.</span>
+              </div>
+            </div>
+            <div class="bullet">
+              <div class="bullet-num">2</div>
+              <div>
+                <strong>Valoraciones visibles</strong>
+                <span>La presencia simultánea de referencias como TMDB e IMDb ayuda a generar confianza y contexto.</span>
+              </div>
+            </div>
+            <div class="bullet">
+              <div class="bullet-num">3</div>
+              <div>
+                <strong>Gestos simples</strong>
+                <span>Una interacción mínima, clara y muy visual para seguir descubriendo contenido sin esfuerzo.</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="showcase glass reveal">
+          <img src="screenshot/discover_menu.png" alt="Pantalla discover de Vexo con The Boys">
+          <div class="overlay">
+            <span class="mini-chip">Discover mode</span>
+            <h3>Una forma más rápida de encontrar algo que realmente apetezca ver.</h3>
+            <p>
+              Menos ruido, más foco. Vexo presenta una propuesta visual contundente para que el usuario conecte con el contenido en segundos.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="personalizacion">
+      <div class="container grid-2">
+        <article class="profile-block glass reveal">
+          <img src="screenshot/profile_personalize.png" alt="Pantalla de personalización de perfil de Vexo">
+          <div class="overlay">
+            <h3>Personalización que refuerza la identidad de la app</h3>
+            <p>
+              La estética no es un añadido. Forma parte de la experiencia y hace que el producto se perciba más cuidado, flexible y memorable.
+            </p>
+          </div>
+        </article>
+
+        <article class="content-card glass reveal">
+          <div class="section-kicker">Perfil y estilo</div>
+          <h3>Una aplicación con carácter propio.</h3>
+          <p>
+            El sistema visual de Vexo se apoya en blanco, morado y degradados suaves para generar una imagen contemporánea. La personalización del perfil amplía esa identidad y hace que cada usuario sienta el espacio como suyo.
+          </p>
+
+          <div class="bullet-list">
+            <div class="bullet">
+              <div class="bullet-num">A</div>
+              <div>
+                <strong>Paletas cromáticas coherentes</strong>
+                <span>La interfaz mantiene continuidad visual en navegación, tarjetas, botones y componentes destacados.</span>
+              </div>
+            </div>
+            <div class="bullet">
+              <div class="bullet-num">B</div>
+              <div>
+                <strong>Fondos de contenido</strong>
+                <span>Las opciones de fondo aportan diferenciación sin perder limpieza ni legibilidad.</span>
+              </div>
+            </div>
+            <div class="bullet">
+              <div class="bullet-num">C</div>
+              <div>
+                <strong>Más sensación de producto real</strong>
+                <span>Este tipo de detalles acerca la app a un estándar visual más actual y comercial.</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <article class="final-cta reveal">
+          <div class="section-kicker" style="color:rgba(255,255,255,.74)">Vexo</div>
+          <h2>Descubre qué ver. Guarda lo que te gusta. Hazlo tuyo.</h2>
+          <p>
+            Una app visual, moderna y centrada en el usuario para explorar películas y series con una experiencia más atractiva, más rápida y más personal.
+          </p>
+
+          <div class="final-actions">
+            <a href="#inicio" class="btn btn-primary">Volver al inicio</a>
+            <a href="#pantallas" class="btn btn-secondary">Ver capturas</a>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <span>Vexo</span>
+      <span>Explorar · Descubrir · Guardar · Personalizar</span>
+    </div>
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
